@@ -567,6 +567,7 @@ void UnitTestGenAlgTest() {
   GASetRunsPerEpoch(ga, 1);
   GSet* rank = GSetCreate();
 //float best = 1.0;
+//int step = 0;
   do {
     for (int iEnt = GAGetNbEntities(ga); iEnt--;)
       GSetAddSort(rank, GAEntity(ga, iEnt), 
@@ -576,11 +577,17 @@ void UnitTestGenAlgTest() {
     GSetFlush(rank);
 /*float ev = evaluate(GAEntAdnF(GAEntity(ga, 0)), 
 GAEntAdnI(GAEntity(ga, 0)));
-printf("%d %f\r",GAGetCurEpoch(ga), ev);
-if (best > ev) {
+if (step == 10){
+  printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetInbreeding(ga));
+  step = 0;
+} else step++;*/
+/*if (best - ev > PBMATH_EPSILON) {
   best = ev;
+  printf("%d %f ", GAGetCurEpoch(ga), best);
+  VecFloatPrint(GAEntAdnF(GAEntity(ga, 0)), stdout, 6);
+  printf(" ");
+  VecPrint(GAEntAdnI(GAEntity(ga, 0)), stdout);
   printf("\n");
-  GAEntPrintln(GAEntity(ga, 0), stdout);
 }*/
   } while (GAGetCurEpoch(ga) < 20000 || 
     evaluate(GAEntAdnF(GAEntity(ga, 0)), 
