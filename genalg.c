@@ -712,14 +712,22 @@ bool GALoad(GenAlg** that, FILE* stream) {
     setElem->_sortVal = elo;
     // Load the genes
     if (lenAdnF > 0) {
-      if (VecLoad(&(ent->_adnF), stream) == false)
+      VecFloat* v = NULL;
+      if (VecLoad(&v, stream) == false)
         return false;
-      if (VecLoad(&(ent->_deltaAdnF), stream) == false)
+      VecCopy(ent->_adnF, v);
+      if (VecLoad(&v, stream) == false)
         return false;
+      VecCopy(ent->_deltaAdnF, v);
+      VecFree(&v);
     }
-    if (lenAdnI > 0)
-      if (VecLoad(&(ent->_adnI), stream) == false)
+    if (lenAdnI > 0) {
+      VecShort* v = NULL;
+      if (VecLoad(&v, stream) == false)
         return false;
+      VecCopy(ent->_adnI, v);
+      VecFree(&v);
+    }
   }
   // Return success code
   return true;
