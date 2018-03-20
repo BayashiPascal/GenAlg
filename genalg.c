@@ -7,29 +7,15 @@
 #include "genalg-inline.c"
 #endif
 
-// ------------- GenAlgEntity
+// ------------- GenAlgAdn
 
 // ================ Functions declaration ====================
 
-// Select the rank of two parents for the SRM algorithm
-// Return the ranks in 'parents', with parents[0] <= parents[1]
-void GASelectParents(GenAlg* that, int* parents);
-
-// Set the genes of the entity at rank 'iChild' as a 50/50 mix of the 
-// genes of entities at ranks 'parents[0]' and 'parents[1]'
-void GAReproduction(GenAlg* that, int* parents, int iChild);
-
-// Mute the genes of the entity at rank 'iChild' 
-// The probability of mutation for one gene is equal to 
-// 'iChild'/'that'->_nbEntities and the amplitude of the mutation
-// is equal to (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
-void GAMute(GenAlg* that, int* parents, int iChild);
-
 // ================ Functions implementation ====================
 
-// Create a new GenAlgEntity with ID 'id', 'lengthAdnF' and 'lengthAdnI'
+// Create a new GenAlgAdn with ID 'id', 'lengthAdnF' and 'lengthAdnI'
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
-GenAlgEntity* GenAlgEntityCreate(int id, int lengthAdnF, 
+GenAlgAdn* GenAlgAdnCreate(int id, int lengthAdnF, 
   int lengthAdnI) {
 #if BUILDMODE == 0
   if (lengthAdnF < 0) {
@@ -46,7 +32,7 @@ GenAlgEntity* GenAlgEntityCreate(int id, int lengthAdnF,
   }
 #endif
   // Allocate memory
-  GenAlgEntity* that = PBErrMalloc(GenAlgErr, sizeof(GenAlgEntity));
+  GenAlgAdn* that = PBErrMalloc(GenAlgErr, sizeof(GenAlgAdn));
   // Set the properties
   that->_age = 1;
   that->_id = id;
@@ -61,12 +47,12 @@ GenAlgEntity* GenAlgEntityCreate(int id, int lengthAdnF,
     that->_adnI = VecShortCreate(lengthAdnI);
   else
     that->_adnI = NULL;
-  // Return the new GenAlgEntity
+  // Return the new GenAlgAdn
   return that;
 }
 
-// Free memory used by the GenAlgEntity 'that'
-void GenAlgEntityFree(GenAlgEntity** that) {
+// Free memory used by the GenAlgAdn 'that'
+void GenAlgAdnFree(GenAlgAdn** that) {
   // Check the argument
   if (that == NULL || *that == NULL) return;
   // Free memory
@@ -81,9 +67,9 @@ void GenAlgEntityFree(GenAlgEntity** that) {
   *that = NULL;
 }
 
-// Initialise randomly the genes of the GenAlgEntity 'that' of the 
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga'
-void GAEntInit(GenAlgEntity* that, GenAlg* ga) {
+void GAAdnInit(GenAlgAdn* that, GenAlg* ga) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -107,9 +93,9 @@ void GAEntInit(GenAlgEntity* that, GenAlg* ga) {
   }
 }
 
-// Print the information about the GenAlgEntity 'that' on the 
+// Print the information about the GenAlgAdn 'that' on the 
 // stream 'stream'
-void GAEntPrintln(GenAlgEntity* that, FILE* stream) {
+void GAAdnPrintln(GenAlgAdn* that, FILE* stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -122,22 +108,36 @@ void GAEntPrintln(GenAlgEntity* that, FILE* stream) {
     PBErrCatch(GenAlgErr);
   }
 #endif  
-  fprintf(stream, "id:%d age:%d", GAEntGetId(that), GAEntGetAge(that));
+  fprintf(stream, "id:%d age:%d", GAAdnGetId(that), GAAdnGetAge(that));
   fprintf(stream, "\n");
   fprintf(stream, "  adnF:");
-  VecPrint(GAEntAdnF(that), stream);
+  VecFloatPrint(GAAdnAdnF(that), stream,6);
   fprintf(stream, "\n");
   fprintf(stream, "  deltaAdnF:");
-  VecPrint(GAEntDeltaAdnF(that), stream);
+  VecFloatPrint(GAAdnDeltaAdnF(that), stream,6);
   fprintf(stream, "\n");
   fprintf(stream, "  adnI:");
-  VecPrint(GAEntAdnI(that), stream);
+  VecPrint(GAAdnAdnI(that), stream);
   fprintf(stream, "\n");
 }
 
 // ------------- GenAlg
 
 // ================ Functions declaration ====================
+
+// Select the rank of two parents for the SRM algorithm
+// Return the ranks in 'parents', with parents[0] <= parents[1]
+void GASelectParents(GenAlg* that, int* parents);
+
+// Set the genes of the entity at rank 'iChild' as a 50/50 mix of the 
+// genes of entities at ranks 'parents[0]' and 'parents[1]'
+void GAReproduction(GenAlg* that, int* parents, int iChild);
+
+// Mute the genes of the entity at rank 'iChild' 
+// The probability of mutation for one gene is equal to 
+// 'rankChild'/'that'->_nbEntities and the amplitude of the mutation
+// is equal to (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
+void GAMute(GenAlg* that, int* parents, int iChild);
 
 // ================ Functions implementation ====================
 
@@ -151,9 +151,7 @@ GenAlg* GenAlgCreate(int nbEntities, int nbElites, int lengthAdnF,
   // Allocate memory
   GenAlg* that = PBErrMalloc(GenAlgErr, sizeof(GenAlg));
   // Set the properties
-  that->_elo = ELORankCreate();
-  that->_runsPerEpoch = GENALG_RUNPEREPOCH;
-  that->_curRun = 0;
+  that->_adns = GSetCreate();
   that->_curEpoch = 0;
   that->_lengthAdnF = lengthAdnF;
   that->_lengthAdnI = lengthAdnI;
@@ -171,7 +169,6 @@ GenAlg* GenAlgCreate(int nbEntities, int nbElites, int lengthAdnF,
       that->_boundsI[iGene] = VecShortCreateStatic2D();
   } else
     that->_boundsI = NULL;
-  that->_nbEntities = 0;
   that->_nbElites = 0;
   that->_nextId = 0;
   GASetNbEntities(that, nbEntities);
@@ -185,11 +182,12 @@ void GenAlgFree(GenAlg** that) {
   // Check the argument
   if (that == NULL || *that == NULL) return;
   // Free memory
-  for (int iEnt = (*that)->_nbEntities; iEnt--;) {
-    GenAlgEntity* gaEnt = GAEntity(*that, iEnt);
-    GenAlgEntityFree(&gaEnt);
-  }
-  ELORankFree(&((*that)->_elo));
+  GSetIterForward iter = GSetIterForwardCreateStatic(GAAdns(*that));
+  do {
+    GenAlgAdn* gaEnt = GSetIterGet(&iter);
+    GenAlgAdnFree(&gaEnt);
+  } while (GSetIterStep(&iter));
+  GSetFree(&((*that)->_adns));
   if ((*that)->_boundsF != NULL)
     free((*that)->_boundsF);
   if ((*that)->_boundsI != NULL)
@@ -215,19 +213,14 @@ void GASetNbEntities(GenAlg* that, int nb) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  while (that->_nbEntities > nb) {
-    ELOEntity* ent = ELORankGetRanked(GAEloRank(that), 
-      that->_nbEntities - 1);
-    GenAlgEntity* gaEnt = (GenAlgEntity*)(ent->_data);
-    ELORankRemove(GAEloRank(that), ent->_data);
-    GenAlgEntityFree(&gaEnt);
-    that->_nbEntities = ELORankGetNb(GAEloRank(that));
+  while (GSetNbElem(GAAdns(that)) > nb) {
+    GenAlgAdn* gaEnt = GSetPop(GAAdns(that));
+    GenAlgAdnFree(&gaEnt);
   }
-  while (that->_nbEntities < nb) {
-    GenAlgEntity* ent = GenAlgEntityCreate(that->_nextId++,
+  while (GSetNbElem(GAAdns(that)) < nb) {
+    GenAlgAdn* ent = GenAlgAdnCreate(that->_nextId++,
       GAGetLengthAdnFloat(that), GAGetLengthAdnInt(that));
-    ELORankAdd(GAEloRank(that), ent);
-    that->_nbEntities = ELORankGetNb(GAEloRank(that));
+    GSetPush(GAAdns(that), ent);
   }
   if (GAGetNbElites(that) >= nb)
     GASetNbElites(that, nb - 1);
@@ -249,7 +242,7 @@ void GASetNbElites(GenAlg* that, int nb) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  if (GAGetNbEntities(that) <= nb)
+  if (GAGetNbAdns(that) <= nb)
     GASetNbEntities(that, nb + 1);
   that->_nbElites = nb;
 }
@@ -266,52 +259,19 @@ void GAInit(GenAlg* that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  // For each entity
-  GSetIterForward iter = 
-    GSetIterForwardCreateStatic(&(GAEloRank(that)->_set));
+  // For each adn
+  GSetIterForward iter = GSetIterForwardCreateStatic(GAAdns(that));
   do {
-    // Get the entity
-    GenAlgEntity* ent = ((ELOEntity*)GSetIterGet(&iter))->_data;
-    // Initialise randomly the genes of the entity
-    GAEntInit(ent, that);
+    // Get the adn
+    GenAlgAdn* adn = GSetIterGet(&iter);
+    // Initialise randomly the genes of the adn
+    GAAdnInit(adn, that);
   } while (GSetIterStep(&iter));
-}
-
-// Step a run for the GenAlg 'that' with ranking of GenAlgEntity given
-// in the GSet of GenAlgEntity 'rank'  (from best to worst, ie _sortVal
-// from greater to lower)
-void GAStepRun(GenAlg* that, GSet* rank) {
-#if BUILDMODE == 0
-  if (that == NULL) {
-    GenAlgErr->_type = PBErrTypeNullPointer;
-    sprintf(GenAlgErr->_msg, "'that' is null");
-    PBErrCatch(GenAlgErr);
-  }
-  if (rank == NULL) {
-    GenAlgErr->_type = PBErrTypeNullPointer;
-    sprintf(GenAlgErr->_msg, "'rank' is null");
-    PBErrCatch(GenAlgErr);
-  }
-#endif
-  // Update the ELORank
-  ELORankUpdate(GAEloRank(that), rank);
-  // Increment the number of runs
-  ++(that->_curRun);
-  // Increment the age of the entities of this run
-  GSetIterForward iter = GSetIterForwardCreateStatic(rank);
-  do {
-    GenAlgEntity* ent = GSetIterGet(&iter);
-    ++(ent->_age);
-  } while (GSetIterStep(&iter));
-  // If we have reached the end of the current epoch
-  if (that->_curRun >= that->_runsPerEpoch)
-    // Step the epoch
-    GAStepEpoch(that);
 }
 
 // Step an epoch for the GenAlg 'that' with the current ranking of
-// GenAlgEntity
-void GAStepEpoch(GenAlg* that) {
+// GenAlgAdn
+void GAStep(GenAlg* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -320,51 +280,38 @@ void GAStepEpoch(GenAlg* that) {
   }
 #endif
   // Selection, Reproduction, Mutation
-  // Declare a GSet of GenAlgEntity to memorize the childs
-  GSet* childs = GSetCreate();
+  // Ensure the set of adns is sorted
+  GSetSort(GAAdns(that));
   // Declare a variable to memorize the parents
   int parents[2];
   // Get the inbreeding level
   float inbreeding = GAGetInbreeding(that);
-  // If the inbreeding level is too high
-  // Break the inbreeding by applying mutation to elites except the 
-  // best one
-  if (inbreeding < GENALG_INBREEDINGTHRESHOLD) {
-    // For each entity which is not an elite
-    for (int iEnt = 1; iEnt < GAGetNbElites(that); ++iEnt) {
-      // Reproduce with itself and mute the genes of the entity
-      parents[1] = parents[0] = iEnt;
-      GAReproduction(that, parents, iEnt);
-      GAMute(that, parents, iEnt);
-      // Add this entity to the set of childs too
-      GSetAppend(childs, GAEntity(that, iEnt));
+  // For each adn which is an elite
+  for (int iAdn = 0; iAdn < GAGetNbElites(that); ++iAdn) {
+    // Increment age
+    (GAAdn(that, iAdn)->_age)++;
+    // If the inbreeding level is too high
+    // Break the inbreeding by applying mutation to elites except the 
+    // best one
+    if (inbreeding < GENALG_INBREEDINGTHRESHOLD && iAdn > 0) {
+      // Reproduce with itself and mute the genes of the adn
+      parents[1] = parents[0] = iAdn;
+      GAReproduction(that, parents, iAdn);
+      GAMute(that, parents, iAdn);
     }
   }
-  // For each entity which is not an elite
-  for (int iEnt = GAGetNbElites(that); iEnt < GAGetNbEntities(that); 
-    ++iEnt) {
-    // Select two parents for this entity
+  // For each adn which is not an elite
+  for (int iAdn = GAGetNbElites(that); iAdn < GAGetNbAdns(that); 
+    ++iAdn) {
+    // Select two parents for this adn
     GASelectParents(that, parents);
-    // Set the genes of the entity as a 50/50 mix of parents' genes
-    GAReproduction(that, parents, iEnt);
-    // Mute the genes of the entity
-    GAMute(that, parents, iEnt);
-    // Add the child to the set of childs
-    GSetAppend(childs, GAEntity(that, iEnt));
+    // Set the genes of the adn as a 50/50 mix of parents' genes
+    GAReproduction(that, parents, iAdn);
+    // Mute the genes of the adn
+    GAMute(that, parents, iAdn);
   }
-  // Remove and re-add the childs from/to the ELOrank to reset their
-  // position and ELO
-  GSetIterForward iter = GSetIterForwardCreateStatic(childs);
-  do {
-    ELORankRemove(GAEloRank(that), GSetIterGet(&iter));
-    ELORankAdd(GAEloRank(that), GSetIterGet(&iter));
-  } while (GSetIterStep(&iter));
   // Increment the number of epochs
   ++(that->_curEpoch);
-  // Reset the current run
-  that->_curRun = 0;
-  // Free memory
-  GSetFree(&childs);
 }
 
 // Select the rank of two parents for the SRM algorithm
@@ -386,7 +333,7 @@ void GASelectParents(GenAlg* that, int* parents) {
   int p[2];
   for (int i = 2; i--;)
     // p[i] below may be equal to the rank of the highest non elite 
-    // entity, but it's not a problem so leave it and let's call that 
+    // adn, but it's not a problem so leave it and let's call that 
     // the Hawking radiation of this function in memory of this great 
     // man.
     p[i] = (int)floor(rnd() * (float)GAGetNbElites(that));
@@ -400,8 +347,8 @@ void GASelectParents(GenAlg* that, int* parents) {
   }
 }
 
-// Set the genes of the entity at rank 'iChild' as a 50/50 mix of the 
-// genes of entities at ranks 'parents[0]' and 'parents[1]'
+// Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
+// genes of adns at ranks 'parents[0]' and 'parents[1]'
 void GAReproduction(GenAlg* that, int* parents, int iChild) {
 #if BUILDMODE == 0
   if (that == NULL) {
@@ -414,17 +361,17 @@ void GAReproduction(GenAlg* that, int* parents, int iChild) {
     sprintf(GenAlgErr->_msg, "'parents' is null");
     PBErrCatch(GenAlgErr);
   }
-  if (iChild < 0 || iChild >= that->_nbEntities) {
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
     GenAlgErr->_type = PBErrTypeInvalidArg;
     sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
-      iChild, that->_nbEntities);
+      iChild, GAGetNbAdns(that));
     PBErrCatch(GenAlgErr);
   }
 #endif
   // Get the parents and child
-  GenAlgEntity* parentA = GAEntity(that, parents[0]);
-  GenAlgEntity* parentB = GAEntity(that, parents[1]);
-  GenAlgEntity* child = GAEntity(that, iChild);
+  GenAlgAdn* parentA = GAAdn(that, parents[0]);
+  GenAlgAdn* parentB = GAAdn(that, parents[1]);
+  GenAlgAdn* child = GAAdn(that, iChild);
   // For each gene of the adn for floating point value
   for (int iGene = GAGetLengthAdnFloat(that); iGene--;) {
     // Get the gene from one parent or the other with equal probabililty
@@ -454,7 +401,7 @@ void GAReproduction(GenAlg* that, int* parents, int iChild) {
 
 // Mute the genes of the entity at rank 'iChild' 
 // The probability of mutation for one gene is equal to 
-// 'iChild'/'that'->_nbEntities and the amplitude of the mutation
+// 'rankChild'/'that'->_nbEntities and the amplitude of the mutation
 // is equal to (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
 void GAMute(GenAlg* that, int* parents, int iChild) {
 #if BUILDMODE == 0
@@ -468,18 +415,18 @@ void GAMute(GenAlg* that, int* parents, int iChild) {
     sprintf(GenAlgErr->_msg, "'parents' is null");
     PBErrCatch(GenAlgErr);
   }
-  if (iChild < 0 || iChild >= that->_nbEntities) {
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
     GenAlgErr->_type = PBErrTypeInvalidArg;
     sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
-      iChild, that->_nbEntities);
+      iChild, GAGetNbAdns(that));
     PBErrCatch(GenAlgErr);
   }
 #endif
   // Get the first parent and child
-  GenAlgEntity* parentA = GAEntity(that, parents[0]);
-  GenAlgEntity* child = GAEntity(that, iChild);
+  GenAlgAdn* parentA = GAAdn(that, parents[0]);
+  GenAlgAdn* child = GAAdn(that, iChild);
   // Get the probability of mutation
-  float probMute = ((float)iChild) / ((float)GAGetNbEntities(that));
+  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
   // Get the amplitude of mutation
   float amp = 1.0 - 1.0 / sqrt((float)(parentA->_age + 1));
   // For each gene of the adn for floating point value
@@ -489,24 +436,24 @@ void GAMute(GenAlg* that, int* parents, int iChild) {
       // Get the bounds
       VecFloat2D* bounds = GABoundsAdnFloat(that, iGene);
       // Declare a variable to memorize the previous value of the gene
-      float prevVal = GAEntGetGeneF(child, iGene);
+      float prevVal = GAAdnGetGeneF(child, iGene);
       // Apply the mutation
-      GAEntSetGeneF(child, iGene, GAEntGetGeneF(child, iGene) + 
+      GAAdnSetGeneF(child, iGene, GAAdnGetGeneF(child, iGene) + 
         (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
-        (rnd() - 0.5 + GAEntGetDeltaGeneF(child, iGene)));
+        (rnd() - 0.5 + GAAdnGetDeltaGeneF(child, iGene)));
       // Keep the gene value in bounds
-      while (GAEntGetGeneF(child, iGene) < VecGet(bounds, 0) ||
-        GAEntGetGeneF(child, iGene) > VecGet(bounds, 1)) {
-        if (GAEntGetGeneF(child, iGene) > VecGet(bounds, 1))
-          GAEntSetGeneF(child, iGene, 
-            2.0 * VecGet(bounds, 1) - GAEntGetGeneF(child, iGene));
-        else if (GAEntGetGeneF(child, iGene) < VecGet(bounds, 0))
-          GAEntSetGeneF(child, iGene, 
-            2.0 * VecGet(bounds, 0) - GAEntGetGeneF(child, iGene));
+      while (GAAdnGetGeneF(child, iGene) < VecGet(bounds, 0) ||
+        GAAdnGetGeneF(child, iGene) > VecGet(bounds, 1)) {
+        if (GAAdnGetGeneF(child, iGene) > VecGet(bounds, 1))
+          GAAdnSetGeneF(child, iGene, 
+            2.0 * VecGet(bounds, 1) - GAAdnGetGeneF(child, iGene));
+        else if (GAAdnGetGeneF(child, iGene) < VecGet(bounds, 0))
+          GAAdnSetGeneF(child, iGene, 
+            2.0 * VecGet(bounds, 0) - GAAdnGetGeneF(child, iGene));
       }
       // Update the deltaAdn
-      GAEntSetDeltaGeneF(child, iGene, 
-        GAEntGetGeneF(child, iGene) - prevVal);
+      GAAdnSetDeltaGeneF(child, iGene, 
+        GAAdnGetGeneF(child, iGene) - prevVal);
     }
   }
   // For each gene of the adn for int value
@@ -520,17 +467,17 @@ void GAMute(GenAlg* that, int* parents, int iChild) {
       // is big enough to have an effect
       float ampI = MIN(2.0, 
         (float)(VecGet(&bounds, 1) - VecGet(&bounds, 0)) * amp);
-      GAEntSetGeneI(child, iGene, GAEntGetGeneI(child, iGene) +
+      GAAdnSetGeneI(child, iGene, GAAdnGetGeneI(child, iGene) +
         (short)round(ampI * (rnd() - 0.5)));
       // Keep the gene value in bounds
-      while (GAEntGetGeneI(child, iGene) < VecGet(&bounds, 0) ||
-        GAEntGetGeneI(child, iGene) > VecGet(&bounds, 1)) {
-        if (GAEntGetGeneI(child, iGene) > VecGet(&bounds, 1))
-          GAEntSetGeneI(child, iGene, 
-            2 * VecGet(&bounds, 1) - GAEntGetGeneI(child, iGene));
-        else if (GAEntGetGeneI(child, iGene) < VecGet(&bounds, 0))
-          GAEntSetGeneI(child, iGene, 
-            2 * VecGet(&bounds, 0) - GAEntGetGeneI(child, iGene));
+      while (GAAdnGetGeneI(child, iGene) < VecGet(&bounds, 0) ||
+        GAAdnGetGeneI(child, iGene) > VecGet(&bounds, 1)) {
+        if (GAAdnGetGeneI(child, iGene) > VecGet(&bounds, 1))
+          GAAdnSetGeneI(child, iGene, 
+            2 * VecGet(&bounds, 1) - GAAdnGetGeneI(child, iGene));
+        else if (GAAdnGetGeneI(child, iGene) < VecGet(&bounds, 0))
+          GAAdnSetGeneI(child, iGene, 
+            2 * VecGet(&bounds, 0) - GAAdnGetGeneI(child, iGene));
       }
     }
   }
@@ -550,18 +497,20 @@ void GAPrintln(GenAlg* that, FILE* stream) {
     PBErrCatch(GenAlgErr);
   }
 #endif  
-  fprintf(stream, "epoch:%d - run:%d\n", 
-    GAGetCurEpoch(that), GAGetCurRun(that));
-  fprintf(stream, "%d entities, %d elites\n", GAGetNbEntities(that), 
+  fprintf(stream, "epoch:%d\n", GAGetCurEpoch(that));
+  fprintf(stream, "%d entities, %d elites\n", GAGetNbAdns(that), 
     GAGetNbElites(that));
-  for (int iEnt = 0; iEnt < GAGetNbEntities(that); ++iEnt) {
-    GenAlgEntity* ent = GAEntity(that, iEnt);
-    fprintf(stream, "#%d elo:%f ", iEnt,
-      ELORankGetELO(GAEloRank(that), ent));
+  GSetIterBackward iter = GSetIterBackwardCreateStatic(GAAdns(that));
+  int iEnt = 0;
+  do {
+    GenAlgAdn* ent = GSetIterGet(&iter);
+    fprintf(stream, "#%d value:%f ", iEnt,
+      GSetIterGetElem(&iter)->_sortVal);
     if (iEnt < GAGetNbElites(that))
       fprintf(stream, "elite ");
-    GAEntPrintln(ent, stream);
-  }
+    GAAdnPrintln(ent, stream);
+    ++iEnt;
+  } while (GSetIterStep(&iter));
 }
 
 // Get the level of inbreeding of curent entities of the GenAlg 'that'
@@ -593,8 +542,8 @@ float GAGetInbreeding(GenAlg* that) {
     // For each elite entity except the first one
     for (int iEnt = 1; iEnt < GAGetNbElites(that); ++iEnt) {
       // Get the difference in adn with the first entity
-      VecFloat* diff = VecGetOp(GAEntAdnF(GAEntity(that, iEnt)), 1.0, 
-        GAEntAdnF(GAEntity(that, 0)), -1.0);
+      VecFloat* diff = VecGetOp(GAAdnAdnF(GAAdn(that, iEnt)), 1.0, 
+        GAAdnAdnF(GAAdn(that, 0)), -1.0);
       // Calculate the inbreeding
       inbreeding += VecNorm(diff) / normRange;
       // Free memory
@@ -619,8 +568,8 @@ float GAGetInbreeding(GenAlg* that) {
     // For each elite entity except the first one
     for (int iEnt = 1; iEnt < GAGetNbElites(that); ++iEnt) {
       // Get the difference in adn with the first entity
-      VecShort* diff = VecGetOp(GAEntAdnI(GAEntity(that, iEnt)), 1, 
-        GAEntAdnI(GAEntity(that, 0)), -1);
+      VecShort* diff = VecGetOp(GAAdnAdnI(GAAdn(that, iEnt)), 1, 
+        GAAdnAdnI(GAAdn(that, 0)), -1);
       VecFloat* diffF = VecShortToFloat(diff);
       // Calculate the inbreeding
       inbreeding += VecNorm(diffF) / normRange;
@@ -672,9 +621,8 @@ bool GALoad(GenAlg** that, FILE* stream) {
     return false;
   // Allocate memory
   *that = GenAlgCreate(nbEnt, nbElite, lenAdnF, lenAdnI);
-  // Load the run, epoch, nbRunPerEpoch, nextId
-  ret = fscanf(stream, "%d %d %d %d", &((*that)->_curRun), 
-    &((*that)->_curEpoch), &((*that)->_runsPerEpoch),
+  // Load the epoch, nextId
+  ret = fscanf(stream, "%d %d", &((*that)->_curEpoch), 
     &((*that)->_nextId));
   // If we couldn't fscanf
   if (ret == EOF)
@@ -694,22 +642,21 @@ bool GALoad(GenAlg** that, FILE* stream) {
     VecCopy(GABoundsAdnInt(*that, iBound), b);
     VecFree(&b);
   }
-  // Load the ELO rank
+  // Load the adns
   for (int iEnt = 0; iEnt < nbEnt; ++iEnt) {
-    GSetElem* setElem = GSetGetElem(&(GAEloRank(*that)->_set), iEnt);
-    ELOEntity* eloEnt = (ELOEntity*)(setElem->_data);
-    GenAlgEntity* ent = (GenAlgEntity*)(eloEnt->_data);
+    GSetElem* setElem = GSetGetElem(GAAdns(*that), iEnt);
+    GenAlgAdn* ent = (GenAlgAdn*)(setElem->_data);
     // Load the id, age and elo
     int id, age;
-    float elo;
-    int ret = fscanf(stream, "%d %d %f", &id, &age, &elo);
+    float val;
+    int ret = fscanf(stream, "%d %d %f", &id, &age, &val);
     // If we couldn't fscanf
     if (ret == EOF)
       return false;
     // Set the id and elo
     ent->_id = id;
     ent->_age = age;
-    setElem->_sortVal = elo;
+    setElem->_sortVal = val;
     // Load the genes
     if (lenAdnF > 0) {
       VecFloat* v = NULL;
@@ -749,15 +696,14 @@ bool GASave(GenAlg* that, FILE* stream) {
   }
 #endif
   // Save the number of entity and elite, and the length of adn
-  int ret = fprintf(stream, "%d %d %d %d\n", GAGetNbEntities(that),
+  int ret = fprintf(stream, "%d %d %d %d\n", GAGetNbAdns(that),
     GAGetNbElites(that), GAGetLengthAdnFloat(that), 
     GAGetLengthAdnInt(that));
   // If we couldn't fprintf
   if (ret < 0)
     return false;
-  // Save the run, epoch, nbRunPerEpoch, nextId
-  ret = fprintf(stream, "%d %d %d %d\n", GAGetCurRun(that),
-    GAGetCurEpoch(that), GAGetRunsPerEpoch(that), that->_nextId);
+  // Save the epoch, nextId
+  ret = fprintf(stream, "%d %d\n", GAGetCurEpoch(that), that->_nextId);
   // If we couldn't fprintf
   if (ret < 0)
     return false;
@@ -768,11 +714,10 @@ bool GASave(GenAlg* that, FILE* stream) {
   for (int iBound = 0; iBound < GAGetLengthAdnInt(that); ++iBound)
     if (VecSave(GABoundsAdnInt(that, iBound), stream) == false)
       return false;
-  // Save the ELO rank
-  for (int iEnt = 0; iEnt < GAGetNbEntities(that); ++iEnt) {
-    GSetElem* setElem = GSetGetElem(&(GAEloRank(that)->_set), iEnt);
-    ELOEntity* eloEnt = (ELOEntity*)(setElem->_data);
-    GenAlgEntity* ent = (GenAlgEntity*)(eloEnt->_data);
+  // Save the adns
+  for (int iEnt = 0; iEnt < GAGetNbAdns(that); ++iEnt) {
+    GSetElem* setElem = GSetGetElem(GAAdns(that), iEnt);
+    GenAlgAdn* ent = (GenAlgAdn*)(setElem->_data);
     // Save the id, age and elo
     int ret = fprintf(stream, "%d %d %f\n", ent->_id, ent->_age, 
       setElem->_sortVal);

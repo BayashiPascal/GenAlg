@@ -12,22 +12,21 @@
 #include <stdbool.h>
 #include "pberr.h"
 #include "pbmath.h"
-#include "elorank.h"
+#include "gset.h"
 
 // ================= Define ==================
 
-#define GENALG_RUNPEREPOCH 100
 #define GENALG_NBENTITIES 100
 #define GENALG_NBELITES 20
 #define GENALG_INBREEDINGTHRESHOLD 0.1
 
-// ------------- GenAlgEntity
+// ------------- GenAlgAdn
 
 // ================= Data structure ===================
 
 typedef struct GenAlg GenAlg;
 
-typedef struct GenAlgEntity {
+typedef struct GenAlgAdn {
   // ID
   int _id;
   // Age
@@ -38,117 +37,112 @@ typedef struct GenAlgEntity {
   VecFloat* _deltaAdnF;
   // Adn for integer point value
   VecShort* _adnI;
-} GenAlgEntity;
+} GenAlgAdn;
 
 // ================ Functions declaration ====================
 
-// Create a new GenAlgEntity with ID 'id', 'lengthAdnF' and 'lengthAdnI'
+// Create a new GenAlgAdn with ID 'id', 'lengthAdnF' and 'lengthAdnI'
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
-GenAlgEntity* GenAlgEntityCreate(int id, int lengthAdnF, 
+GenAlgAdn* GenAlgAdnCreate(int id, int lengthAdnF, 
   int lengthAdnI);
 
-// Free memory used by the GenAlgEntity 'that'
-void GenAlgEntityFree(GenAlgEntity** that);
+// Free memory used by the GenAlgAdn 'that'
+void GenAlgAdnFree(GenAlgAdn** that);
 
-// Return the adn for floating point values of the GenAlgEntity 'that'
+// Return the adn for floating point values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat* GAEntAdnF(GenAlgEntity* that);
+VecFloat* GAAdnAdnF(GenAlgAdn* that);
 
 // Return the delta of adn for floating point values of the 
-// GenAlgEntity 'that'
+// GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat* GAEntDeltaAdnF(GenAlgEntity* that);
+VecFloat* GAAdnDeltaAdnF(GenAlgAdn* that);
 
-// Return the adn for integer values of the GenAlgEntity 'that'
+// Return the adn for integer values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-VecShort* GAEntAdnI(GenAlgEntity* that);
+VecShort* GAAdnAdnI(GenAlgAdn* that);
 
-// Initialise randomly the genes of the GenAlgEntity 'that' of the 
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga'
-void GAEntInit(GenAlgEntity* that, GenAlg* ga);
+void GAAdnInit(GenAlgAdn* that, GenAlg* ga);
 
 // Get the 'iGene'-th gene of the adn for floating point values of the
-// GenAlgEntity 'that'
+// GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-float GAEntGetGeneF(GenAlgEntity* that, int iGene);
+float GAAdnGetGeneF(GenAlgAdn* that, int iGene);
 
 // Get the delta of the 'iGene'-th gene of the adn for floating point 
-// values of the GenAlgEntity 'that'
+// values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-float GAEntGetDeltaGeneF(GenAlgEntity* that, int iGene);
+float GAAdnGetDeltaGeneF(GenAlgAdn* that, int iGene);
 
 // Get the 'iGene'-th gene of the adn for int values of the
-// GenAlgEntity 'that'
+// GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAEntGetGeneI(GenAlgEntity* that, int iGene);
+int GAAdnGetGeneI(GenAlgAdn* that, int iGene);
 
 // Set the 'iGene'-th gene of the adn for floating point values of the
-// GenAlgEntity 'that' to 'gene'
+// GenAlgAdn 'that' to 'gene'
 #if BUILDMODE != 0
 inline
 #endif
-void GAEntSetGeneF(GenAlgEntity* that, int iGene, float gene);
+void GAAdnSetGeneF(GenAlgAdn* that, int iGene, float gene);
 
 // Set the delta of the 'iGene'-th gene of the adn for floating point 
-// values of the GenAlgEntity 'that' to 'delta'
+// values of the GenAlgAdn 'that' to 'delta'
 #if BUILDMODE != 0
 inline
 #endif
-void GAEntSetDeltaGeneF(GenAlgEntity* that, int iGene, float delta);
+void GAAdnSetDeltaGeneF(GenAlgAdn* that, int iGene, float delta);
 
 // Set the 'iGene'-th gene of the adn for int values of the
-// GenAlgEntity 'that'to 'gene'
+// GenAlgAdn 'that'to 'gene'
 #if BUILDMODE != 0
 inline
 #endif
-void GAEntSetGeneI(GenAlgEntity* that, int iGene, short gene);
+void GAAdnSetGeneI(GenAlgAdn* that, int iGene, short gene);
 
-// Get the id of the GenAlgEntity 'that'
+// Get the id of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAEntGetId(GenAlgEntity* that);
+int GAAdnGetId(GenAlgAdn* that);
 
-// Get the age of the GenAlgEntity 'that'
+// Get the age of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAEntGetAge(GenAlgEntity* that);
+int GAAdnGetAge(GenAlgAdn* that);
 
-// Print the information about the GenAlgEntity 'that' on the 
+// Print the information about the GenAlgAdn 'that' on the 
 // stream 'stream'
-void GAEntPrintln(GenAlgEntity* that, FILE* stream);
+void GAAdnPrintln(GenAlgAdn* that, FILE* stream);
 
 // ------------- GenAlg
 
 // ================= Data structure ===================
 
 typedef struct GenAlg {
-  // ELORank of GenAlgEntity
-  ELORank* _elo;
-  // Nb runs per epoch
-  int _runsPerEpoch;
-  // Current run
-  int _curRun;
+  // GSet of GenAlgAdn, sortval == score so the head of the set is the 
+  // worst adn and the tail of the set is the best
+  GSet* _adns;
   // Current epoch
   int _curEpoch;
-  // Nb entities in population
-  int _nbEntities;
   // Nb elite entities in population
   int _nbElites;
-  // Id of the next new GenAlgEntity
+  // Id of the next new GenAlgAdn
   int _nextId;
   // Length of adn for floating point value
   int _lengthAdnF;
@@ -173,23 +167,17 @@ GenAlg* GenAlgCreate(int nbEntities, int nbElites, int lengthAdnF,
 // Free memory used by the GenAlg 'that'
 void GenAlgFree(GenAlg** that);
 
-// Return the ELORank of the GenAlg 'that'
+// Return the GSet of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-ELORank* GAEloRank(GenAlg* that);
-
-// Return the nb of runs per epoch of the GenAlg 'that'
-#if BUILDMODE != 0
-inline
-#endif
-int GAGetRunsPerEpoch(GenAlg* that);
+GSet* GAAdns(GenAlg* that);
 
 // Return the nb of entities of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetNbEntities(GenAlg* that);
+int GAGetNbAdns(GenAlg* that);
 
 // Return the nb of elites of the GenAlg 'that'
 #if BUILDMODE != 0
@@ -197,24 +185,11 @@ inline
 #endif
 int GAGetNbElites(GenAlg* that);
 
-// Return the current run of the GenAlg 'that'
-#if BUILDMODE != 0
-inline
-#endif
-int GAGetCurRun(GenAlg* that);
-
 // Return the current epoch of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
 int GAGetCurEpoch(GenAlg* that);
-
-// Set the nb of runs per epoch of the GenAlg 'that' to 'runs'
-// 'runs' must be greater than 0
-#if BUILDMODE != 0
-inline
-#endif
-void GASetRunsPerEpoch(GenAlg* that, int runs);
 
 // Set the nb of entities of the GenAlg 'that' to 'nb'
 // 'nb' must be greater than 1, if 'nb' is lower than the current nb 
@@ -251,11 +226,11 @@ inline
 #endif
 VecShort2D* GABoundsAdnInt(GenAlg* that, int iGene);
 
-// Get the GenAlgEntity of the GenAlg 'that' currently at rank 'iRank'
+// Get the GenAlgAdn of the GenAlg 'that' currently at rank 'iRank'
 #if BUILDMODE != 0
 inline
 #endif
-GenAlgEntity* GAEntity(GenAlg* that, int iRank);
+GenAlgAdn* GAAdn(GenAlg* that, int iRank);
 
 // Init the GenAlg 'that'
 // Must be called after the bounds have been set
@@ -263,14 +238,9 @@ GenAlgEntity* GAEntity(GenAlg* that, int iRank);
 // function
 void GAInit(GenAlg* that);
 
-// Step a run for the GenAlg 'that' with ranking of GenAlgEntity given
-// in the GSet of GenAlgEntity 'rank' (from best to worst, ie _sortVal
-// from greater to lower) 
-void GAStepRun(GenAlg* that, GSet* rank);
-
 // Step an epoch for the GenAlg 'that' with the current ranking of
-// GenAlgEntity
-void GAStepEpoch(GenAlg* that); 
+// GenAlgAdn
+void GAStep(GenAlg* that); 
 
 // Print the information about the GenAlg 'that' on the stream 'stream'
 void GAPrintln(GenAlg* that, FILE* stream);
@@ -288,6 +258,12 @@ bool GALoad(GenAlg** that, FILE* stream);
 // Save the GenAlg 'that' to the stream 'stream'
 // Return true in case of success, else false
 bool GASave(GenAlg* that, FILE* stream);
+
+// Set the value of the GenAlgAdn 'adn' of the GenAlg 'that' to 'val'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetAdnValue(GenAlg* that, GenAlgAdn* adn, float val);
 
 // ================= Polymorphism ==================
 

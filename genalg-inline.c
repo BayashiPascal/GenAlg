@@ -1,14 +1,14 @@
 // ============ GENALG-INLINE.C ================
 
-// ------------- GenAlgEntity
+// ------------- GenAlgAdn
 
 // ================ Functions implementation ====================
 
-// Return the adn for floating point values of the GenAlgEntity 'that'
+// Return the adn for floating point values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat* GAEntAdnF(GenAlgEntity* that) {
+VecFloat* GAAdnAdnF(GenAlgAdn* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -20,11 +20,11 @@ VecFloat* GAEntAdnF(GenAlgEntity* that) {
 }
 
 // Return the delta of adn for floating point values of the 
-// GenAlgEntity 'that'
+// GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat* GAEntDeltaAdnF(GenAlgEntity* that) {
+VecFloat* GAAdnDeltaAdnF(GenAlgAdn* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -35,11 +35,11 @@ VecFloat* GAEntDeltaAdnF(GenAlgEntity* that) {
   return that->_deltaAdnF;
 }
 
-// Return the adn for integer values of the GenAlgEntity 'that'
+// Return the adn for integer values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-VecShort* GAEntAdnI(GenAlgEntity* that) {
+VecShort* GAAdnAdnI(GenAlgAdn* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -51,11 +51,11 @@ VecShort* GAEntAdnI(GenAlgEntity* that) {
 }
 
 // Get the 'iGene'-th gene of the adn for floating point values of the
-// GenAlgEntity 'that'
+// GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-float GAEntGetGeneF(GenAlgEntity* that, int iGene) {
+float GAAdnGetGeneF(GenAlgAdn* that, int iGene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -67,11 +67,11 @@ float GAEntGetGeneF(GenAlgEntity* that, int iGene) {
 }
 
 // Get the delta of the 'iGene'-th gene of the adn for floating point 
-// values of the GenAlgEntity 'that'
+// values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-float GAEntGetDeltaGeneF(GenAlgEntity* that, int iGene) {
+float GAAdnGetDeltaGeneF(GenAlgAdn* that, int iGene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -83,11 +83,11 @@ float GAEntGetDeltaGeneF(GenAlgEntity* that, int iGene) {
 }
 
 // Get the 'iGene'-th gene of the adn for int values of the
-// GenAlgEntity 'that'
+// GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAEntGetGeneI(GenAlgEntity* that, int iGene) {
+int GAAdnGetGeneI(GenAlgAdn* that, int iGene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -99,11 +99,11 @@ int GAEntGetGeneI(GenAlgEntity* that, int iGene) {
 }
 
 // Set the 'iGene'-th gene of the adn for floating point values of the
-// GenAlgEntity 'that' to 'gene'
+// GenAlgAdn 'that' to 'gene'
 #if BUILDMODE != 0
 inline
 #endif
-void GAEntSetGeneF(GenAlgEntity* that, int iGene, float gene) {
+void GAAdnSetGeneF(GenAlgAdn* that, int iGene, float gene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -115,11 +115,11 @@ void GAEntSetGeneF(GenAlgEntity* that, int iGene, float gene) {
 }
 
 // Set the delta of the 'iGene'-th gene of the adn for floating point 
-// values of the GenAlgEntity 'that' to 'delta'
+// values of the GenAlgAdn 'that' to 'delta'
 #if BUILDMODE != 0
 inline
 #endif
-void GAEntSetDeltaGeneF(GenAlgEntity* that, int iGene, float delta) {
+void GAAdnSetDeltaGeneF(GenAlgAdn* that, int iGene, float delta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -131,11 +131,11 @@ void GAEntSetDeltaGeneF(GenAlgEntity* that, int iGene, float delta) {
 }
 
 // Set the 'iGene'-th gene of the adn for int values of the
-// GenAlgEntity 'that'to 'gene'
+// GenAlgAdn 'that'to 'gene'
 #if BUILDMODE != 0
 inline
 #endif
-void GAEntSetGeneI(GenAlgEntity* that, int iGene, short gene) {
+void GAAdnSetGeneI(GenAlgAdn* that, int iGene, short gene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -146,11 +146,11 @@ void GAEntSetGeneI(GenAlgEntity* that, int iGene, short gene) {
   VecSet(that->_adnI, iGene, gene);
 }
 
-// Get the id of the GenAlgEntity 'that'
+// Get the id of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAEntGetId(GenAlgEntity* that) {
+int GAAdnGetId(GenAlgAdn* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -161,11 +161,11 @@ int GAEntGetId(GenAlgEntity* that) {
   return that->_id;
 }
 
-// Get the age of the GenAlgEntity 'that'
+// Get the age of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAEntGetAge(GenAlgEntity* that) {
+int GAAdnGetAge(GenAlgAdn* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -180,11 +180,11 @@ int GAEntGetAge(GenAlgEntity* that) {
 
 // ================ Functions implementation ====================
 
-// Return the ELORank of the GenAlg 'that'
+// Return the GSet of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-ELORank* GAEloRank(GenAlg* that) {
+GSet* GAAdns(GenAlg* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -192,29 +192,14 @@ ELORank* GAEloRank(GenAlg* that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  return that->_elo;
-}
-
-// Return the nb of runs per epoch of the GenAlg 'that'
-#if BUILDMODE != 0
-inline
-#endif
-int GAGetRunsPerEpoch(GenAlg* that) {
-#if BUILDMODE == 0
-  if (that == NULL) {
-    GenAlgErr->_type = PBErrTypeNullPointer;
-    sprintf(GenAlgErr->_msg, "'that' is null");
-    PBErrCatch(GenAlgErr);
-  }
-#endif
-  return that->_runsPerEpoch;
+  return that->_adns;
 }
 
 // Return the nb of entities of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetNbEntities(GenAlg* that) {
+int GAGetNbAdns(GenAlg* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -222,7 +207,7 @@ int GAGetNbEntities(GenAlg* that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  return that->_nbEntities;
+  return GSetNbElem(that->_adns);
 }
 
 // Return the nb of elites of the GenAlg 'that'
@@ -240,21 +225,6 @@ int GAGetNbElites(GenAlg* that) {
   return that->_nbElites;
 }
 
-// Return the current run of the GenAlg 'that'
-#if BUILDMODE != 0
-inline
-#endif
-int GAGetCurRun(GenAlg* that) {
-#if BUILDMODE == 0
-  if (that == NULL) {
-    GenAlgErr->_type = PBErrTypeNullPointer;
-    sprintf(GenAlgErr->_msg, "'that' is null");
-    PBErrCatch(GenAlgErr);
-  }
-#endif
-  return that->_curRun;
-}
-
 // Return the current epoch of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
@@ -268,27 +238,6 @@ int GAGetCurEpoch(GenAlg* that) {
   }
 #endif
   return that->_curEpoch;
-}
-
-// Set the nb of runs per epoch of the GenAlg 'that' to 'runs'
-// 'runs' must be greater than 0
-#if BUILDMODE != 0
-inline
-#endif
-void GASetRunsPerEpoch(GenAlg* that, int runs) {
-#if BUILDMODE == 0
-  if (that == NULL) {
-    GenAlgErr->_type = PBErrTypeNullPointer;
-    sprintf(GenAlgErr->_msg, "'that' is null");
-    PBErrCatch(GenAlgErr);
-  }
-  if (runs <= 0) {
-    GenAlgErr->_type = PBErrTypeInvalidArg;
-    sprintf(GenAlgErr->_msg, "'runs' is invalid (%d>0)", runs);
-    PBErrCatch(GenAlgErr);
-  }
-#endif
-  that->_runsPerEpoch = runs;
 }
 
 // Get the length of adn for floating point value
@@ -364,24 +313,46 @@ VecShort2D* GABoundsAdnInt(GenAlg* that, int iGene) {
   return that->_boundsI + iGene;
 }
 
-// Get the GenAlgEntity of the GenAlg 'that' currently at rank 'iRank'
+// Get the GenAlgAdn of the GenAlg 'that' currently at rank 'iRank'
+// (0 is the best adn)
 #if BUILDMODE != 0
 inline
 #endif
-GenAlgEntity* GAEntity(GenAlg* that, int iRank) {
+GenAlgAdn* GAAdn(GenAlg* that, int iRank) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
     sprintf(GenAlgErr->_msg, "'that' is null");
     PBErrCatch(GenAlgErr);
   }
-  if (iRank < 0 || iRank >= that->_nbEntities) {
+  if (iRank < 0 || iRank >= GAGetNbAdns(that)) {
     GenAlgErr->_type = PBErrTypeInvalidArg;
     sprintf(GenAlgErr->_msg, "'iRank' is invalid (0<=%d<%d)",
-      iRank, that->_nbEntities);
+      iRank, GAGetNbAdns(that));
     PBErrCatch(GenAlgErr);
   }
 #endif
-  return (GenAlgEntity*)(ELORankGetRanked(that->_elo, iRank)->_data);
+  return (GenAlgAdn*)GSetGet(that->_adns,
+    GSetNbElem(that->_adns) - iRank - 1);
+}
+
+// Set the value of the GenAlgAdn 'adn' of the GenAlg 'that' to 'val'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetAdnValue(GenAlg* that, GenAlgAdn* adn, float val) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (adn == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'adn' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  GSetGetFirstElem(GAAdns(that), adn)->_sortVal = val;
 }
 

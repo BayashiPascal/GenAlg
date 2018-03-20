@@ -9,102 +9,102 @@
 
 #define RANDOMSEED 2
 
-void UnitTestGenAlgEntityCreateFree() {
+void UnitTestGenAlgAdnCreateFree() {
   int id = 1;
   int lengthAdnF = 2;
   int lengthAdnI = 3;
-  GenAlgEntity* ent = GenAlgEntityCreate(id, lengthAdnF, lengthAdnI);
+  GenAlgAdn* ent = GenAlgAdnCreate(id, lengthAdnF, lengthAdnI);
   if (ent->_age != 1 ||
     ent->_id != id ||
     VecGetDim(ent->_adnF) != lengthAdnF ||
     VecGetDim(ent->_deltaAdnF) != lengthAdnF ||
     VecGetDim(ent->_adnI) != lengthAdnI) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GenAlgEntityCreate failed");
+    sprintf(GenAlgErr->_msg, "GenAlgAdnCreate failed");
     PBErrCatch(GenAlgErr);
   }
-  GenAlgEntityFree(&ent);
+  GenAlgAdnFree(&ent);
   if (ent != NULL) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GenAlgEntityFree failed");
+    sprintf(GenAlgErr->_msg, "GenAlgAdnFree failed");
     PBErrCatch(GenAlgErr);
   }
-  printf("UnitTestGenAlgEntityCreateFree OK\n");
+  printf("UnitTestGenAlgAdnCreateFree OK\n");
 }
 
-void UnitTestGenAlgEntityGetSet() {
+void UnitTestGenAlgAdnGetSet() {
   int id = 1;
   int lengthAdnF = 2;
   int lengthAdnI = 3;
-  GenAlgEntity* ent = GenAlgEntityCreate(id, lengthAdnF, lengthAdnI);
-  if (GAEntAdnF(ent) != ent->_adnF) {
+  GenAlgAdn* ent = GenAlgAdnCreate(id, lengthAdnF, lengthAdnI);
+  if (GAAdnAdnF(ent) != ent->_adnF) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntAdnF failed");
+    sprintf(GenAlgErr->_msg, "GAAdnAdnF failed");
     PBErrCatch(GenAlgErr);
   }
-  if (GAEntDeltaAdnF(ent) != ent->_deltaAdnF) {
+  if (GAAdnDeltaAdnF(ent) != ent->_deltaAdnF) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntDeltaAdnF failed");
+    sprintf(GenAlgErr->_msg, "GAAdnDeltaAdnF failed");
     PBErrCatch(GenAlgErr);
   }
-  if (GAEntAdnI(ent) != ent->_adnI) {
+  if (GAAdnAdnI(ent) != ent->_adnI) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntAdnI failed");
+    sprintf(GenAlgErr->_msg, "GAAdnAdnI failed");
     PBErrCatch(GenAlgErr);
   }
-  GAEntSetGeneF(ent, 0, 1.0);
+  GAAdnSetGeneF(ent, 0, 1.0);
   if (ISEQUALF(VecGet(ent->_adnF, 0), 1.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntSetGeneF failed");
+    sprintf(GenAlgErr->_msg, "GAAdnSetGeneF failed");
     PBErrCatch(GenAlgErr);
   }
-  if (ISEQUALF(GAEntGetGeneF(ent, 0), 1.0) == false) {
+  if (ISEQUALF(GAAdnGetGeneF(ent, 0), 1.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntGetGeneF failed");
+    sprintf(GenAlgErr->_msg, "GAAdnGetGeneF failed");
     PBErrCatch(GenAlgErr);
   }
-  GAEntSetDeltaGeneF(ent, 0, 2.0);
+  GAAdnSetDeltaGeneF(ent, 0, 2.0);
   if (ISEQUALF(VecGet(ent->_deltaAdnF, 0), 2.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntSetDeltaGeneF failed");
+    sprintf(GenAlgErr->_msg, "GAAdnSetDeltaGeneF failed");
     PBErrCatch(GenAlgErr);
   }
-  if (ISEQUALF(GAEntGetDeltaGeneF(ent, 0), 2.0) == false) {
+  if (ISEQUALF(GAAdnGetDeltaGeneF(ent, 0), 2.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntGetDeltaGeneF failed");
+    sprintf(GenAlgErr->_msg, "GAAdnGetDeltaGeneF failed");
     PBErrCatch(GenAlgErr);
   }
-  GAEntSetGeneI(ent, 0, 3);
+  GAAdnSetGeneI(ent, 0, 3);
   if (VecGet(ent->_adnI, 0) != 3) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntSetGeneI failed");
+    sprintf(GenAlgErr->_msg, "GAAdnSetGeneI failed");
     PBErrCatch(GenAlgErr);
   }
-  if (GAEntGetGeneI(ent, 0) != 3) {
+  if (GAAdnGetGeneI(ent, 0) != 3) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntGetGeneI failed");
+    sprintf(GenAlgErr->_msg, "GAAdnGetGeneI failed");
     PBErrCatch(GenAlgErr);
   }
-  if (GAEntGetAge(ent) != 1) {
+  if (GAAdnGetAge(ent) != 1) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntGetAge failed");
+    sprintf(GenAlgErr->_msg, "GAAdnGetAge failed");
     PBErrCatch(GenAlgErr);
   }
-  if (GAEntGetId(ent) != id) {
+  if (GAAdnGetId(ent) != id) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntGetId failed");
+    sprintf(GenAlgErr->_msg, "GAAdnGetId failed");
     PBErrCatch(GenAlgErr);
   }
-  GenAlgEntityFree(&ent);
-  printf("UnitTestGenAlgEntityGetSet OK\n");
+  GenAlgAdnFree(&ent);
+  printf("UnitTestGenAlgAdnGetSet OK\n");
 }
 
-void UnitTestGenAlgEntityInit() {
+void UnitTestGenAlgAdnInit() {
   srandom(5);
   int id = 1;
   int lengthAdnF = 2;
   int lengthAdnI = 2;
-  GenAlgEntity* ent = GenAlgEntityCreate(id, lengthAdnF, lengthAdnI);
+  GenAlgAdn* ent = GenAlgAdnCreate(id, lengthAdnF, lengthAdnI);
   GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES, 
     lengthAdnF, lengthAdnI);
   VecFloat2D boundsF = VecFloatCreateStatic2D();
@@ -115,25 +115,25 @@ void UnitTestGenAlgEntityInit() {
   VecCopy(GABoundsAdnFloat(ga, 1), &boundsF);
   VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
   VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
-  GAEntInit(ent, ga);
+  GAAdnInit(ent, ga);
   if (ISEQUALF(VecGet(ent->_adnF, 0), -0.907064) == false ||
     ISEQUALF(VecGet(ent->_adnF, 1), -0.450509) == false ||
     VecGet(ent->_adnI, 0) != 2 ||
     VecGet(ent->_adnI, 1) != 10) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAEntInit failed");
+    sprintf(GenAlgErr->_msg, "GAAdnInit failed");
     PBErrCatch(GenAlgErr);
   }
   GenAlgFree(&ga);
-  GenAlgEntityFree(&ent);
-  printf("UnitTestGenAlgEntityInit OK\n");
+  GenAlgAdnFree(&ent);
+  printf("UnitTestGenAlgAdnInit OK\n");
 }
 
-void UnitTestGenAlgEntity() {
-  UnitTestGenAlgEntityCreateFree();
-  UnitTestGenAlgEntityGetSet();
-  UnitTestGenAlgEntityInit();
-  printf("UnitTestGenAlgEntity OK\n");
+void UnitTestGenAlgAdn() {
+  UnitTestGenAlgAdnCreateFree();
+  UnitTestGenAlgAdnGetSet();
+  UnitTestGenAlgAdnInit();
+  printf("UnitTestGenAlgAdn OK\n");
 }
 
 void UnitTestGenAlgCreateFree() {
@@ -141,15 +141,12 @@ void UnitTestGenAlgCreateFree() {
   int lengthAdnI = 3;
   GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES,
     lengthAdnF, lengthAdnI);
-  if (ga->_runsPerEpoch != GENALG_RUNPEREPOCH ||
-    ga->_curRun != 0 ||
-    ga->_curEpoch != 0 ||
+  if (ga->_curEpoch != 0 ||
     ga->_nextId != GENALG_NBENTITIES ||
-    ga->_nbEntities != GENALG_NBENTITIES ||
     ga->_nbElites != GENALG_NBELITES ||
     ga->_lengthAdnF != lengthAdnF ||
     ga->_lengthAdnI != lengthAdnI ||
-    ELORankGetNb(GAEloRank(ga)) != GENALG_NBENTITIES) {
+    GSetNbElem(GAAdns(ga)) != GENALG_NBENTITIES) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GenAlgCreate failed");
     PBErrCatch(GenAlgErr);
@@ -168,19 +165,14 @@ void UnitTestGenAlgGetSet() {
   int lengthAdnI = 3;
   GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES,
     lengthAdnF, lengthAdnI);
-  if (GAEloRank(ga) != ga->_elo) {
+  if (GAAdns(ga) != ga->_adns) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAEloRank failed");
     PBErrCatch(GenAlgErr);
   }
-  if (GAGetRunsPerEpoch(ga) != GENALG_RUNPEREPOCH) {
+  if (GAGetNbAdns(ga) != GENALG_NBENTITIES) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAGetRunsPerEpoch failed");
-    PBErrCatch(GenAlgErr);
-  }
-  if (GAGetNbEntities(ga) != GENALG_NBENTITIES) {
-    GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAGetNbEntities failed");
+    sprintf(GenAlgErr->_msg, "GAGetNbAdns failed");
     PBErrCatch(GenAlgErr);
   }
   if (GAGetNbElites(ga) != GENALG_NBELITES) {
@@ -188,34 +180,23 @@ void UnitTestGenAlgGetSet() {
     sprintf(GenAlgErr->_msg, "GAGetNbElites failed");
     PBErrCatch(GenAlgErr);
   }
-  if (GAGetCurRun(ga) != 0) {
-    GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAGetCurRun failed");
-    PBErrCatch(GenAlgErr);
-  }
   if (GAGetCurEpoch(ga) != 0) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAGetCurEpoch failed");
     PBErrCatch(GenAlgErr);
   }
-  GASetRunsPerEpoch(ga, 10);
-  if (GAGetRunsPerEpoch(ga) != 10) {
-    GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GASetRunsPerEpoch failed");
-    PBErrCatch(GenAlgErr);
-  }
   GASetNbEntities(ga, 10);
-  if (GAGetNbEntities(ga) != 10 ||
+  if (GAGetNbAdns(ga) != 10 ||
     GAGetNbElites(ga) != 9 ||
-    ELORankGetNb(GAEloRank(ga)) != 10) {
+    GSetNbElem(GAAdns(ga)) != 10) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GASetNbEntities failed");
     PBErrCatch(GenAlgErr);
   }
   GASetNbElites(ga, 20);
-  if (GAGetNbEntities(ga) != 21 ||
+  if (GAGetNbAdns(ga) != 21 ||
     GAGetNbElites(ga) != 20 ||
-    ELORankGetNb(GAEloRank(ga)) != 21) {
+    GSetNbElem(GAAdns(ga)) != 21) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GASetNbElites failed");
     PBErrCatch(GenAlgErr);
@@ -240,6 +221,12 @@ void UnitTestGenAlgGetSet() {
     sprintf(GenAlgErr->_msg, "GABoundsAdnInt failed");
     PBErrCatch(GenAlgErr);
   }
+  GASetAdnValue(ga, GAAdn(ga, 0), 1.0);
+  if (ISEQUALF(ga->_adns->_tail->_sortVal, 1.0) == false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetAdnValue failed");
+    PBErrCatch(GenAlgErr);
+  }
   GenAlgFree(&ga);
   printf("UnitTestGenAlgGetSet OK\n");
 }
@@ -259,9 +246,7 @@ void UnitTestGenAlgInit() {
   VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
   VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
   GAInit(ga);
-  GenAlgEntity* ent = 
-    (GenAlgEntity*)(
-    ((ELOEntity*)(GAEloRank(ga)->_set._head->_data))->_data);
+  GenAlgAdn* ent = (GenAlgAdn*)(GAAdns(ga)->_head->_data);
   if (ISEQUALF(VecGet(ent->_adnF, 0), -0.907064) == false ||
     ISEQUALF(VecGet(ent->_adnF, 1), -0.450509) == false ||
     VecGet(ent->_adnI, 0) != 2 ||
@@ -293,47 +278,6 @@ void UnitTestGenAlgPrint() {
   printf("UnitTestGenAlgInit OK\n");
 }
 
-void UnitTestGenAlgStepRun() {
-  srandom(5);
-  int lengthAdnF = 2;
-  int lengthAdnI = 2;
-  GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES,
-    lengthAdnF, lengthAdnI);
-  VecFloat2D boundsF = VecFloatCreateStatic2D();
-  VecShort2D boundsI = VecShortCreateStatic2D();
-  VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
-  VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
-  VecCopy(GABoundsAdnFloat(ga, 0), &boundsF);
-  VecCopy(GABoundsAdnFloat(ga, 1), &boundsF);
-  VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
-  VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
-  GASetNbElites(ga, 2);
-  GASetNbEntities(ga, 3);
-  GAInit(ga);
-  GSet* rank = GSetCreate();
-  for (int i = 3; i--;)
-    GSetAddSort(rank, GAEntity(ga, i), 3.0 - (float)i);
-  GAStepRun(ga, rank);
-  if (GAGetCurRun(ga) != 1) {
-    GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAStepRun failed");
-    PBErrCatch(GenAlgErr);
-  }
-  for (int i = 3; i--;) {
-    if (ELORankGetRank(ga->_elo, GSetGet(rank, i)) != 2 - i ||
-      ISEQUALF(ELORankGetELO(ga->_elo, GSetGet(rank, i)), 
-        92.0 + (float)i * 8.0) == false ||
-      GAEntity(ga, i)->_age != 2) {
-      GenAlgErr->_type = PBErrTypeUnitTestFailed;
-      sprintf(GenAlgErr->_msg, "GAStepRun failed");
-      PBErrCatch(GenAlgErr);
-    }
-  }
-  GSetFree(&rank);
-  GenAlgFree(&ga);
-  printf("UnitTestGenAlgStepRun OK\n");
-}
-
 void UnitTestGenAlgGetInbreeding() {
   srandom(5);
   int lengthAdnF = 2;
@@ -356,8 +300,8 @@ void UnitTestGenAlgGetInbreeding() {
     sprintf(GenAlgErr->_msg, "GAGetInbreeding failed");
     PBErrCatch(GenAlgErr);
   }
-  VecCopy(GAEntity(ga, 1)->_adnF, GAEntity(ga, 0)->_adnF);
-  VecCopy(GAEntity(ga, 1)->_adnI, GAEntity(ga, 0)->_adnI);
+  VecCopy(GAAdn(ga, 1)->_adnF, GAAdn(ga, 0)->_adnF);
+  VecCopy(GAAdn(ga, 1)->_adnI, GAAdn(ga, 0)->_adnI);
   if (ISEQUALF(GAGetInbreeding(ga), 0.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAGetInbreeding failed");
@@ -367,8 +311,8 @@ void UnitTestGenAlgGetInbreeding() {
   printf("UnitTestGenAlgGetInbreeding OK\n");
 }
 
-void UnitTestGenAlgStepEpoch() {
-  srandom(5);
+void UnitTestGenAlgStep() {
+  srandom(2);
   int lengthAdnF = 2;
   int lengthAdnI = 2;
   GenAlg* ga = GenAlgCreate(3, 2, lengthAdnF, lengthAdnI);
@@ -381,68 +325,55 @@ void UnitTestGenAlgStepEpoch() {
   VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
   VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
   GAInit(ga);
-  GSet* rank = GSetCreate();
   for (int i = 3; i--;)
-    GSetAddSort(rank, GAEntity(ga, i), 3.0 - (float)i);
-  GAStepRun(ga, rank);
-  printf("Before StepEpoch:\n");
+    GASetAdnValue(ga, GAAdn(ga, i), 3.0 - (float)i);
+  printf("Before Step:\n");
   GAPrintln(ga, stdout);
-  GenAlgEntity* child = GAEntity(ga, 2);
-  GAStepEpoch(ga);
-  printf("After StepEpoch:\n");
+  GenAlgAdn* child = GAAdn(ga, 2);
+  GAStep(ga);
+  printf("After Step:\n");
   GAPrintln(ga, stdout);
-  if (ga->_nextId != 4 || GAEntGetId(child) != 3 || 
-    GAEntGetAge(child) != 1 ||
-    ISEQUALF(GAEntGetGeneF(child, 0), 0.755265) == false ||
-    ISEQUALF(GAEntGetGeneF(child, 1), -0.209552) == false ||
-    ISEQUALF(GAEntGetDeltaGeneF(child, 0), -0.032739) == false ||
-    ISEQUALF(GAEntGetDeltaGeneF(child, 1), -0.206048) == false ||
-    GAEntGetGeneI(child, 0) != 4 ||
-    GAEntGetGeneI(child, 1) != 1 ||
-    GAEntity(ga, 1) != child ||
-    GAEntGetAge(GAEntity(ga, 0)) != 2 ||
-    GAEntGetAge(GAEntity(ga, 2)) != 2 ||
-    GAEntGetId(GAEntity(ga, 0)) != 2 ||
-    GAEntGetId(GAEntity(ga, 2)) != 1 ||
-    ISEQUALF(ELORankGetELO(GAEloRank(ga), child), 100.0) == false ||
-    ISEQUALF(ELORankGetELO(GAEloRank(ga), GAEntity(ga, 0)), 
-      108.0) == false ||
-    ISEQUALF(ELORankGetELO(GAEloRank(ga), GAEntity(ga, 2)), 
-      100.0) == false) {
+  if (ga->_nextId != 4 || GAAdnGetId(child) != 3 || 
+    GAAdnGetAge(child) != 1 ||
+    ISEQUALF(GAAdnGetGeneF(child, 0), 0.367611) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 1), 0.174965) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.081678) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.0) == false ||
+    GAAdnGetGeneI(child, 0) != 4 ||
+    GAAdnGetGeneI(child, 1) != 9 ||
+    GAAdn(ga, 2) != child ||
+    GAAdnGetAge(GAAdn(ga, 0)) != 2 ||
+    GAAdnGetAge(GAAdn(ga, 1)) != 2 ||
+    GAAdnGetId(GAAdn(ga, 0)) != 0 ||
+    GAAdnGetId(GAAdn(ga, 1)) != 1) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAStepEpoch failed");
+    sprintf(GenAlgErr->_msg, "GAStep failed");
     PBErrCatch(GenAlgErr);
   }
-  VecCopy(GAEntity(ga, 1)->_adnF, GAEntity(ga, 0)->_adnF);
-  VecCopy(GAEntity(ga, 1)->_adnI, GAEntity(ga, 0)->_adnI);
-  GAStepEpoch(ga);
+  VecCopy(GAAdn(ga, 1)->_adnF, GAAdn(ga, 0)->_adnF);
+  VecCopy(GAAdn(ga, 1)->_adnI, GAAdn(ga, 0)->_adnI);
+  GAStep(ga);
   printf("After StepEpoch with interbreeding:\n");
   GAPrintln(ga, stdout);
-  if (ga->_nextId != 6 || GAEntGetId(child) != 4 || 
-    GAEntGetAge(child) != 1 ||
-    ISEQUALF(GAEntGetGeneF(child, 0), 0.788004) == false ||
-    ISEQUALF(GAEntGetGeneF(child, 1), -0.003504) == false ||
-    ISEQUALF(GAEntGetDeltaGeneF(child, 0), -0.032739) == false ||
-    ISEQUALF(GAEntGetDeltaGeneF(child, 1), -0.206048) == false ||
-    GAEntGetGeneI(child, 0) != 3 ||
-    GAEntGetGeneI(child, 1) != 1 ||
-    GAEntity(ga, 2) != child ||
-    GAEntGetAge(GAEntity(ga, 0)) != 2 ||
-    GAEntGetAge(GAEntity(ga, 1)) != 1 ||
-    GAEntGetId(GAEntity(ga, 0)) != 2 ||
-    GAEntGetId(GAEntity(ga, 1)) != 5 ||
-    ISEQUALF(ELORankGetELO(GAEloRank(ga), child), 100.0) == false ||
-    ISEQUALF(ELORankGetELO(GAEloRank(ga), GAEntity(ga, 0)), 
-      108.0) == false ||
-    ISEQUALF(ELORankGetELO(GAEloRank(ga), GAEntity(ga, 1)), 
-      100.0) == false) {
+  if (ga->_nextId != 6 || GAAdnGetId(child) != 5 || 
+    GAAdnGetAge(child) != 1 ||
+    ISEQUALF(GAAdnGetGeneF(child, 0), 0.325465) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 1), -0.065164) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.039532) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), -0.240129) == false ||
+    GAAdnGetGeneI(child, 0) != 4 ||
+    GAAdnGetGeneI(child, 1) != 9 ||
+    GAAdn(ga, 2) != child ||
+    GAAdnGetAge(GAAdn(ga, 0)) != 3 ||
+    GAAdnGetAge(GAAdn(ga, 1)) != 1 ||
+    GAAdnGetId(GAAdn(ga, 0)) != 0 ||
+    GAAdnGetId(GAAdn(ga, 1)) != 4) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAStepEpoch failed");
+    sprintf(GenAlgErr->_msg, "GAStep failed");
     PBErrCatch(GenAlgErr);
   }
-  GSetFree(&rank);
   GenAlgFree(&ga);
-  printf("UnitTestGenAlgStepEpoch OK\n");
+  printf("UnitTestGenAlgStep OK\n");
 }
 
 void UnitTestGenAlgLoadSave() {
@@ -459,11 +390,10 @@ void UnitTestGenAlgLoadSave() {
   VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
   VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
   GAInit(ga);
-  GAStepEpoch(ga);
+  GAStep(ga);
   GSet* rank = GSetCreate();
   for (int i = 3; i--;)
-    GSetAddSort(rank, GAEntity(ga, i), 3.0 - (float)i);
-  GAStepRun(ga, rank);
+    GSetAddSort(rank, GAAdn(ga, i), 3.0 - (float)i);
   FILE* stream = fopen("./UnitTestGenAlgLoadSave.txt", "w");
   if (GASave(ga, stream) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
@@ -481,9 +411,6 @@ void UnitTestGenAlgLoadSave() {
   fclose(stream);
   if (ga->_nextId != gaLoad->_nextId||
     ga->_curEpoch != gaLoad->_curEpoch ||
-    ga->_curRun != gaLoad->_curRun ||
-    ga->_runsPerEpoch != gaLoad->_runsPerEpoch ||
-    ga->_nbEntities != gaLoad->_nbEntities ||
     ga->_nbElites != gaLoad->_nbElites ||
     ga->_lengthAdnF != gaLoad->_lengthAdnF ||
     ga->_lengthAdnI != gaLoad->_lengthAdnI ||
@@ -491,36 +418,30 @@ void UnitTestGenAlgLoadSave() {
     VecIsEqual(ga->_boundsF + 1, gaLoad->_boundsF + 1) == false ||
     VecIsEqual(ga->_boundsI, gaLoad->_boundsI) == false ||
     VecIsEqual(ga->_boundsI + 1, gaLoad->_boundsI + 1) == false ||
-    GAEntGetId(GAEntity(ga, 0)) != GAEntGetId(GAEntity(gaLoad, 0)) ||
-    GAEntGetId(GAEntity(ga, 1)) != GAEntGetId(GAEntity(gaLoad, 1)) ||
-    GAEntGetId(GAEntity(ga, 2)) != GAEntGetId(GAEntity(gaLoad, 2)) ||
-    GAEntGetAge(GAEntity(ga, 0)) != GAEntGetAge(GAEntity(gaLoad, 0)) ||
-    GAEntGetAge(GAEntity(ga, 1)) != GAEntGetAge(GAEntity(gaLoad, 1)) ||
-    GAEntGetAge(GAEntity(ga, 2)) != GAEntGetAge(GAEntity(gaLoad, 2)) ||
-    VecIsEqual(GAEntity(ga, 0)->_adnF, 
-      GAEntity(gaLoad, 0)->_adnF) == false ||
-    VecIsEqual(GAEntity(ga, 0)->_deltaAdnF, 
-      GAEntity(gaLoad, 0)->_deltaAdnF) == false ||
-    VecIsEqual(GAEntity(ga, 0)->_adnI, 
-      GAEntity(gaLoad, 0)->_adnI) == false ||
-    VecIsEqual(GAEntity(ga, 1)->_adnF, 
-      GAEntity(gaLoad, 1)->_adnF) == false ||
-    VecIsEqual(GAEntity(ga, 1)->_deltaAdnF, 
-      GAEntity(gaLoad, 1)->_deltaAdnF) == false ||
-    VecIsEqual(GAEntity(ga, 1)->_adnI, 
-      GAEntity(gaLoad, 1)->_adnI) == false ||
-    VecIsEqual(GAEntity(ga, 2)->_adnF, 
-      GAEntity(gaLoad, 2)->_adnF) == false ||
-    VecIsEqual(GAEntity(ga, 2)->_deltaAdnF, 
-      GAEntity(gaLoad, 2)->_deltaAdnF) == false ||
-    VecIsEqual(GAEntity(ga, 2)->_adnI, 
-      GAEntity(gaLoad, 2)->_adnI) == false ||
-    ISEQUALF(ELORankGetELO(GAEloRank(ga), GAEntity(ga, 0)), 
-      ELORankGetELO(GAEloRank(gaLoad), GAEntity(gaLoad, 0))) == false ||
-    ISEQUALF(ELORankGetELO(GAEloRank(ga), GAEntity(ga, 1)), 
-      ELORankGetELO(GAEloRank(gaLoad), GAEntity(gaLoad, 1))) == false ||
-    ISEQUALF(ELORankGetELO(GAEloRank(ga), GAEntity(ga, 2)), 
-      ELORankGetELO(GAEloRank(gaLoad), GAEntity(gaLoad, 2))) == false) {
+    GAAdnGetId(GAAdn(ga, 0)) != GAAdnGetId(GAAdn(gaLoad, 0)) ||
+    GAAdnGetId(GAAdn(ga, 1)) != GAAdnGetId(GAAdn(gaLoad, 1)) ||
+    GAAdnGetId(GAAdn(ga, 2)) != GAAdnGetId(GAAdn(gaLoad, 2)) ||
+    GAAdnGetAge(GAAdn(ga, 0)) != GAAdnGetAge(GAAdn(gaLoad, 0)) ||
+    GAAdnGetAge(GAAdn(ga, 1)) != GAAdnGetAge(GAAdn(gaLoad, 1)) ||
+    GAAdnGetAge(GAAdn(ga, 2)) != GAAdnGetAge(GAAdn(gaLoad, 2)) ||
+    VecIsEqual(GAAdn(ga, 0)->_adnF, 
+      GAAdn(gaLoad, 0)->_adnF) == false ||
+    VecIsEqual(GAAdn(ga, 0)->_deltaAdnF, 
+      GAAdn(gaLoad, 0)->_deltaAdnF) == false ||
+    VecIsEqual(GAAdn(ga, 0)->_adnI, 
+      GAAdn(gaLoad, 0)->_adnI) == false ||
+    VecIsEqual(GAAdn(ga, 1)->_adnF, 
+      GAAdn(gaLoad, 1)->_adnF) == false ||
+    VecIsEqual(GAAdn(ga, 1)->_deltaAdnF, 
+      GAAdn(gaLoad, 1)->_deltaAdnF) == false ||
+    VecIsEqual(GAAdn(ga, 1)->_adnI, 
+      GAAdn(gaLoad, 1)->_adnI) == false ||
+    VecIsEqual(GAAdn(ga, 2)->_adnF, 
+      GAAdn(gaLoad, 2)->_adnF) == false ||
+    VecIsEqual(GAAdn(ga, 2)->_deltaAdnF, 
+      GAAdn(gaLoad, 2)->_deltaAdnF) == false ||
+    VecIsEqual(GAAdn(ga, 2)->_adnI, 
+      GAAdn(gaLoad, 2)->_adnI) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "UnitTestGenAlgLoadSave failed");
     PBErrCatch(GenAlgErr);
@@ -564,19 +485,19 @@ void UnitTestGenAlgTest() {
     VecCopy(GABoundsAdnInt(ga, i), &boundsI);
   }
   GAInit(ga);
-  GASetRunsPerEpoch(ga, 1);
-  GSet* rank = GSetCreate();
 //float best = 1.0;
 //int step = 0;
+/*float ev = evaluate(GAAdnAdnF(GAAdn(ga, 0)), 
+GAAdnAdnI(GAAdn(ga, 0)));
+printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetInbreeding(ga));*/
   do {
-    for (int iEnt = GAGetNbEntities(ga); iEnt--;)
-      GSetAddSort(rank, GAEntity(ga, iEnt), 
-        -1.0 * evaluate(GAEntAdnF(GAEntity(ga, iEnt)), 
-        GAEntAdnI(GAEntity(ga, iEnt))));
-    GAStepRun(ga, rank);
-    GSetFlush(rank);
-/*float ev = evaluate(GAEntAdnF(GAEntity(ga, 0)), 
-GAEntAdnI(GAEntity(ga, 0)));
+    for (int iEnt = GAGetNbAdns(ga); iEnt--;)
+      GASetAdnValue(ga, GAAdn(ga, iEnt), 
+        -1.0 * evaluate(GAAdnAdnF(GAAdn(ga, iEnt)), 
+        GAAdnAdnI(GAAdn(ga, iEnt))));
+    GAStep(ga);
+/*float ev = evaluate(GAAdnAdnF(GAAdn(ga, 0)), 
+GAAdnAdnI(GAAdn(ga, 0)));
 if (step == 10){
   printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetInbreeding(ga));
   step = 0;
@@ -584,20 +505,19 @@ if (step == 10){
 /*if (best - ev > PBMATH_EPSILON) {
   best = ev;
   printf("%d %f ", GAGetCurEpoch(ga), best);
-  VecFloatPrint(GAEntAdnF(GAEntity(ga, 0)), stdout, 6);
+  VecFloatPrint(GAAdnAdnF(GAAdn(ga, 0)), stdout, 6);
   printf(" ");
-  VecPrint(GAEntAdnI(GAEntity(ga, 0)), stdout);
+  VecPrint(GAAdnAdnI(GAAdn(ga, 0)), stdout);
   printf("\n");
 }*/
   } while (GAGetCurEpoch(ga) < 20000 || 
-    evaluate(GAEntAdnF(GAEntity(ga, 0)), 
-      GAEntAdnI(GAEntity(ga, 0))) < PBMATH_EPSILON);
+    evaluate(GAAdnAdnF(GAAdn(ga, 0)), 
+      GAAdnAdnI(GAAdn(ga, 0))) < PBMATH_EPSILON);
   printf("target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1\n");
   printf("approx: \n");
-  GAEntPrintln(GAEntity(ga, 0), stdout);
-  printf("error: %f\n", evaluate(GAEntAdnF(GAEntity(ga, 0)), 
-    GAEntAdnI(GAEntity(ga, 0))));
-  GSetFree(&rank);
+  GAAdnPrintln(GAAdn(ga, 0), stdout);
+  printf("error: %f\n", evaluate(GAAdnAdnF(GAAdn(ga, 0)), 
+    GAAdnAdnI(GAAdn(ga, 0))));
   GenAlgFree(&ga);
   printf("UnitTestGenAlgTest OK\n");
 }
@@ -607,16 +527,15 @@ void UnitTestGenAlg() {
   UnitTestGenAlgGetSet();
   UnitTestGenAlgInit();
   UnitTestGenAlgPrint();
-  UnitTestGenAlgStepRun();
   UnitTestGenAlgGetInbreeding();
-  UnitTestGenAlgStepEpoch();
+  UnitTestGenAlgStep();
   UnitTestGenAlgLoadSave();
   UnitTestGenAlgTest();
   printf("UnitTestGenAlg OK\n");
 }
 
 void UnitTestAll() {
-  UnitTestGenAlgEntity();
+  UnitTestGenAlgAdn();
   UnitTestGenAlg();
   printf("UnitTestAll OK\n");
 }
