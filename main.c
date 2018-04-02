@@ -216,6 +216,22 @@ void UnitTestGenAlgGetSet() {
     sprintf(GenAlgErr->_msg, "GABoundsAdnFloat failed");
     PBErrCatch(GenAlgErr);
   }
+  VecFloat2D boundsF = VecFloatCreateStatic2D();
+  VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
+  GASetBoundsAdnFloat(ga, 1, &boundsF);
+  if (VecIsEqual(GABoundsAdnFloat(ga, 1), &boundsF) == false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetBoundsAdnFloat failed");
+    PBErrCatch(GenAlgErr);
+  }
+  VecShort2D boundsS = VecShortCreateStatic2D();
+  VecSet(&boundsS, 0, -1); VecSet(&boundsS, 1, 1);
+  GASetBoundsAdnInt(ga, 1, &boundsS);
+  if (VecIsEqual(GABoundsAdnInt(ga, 1), &boundsS) == false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetBoundsAdnInt failed");
+    PBErrCatch(GenAlgErr);
+  }
   if (GABoundsAdnInt(ga, 1) != ga->_boundsI + 1) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GABoundsAdnInt failed");

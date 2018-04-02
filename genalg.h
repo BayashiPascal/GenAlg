@@ -226,6 +226,20 @@ inline
 #endif
 VecShort2D* GABoundsAdnInt(GenAlg* that, int iGene);
 
+// Set the bounds for the 'iGene'-th gene of adn for floating point 
+// values to a copy of 'bounds'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetBoundsAdnFloat(GenAlg* that, int iGene, VecFloat2D* bounds);
+
+// Set the bounds for the 'iGene'-th gene of adn for integer values
+// to a copy of 'bounds'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetBoundsAdnInt(GenAlg* that, int iGene, VecShort2D* bounds);
+
 // Get the GenAlgAdn of the GenAlg 'that' currently at rank 'iRank'
 #if BUILDMODE != 0
 inline

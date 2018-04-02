@@ -270,6 +270,60 @@ int GAGetLengthAdnInt(GenAlg* that) {
   return that->_lengthAdnI;
 }
 
+// Set the bounds for the 'iGene'-th gene of adn for floating point 
+// values to a copy of 'bounds'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetBoundsAdnFloat(GenAlg* that, int iGene, VecFloat2D* bounds) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (bounds == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'bounds' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iGene < 0 || iGene >= that->_lengthAdnF) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'iGene' is invalid (0<=%d<%d)",
+      iGene, that->_lengthAdnF);
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  VecCopy(that->_boundsF + iGene, bounds);
+}
+
+// Set the bounds for the 'iGene'-th gene of adn for integer values
+// to a copy of 'bounds'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetBoundsAdnInt(GenAlg* that, int iGene, VecShort2D* bounds) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (bounds == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'bounds' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iGene < 0 || iGene >= that->_lengthAdnI) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'iGene' is invalid (0<=%d<%d)",
+      iGene, that->_lengthAdnI);
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  VecCopy(that->_boundsI + iGene, bounds);
+}
+
 // Get the bounds for the 'iGene'-th gene of adn for floating point 
 // values
 #if BUILDMODE != 0
