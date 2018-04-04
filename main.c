@@ -503,8 +503,7 @@ void UnitTestGenAlgTest() {
   GAInit(ga);
 //float best = 1.0;
 //int step = 0;
-/*float ev = evaluate(GAAdnAdnF(GAAdn(ga, 0)), 
-GAAdnAdnI(GAAdn(ga, 0)));
+/*float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
 printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetInbreeding(ga));*/
   do {
     for (int iEnt = GAGetNbAdns(ga); iEnt--;)
@@ -512,8 +511,7 @@ printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetInbreeding(ga));*/
         -1.0 * evaluate(GAAdnAdnF(GAAdn(ga, iEnt)), 
         GAAdnAdnI(GAAdn(ga, iEnt))));
     GAStep(ga);
-/*float ev = evaluate(GAAdnAdnF(GAAdn(ga, 0)), 
-GAAdnAdnI(GAAdn(ga, 0)));
+/*float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
 if (step == 10){
   printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetInbreeding(ga));
   step = 0;
@@ -521,19 +519,17 @@ if (step == 10){
 /*if (best - ev > PBMATH_EPSILON) {
   best = ev;
   printf("%d %f ", GAGetCurEpoch(ga), best);
-  VecFloatPrint(GAAdnAdnF(GAAdn(ga, 0)), stdout, 6);
+  VecFloatPrint(GABestAdnF(ga), stdout, 6);
   printf(" ");
-  VecPrint(GAAdnAdnI(GAAdn(ga, 0)), stdout);
+  VecPrint(GABestAdnI(ga), stdout);
   printf("\n");
 }*/
   } while (GAGetCurEpoch(ga) < 20000 || 
-    evaluate(GAAdnAdnF(GAAdn(ga, 0)), 
-      GAAdnAdnI(GAAdn(ga, 0))) < PBMATH_EPSILON);
+    evaluate(GABestAdnF(ga), GABestAdnI(ga)) < PBMATH_EPSILON);
   printf("target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1\n");
   printf("approx: \n");
   GAAdnPrintln(GAAdn(ga, 0), stdout);
-  printf("error: %f\n", evaluate(GAAdnAdnF(GAAdn(ga, 0)), 
-    GAAdnAdnI(GAAdn(ga, 0))));
+  printf("error: %f\n", evaluate(GABestAdnF(ga), GABestAdnI(ga)));
   GenAlgFree(&ga);
   printf("UnitTestGenAlgTest OK\n");
 }

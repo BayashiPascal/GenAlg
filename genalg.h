@@ -132,6 +132,11 @@ void GAAdnPrintln(GenAlgAdn* that, FILE* stream);
 
 // ------------- GenAlg
 
+// ================= Define ===================
+
+#define GABestAdnF(that) GAAdnAdnF(GAAdn(that, 0))
+#define GABestAdnI(that) GAAdnAdnI(GAAdn(that, 0))
+
 // ================= Data structure ===================
 
 typedef struct GenAlg {
