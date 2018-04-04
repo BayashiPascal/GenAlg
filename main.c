@@ -294,7 +294,7 @@ void UnitTestGenAlgPrint() {
   printf("UnitTestGenAlgInit OK\n");
 }
 
-void UnitTestGenAlgGetInbreeding() {
+void UnitTestGenAlgGetDiversity() {
   srandom(5);
   int lengthAdnF = 2;
   int lengthAdnI = 2;
@@ -311,20 +311,20 @@ void UnitTestGenAlgGetInbreeding() {
   GASetNbElites(ga, 2);
   GASetNbEntities(ga, 3);
   GAInit(ga);
-  if (ISEQUALF(GAGetInbreeding(ga), 0.182041) == false) {
+  if (ISEQUALF(GAGetDiversity(ga), 0.182041) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAGetInbreeding failed");
+    sprintf(GenAlgErr->_msg, "GAGetDiversity failed");
     PBErrCatch(GenAlgErr);
   }
   VecCopy(GAAdn(ga, 1)->_adnF, GAAdn(ga, 0)->_adnF);
   VecCopy(GAAdn(ga, 1)->_adnI, GAAdn(ga, 0)->_adnI);
-  if (ISEQUALF(GAGetInbreeding(ga), 0.0) == false) {
+  if (ISEQUALF(GAGetDiversity(ga), 0.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAGetInbreeding failed");
+    sprintf(GenAlgErr->_msg, "GAGetDiversity failed");
     PBErrCatch(GenAlgErr);
   }
   GenAlgFree(&ga);
-  printf("UnitTestGenAlgGetInbreeding OK\n");
+  printf("UnitTestGenAlgGetDiversity OK\n");
 }
 
 void UnitTestGenAlgStep() {
@@ -373,14 +373,14 @@ void UnitTestGenAlgStep() {
   GAPrintln(ga, stdout);
   if (ga->_nextId != 6 || GAAdnGetId(child) != 5 || 
     GAAdnGetAge(child) != 1 ||
-    ISEQUALF(GAAdnGetGeneF(child, 0), 0.325465) == false ||
-    ISEQUALF(GAAdnGetGeneF(child, 1), -0.065164) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.039532) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), -0.240129) == false ||
-    GAAdnGetGeneI(child, 0) != 4 ||
-    GAAdnGetGeneI(child, 1) != 9 ||
+    ISEQUALF(GAAdnGetGeneF(child, 0), 0.289982) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 1), -0.910199) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.081678) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.0) == false ||
+    GAAdnGetGeneI(child, 0) != 9 ||
+    GAAdnGetGeneI(child, 1) != 8 ||
     GAAdn(ga, 2) != child ||
-    GAAdnGetAge(GAAdn(ga, 0)) != 3 ||
+    GAAdnGetAge(GAAdn(ga, 0)) != 2 ||
     GAAdnGetAge(GAAdn(ga, 1)) != 1 ||
     GAAdnGetId(GAAdn(ga, 0)) != 0 ||
     GAAdnGetId(GAAdn(ga, 1)) != 4) {
@@ -501,29 +501,29 @@ void UnitTestGenAlgTest() {
     VecCopy(GABoundsAdnInt(ga, i), &boundsI);
   }
   GAInit(ga);
-//float best = 1.0;
+float best = 1.0;
 //int step = 0;
 /*float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
-printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetInbreeding(ga));*/
+printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));*/
   do {
     for (int iEnt = GAGetNbAdns(ga); iEnt--;)
       GASetAdnValue(ga, GAAdn(ga, iEnt), 
         -1.0 * evaluate(GAAdnAdnF(GAAdn(ga, iEnt)), 
         GAAdnAdnI(GAAdn(ga, iEnt))));
     GAStep(ga);
-/*float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
-if (step == 10){
-  printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetInbreeding(ga));
-  step = 0;
-} else step++;*/
-/*if (best - ev > PBMATH_EPSILON) {
+float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
+//if (step == 10){
+//  printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));
+//  step = 0;
+//} else step++;
+if (best - ev > PBMATH_EPSILON) {
   best = ev;
   printf("%d %f ", GAGetCurEpoch(ga), best);
   VecFloatPrint(GABestAdnF(ga), stdout, 6);
   printf(" ");
   VecPrint(GABestAdnI(ga), stdout);
   printf("\n");
-}*/
+}
   } while (GAGetCurEpoch(ga) < 20000 || 
     evaluate(GABestAdnF(ga), GABestAdnI(ga)) < PBMATH_EPSILON);
   printf("target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1\n");
@@ -539,7 +539,7 @@ void UnitTestGenAlg() {
   UnitTestGenAlgGetSet();
   UnitTestGenAlgInit();
   UnitTestGenAlgPrint();
-  UnitTestGenAlgGetInbreeding();
+  UnitTestGenAlgGetDiversity();
   UnitTestGenAlgStep();
   UnitTestGenAlgLoadSave();
   UnitTestGenAlgTest();

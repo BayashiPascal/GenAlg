@@ -18,7 +18,7 @@
 
 #define GENALG_NBENTITIES 100
 #define GENALG_NBELITES 20
-#define GENALG_INBREEDINGTHRESHOLD 0.1
+#define GENALG_DIVERSITYTHRESHOLD 0.01
 
 // ------------- GenAlgAdn
 
@@ -264,10 +264,10 @@ void GAStep(GenAlg* that);
 // Print the information about the GenAlg 'that' on the stream 'stream'
 void GAPrintln(GenAlg* that, FILE* stream);
 
-// Get the level of inbreeding of curent entities of the GenAlg 'that'
+// Get the level of diversity of curent entities of the GenAlg 'that'
 // The return value is in [0.0, 1.0]
 // 0.0 means all the elite entities have exactly the same adns 
-float GAGetInbreeding(GenAlg* that);
+float GAGetDiversity(GenAlg* that);
 
 // Load the GenAlg 'that' from the stream 'stream'
 // If the GenAlg is already allocated, it is freed before loading

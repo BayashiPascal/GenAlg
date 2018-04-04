@@ -133,11 +133,16 @@ void GASelectParents(GenAlg* that, int* parents);
 // genes of entities at ranks 'parents[0]' and 'parents[1]'
 void GAReproduction(GenAlg* that, int* parents, int iChild);
 
-// Mute the genes of the entity at rank 'iChild' 
+// Mute the genes of the entity at rank 'iChild'
 // The probability of mutation for one gene is equal to 
-// 'rankChild'/'that'->_nbEntities and the amplitude of the mutation
+// 'rankChild'/'that'->_nbEntities
+// The amplitude of the mutation
 // is equal to (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
 void GAMute(GenAlg* that, int* parents, int iChild);
+
+// Reset the GenAlg 'that'
+// Randomize all the gene except those of the first adn
+void GAKTEvent(GenAlg* that);
 
 // ================ Functions implementation ====================
 
@@ -269,6 +274,31 @@ void GAInit(GenAlg* that) {
   } while (GSetIterStep(&iter));
 }
 
+// Reset the GenAlg 'that'
+// Randomize all the gene except those of the best adn
+void GAKTEvent(GenAlg* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // For each adn except the best one
+  GSetIterBackward iter = GSetIterBackwardCreateStatic(GAAdns(that));
+  GSetIterStep(&iter);
+  do {
+    // Get the adn
+    GenAlgAdn* adn = GSetIterGet(&iter);
+    // Initialise randomly the genes of the adn
+    GAAdnInit(adn, that);
+    // Reset the age of the child
+    adn->_age = 1;
+    // Set the id of the child
+    adn->_id = (that->_nextId)++;
+  } while (GSetIterStep(&iter));
+}
+
 // Step an epoch for the GenAlg 'that' with the current ranking of
 // GenAlgAdn
 void GAStep(GenAlg* that) {
@@ -284,31 +314,30 @@ void GAStep(GenAlg* that) {
   GSetSort(GAAdns(that));
   // Declare a variable to memorize the parents
   int parents[2];
-  // Get the inbreeding level
-  float inbreeding = GAGetInbreeding(that);
-  // For each adn which is an elite
-  for (int iAdn = 0; iAdn < GAGetNbElites(that); ++iAdn) {
-    // Increment age
-    (GAAdn(that, iAdn)->_age)++;
-    // If the inbreeding level is too high
-    // Break the inbreeding by applying mutation to elites except the 
-    // best one
-    if (inbreeding < GENALG_INBREEDINGTHRESHOLD && iAdn > 0) {
-      // Reproduce with itself and mute the genes of the adn
-      parents[1] = parents[0] = iAdn;
+  // Get the diversity level
+  float diversity = GAGetDiversity(that);
+  // If the diversity level is too low
+  if (diversity < GENALG_DIVERSITYTHRESHOLD) {
+    // Break the diversity by applying KT event (in memory of 
+    // chickens' grand pa and grand ma)
+    GAKTEvent(that);
+  // Else, the diversity level is ok
+  } else {
+    // For each adn which is an elite
+    for (int iAdn = 0; iAdn < GAGetNbElites(that); ++iAdn) {
+      // Increment age
+      (GAAdn(that, iAdn)->_age)++;
+    }
+    // For each adn which is not an elite
+    for (int iAdn = GAGetNbElites(that); iAdn < GAGetNbAdns(that); 
+      ++iAdn) {
+      // Select two parents for this adn
+      GASelectParents(that, parents);
+      // Set the genes of the adn as a 50/50 mix of parents' genes
       GAReproduction(that, parents, iAdn);
+      // Mute the genes of the adn
       GAMute(that, parents, iAdn);
     }
-  }
-  // For each adn which is not an elite
-  for (int iAdn = GAGetNbElites(that); iAdn < GAGetNbAdns(that); 
-    ++iAdn) {
-    // Select two parents for this adn
-    GASelectParents(that, parents);
-    // Set the genes of the adn as a 50/50 mix of parents' genes
-    GAReproduction(that, parents, iAdn);
-    // Mute the genes of the adn
-    GAMute(that, parents, iAdn);
   }
   // Increment the number of epochs
   ++(that->_curEpoch);
@@ -399,9 +428,10 @@ void GAReproduction(GenAlg* that, int* parents, int iChild) {
   child->_id = (that->_nextId)++;
 }
 
-// Mute the genes of the entity at rank 'iChild' 
+// Mute the genes of the entity at rank 'iChild'
 // The probability of mutation for one gene is equal to 
-// 'rankChild'/'that'->_nbEntities and the amplitude of the mutation
+// 'rankChild'/'that'->_nbEntities
+// The amplitude of the mutation
 // is equal to (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
 void GAMute(GenAlg* that, int* parents, int iChild) {
 #if BUILDMODE == 0
@@ -425,9 +455,8 @@ void GAMute(GenAlg* that, int* parents, int iChild) {
   // Get the first parent and child
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
-  // Get the probability of mutation
+  // Get the proba amplitude of mutation
   float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
-  // Get the amplitude of mutation
   float amp = 1.0 - 1.0 / sqrt((float)(parentA->_age + 1));
   // For each gene of the adn for floating point value
   for (int iGene = GAGetLengthAdnFloat(that); iGene--;) {
@@ -513,10 +542,10 @@ void GAPrintln(GenAlg* that, FILE* stream) {
   } while (GSetIterStep(&iter));
 }
 
-// Get the level of inbreeding of curent entities of the GenAlg 'that'
+// Get the level of diversity of curent entities of the GenAlg 'that'
 // The return value is in [0.0, 1.0]
 // 0.0 means all the elite entities have exactly the same adns 
-float GAGetInbreeding(GenAlg* that) {
+float GAGetDiversity(GenAlg* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -525,7 +554,7 @@ float GAGetInbreeding(GenAlg* that) {
   }
 #endif
   // Declare a variable to memorize the result
-  float inbreeding = 0.0;
+  float diversity = 0.0;
   // Declare a variable for calculation
   int nb = 1;
   // If there are adn for floating point values
@@ -544,12 +573,13 @@ float GAGetInbreeding(GenAlg* that) {
       // Get the difference in adn with the first entity
       VecFloat* diff = VecGetOp(GAAdnAdnF(GAAdn(that, iEnt)), 1.0, 
         GAAdnAdnF(GAAdn(that, 0)), -1.0);
-      // Calculate the inbreeding
-      inbreeding += VecNorm(diff) / normRange;
+      // Calculate the diversity
+      diversity += VecNorm(diff) / 
+        (normRange * (float)GAAdnGetAge(GAAdn(that, iEnt)));
       // Free memory
       VecFree(&diff);
     }
-    // Calculate the inbreeding
+    // Calculate the diversity
     nb += GAGetNbElites(that);
     // Free memory
     VecFree(&range);
@@ -571,21 +601,21 @@ float GAGetInbreeding(GenAlg* that) {
       VecShort* diff = VecGetOp(GAAdnAdnI(GAAdn(that, iEnt)), 1, 
         GAAdnAdnI(GAAdn(that, 0)), -1);
       VecFloat* diffF = VecShortToFloat(diff);
-      // Calculate the inbreeding
-      inbreeding += VecNorm(diffF) / normRange;
+      // Calculate the diversity
+      diversity += VecNorm(diffF) / normRange;
       // Free memory
       VecFree(&diffF);
       VecFree(&diff);
     }
-    // Calculate the inbreeding
+    // Calculate the diversity
     nb += GAGetNbElites(that);
     // Free memory
     VecFree(&range);
   }
-  // Calculate the inbreeding
-  inbreeding /= (float)nb;
+  // Calculate the diversity
+  diversity /= (float)nb;
   // Return the result
-  return inbreeding;
+  return diversity;
 }
 
 // Load the GenAlg 'that' from the stream 'stream'
