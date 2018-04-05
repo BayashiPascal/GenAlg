@@ -157,6 +157,8 @@ typedef struct GenAlg {
   VecFloat2D* _boundsF;
   // Bounds (min, max) for integer values adn
   VecShort2D* _boundsI;
+  // Diversity threshold for KTEvent
+  float _diversityThreshold;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -189,6 +191,18 @@ int GAGetNbAdns(GenAlg* that);
 inline
 #endif
 int GAGetNbElites(GenAlg* that);
+
+// Return the diversity threshold of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+float GAGetDiversityThreshold(GenAlg* that);
+
+// Set the diversity threshold of the GenAlg 'that' to 'div'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetDiversityThreshold(GenAlg* that, float div);
 
 // Return the current epoch of the GenAlg 'that'
 #if BUILDMODE != 0

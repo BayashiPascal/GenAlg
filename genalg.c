@@ -176,6 +176,7 @@ GenAlg* GenAlgCreate(int nbEntities, int nbElites, int lengthAdnF,
     that->_boundsI = NULL;
   that->_nbElites = 0;
   that->_nextId = 0;
+  that->_diversityThreshold = GENALG_DIVERSITYTHRESHOLD;
   GASetNbEntities(that, nbEntities);
   GASetNbElites(that, nbElites);
   // Return the new GenAlg
@@ -602,7 +603,8 @@ float GAGetDiversity(GenAlg* that) {
         GAAdnAdnI(GAAdn(that, 0)), -1);
       VecFloat* diffF = VecShortToFloat(diff);
       // Calculate the diversity
-      diversity += VecNorm(diffF) / normRange;
+      diversity += VecNorm(diffF) / 
+        (normRange * (float)GAAdnGetAge(GAAdn(that, iEnt)));
       // Free memory
       VecFree(&diffF);
       VecFree(&diff);

@@ -146,6 +146,8 @@ void UnitTestGenAlgCreateFree() {
     ga->_nbElites != GENALG_NBELITES ||
     ga->_lengthAdnF != lengthAdnF ||
     ga->_lengthAdnI != lengthAdnI ||
+    ISEQUALF(ga->_diversityThreshold, 
+      GENALG_DIVERSITYTHRESHOLD) == false ||
     GSetNbElem(GAAdns(ga)) != GENALG_NBENTITIES) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GenAlgCreate failed");
@@ -241,6 +243,18 @@ void UnitTestGenAlgGetSet() {
   if (ISEQUALF(ga->_adns->_tail->_sortVal, 1.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GASetAdnValue failed");
+    PBErrCatch(GenAlgErr);
+  }
+  if (ISEQUALF(GAGetDiversityThreshold(ga),   
+    ga->_diversityThreshold) == false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAGetDiversityThreshold failed");
+    PBErrCatch(GenAlgErr);
+  }
+  GASetDiversityThreshold(ga, 0.5);
+  if (ISEQUALF(GAGetDiversityThreshold(ga), 0.5) == false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetDiversityThreshold failed");
     PBErrCatch(GenAlgErr);
   }
   GenAlgFree(&ga);
@@ -501,7 +515,7 @@ void UnitTestGenAlgTest() {
     VecCopy(GABoundsAdnInt(ga, i), &boundsI);
   }
   GAInit(ga);
-float best = 1.0;
+//float best = 1.0;
 //int step = 0;
 /*float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
 printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));*/
@@ -511,19 +525,19 @@ printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));*/
         -1.0 * evaluate(GAAdnAdnF(GAAdn(ga, iEnt)), 
         GAAdnAdnI(GAAdn(ga, iEnt))));
     GAStep(ga);
-float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
+//float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
 //if (step == 10){
 //  printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));
 //  step = 0;
 //} else step++;
-if (best - ev > PBMATH_EPSILON) {
+/*if (best - ev > PBMATH_EPSILON) {
   best = ev;
   printf("%d %f ", GAGetCurEpoch(ga), best);
   VecFloatPrint(GABestAdnF(ga), stdout, 6);
   printf(" ");
   VecPrint(GABestAdnI(ga), stdout);
   printf("\n");
-}
+}*/
   } while (GAGetCurEpoch(ga) < 20000 || 
     evaluate(GABestAdnF(ga), GABestAdnI(ga)) < PBMATH_EPSILON);
   printf("target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1\n");

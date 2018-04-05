@@ -410,3 +410,33 @@ void GASetAdnValue(GenAlg* that, GenAlgAdn* adn, float val) {
   GSetGetFirstElem(GAAdns(that), adn)->_sortVal = val;
 }
 
+// Return the diversity threshold of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+float GAGetDiversityThreshold(GenAlg* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_diversityThreshold;
+}
+
+// Set the diversity threshold of the GenAlg 'that' to 'div'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetDiversityThreshold(GenAlg* that, float div) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  that->_diversityThreshold = div;
+}
+
