@@ -10,7 +10,7 @@
 #define RANDOMSEED 2
 
 void UnitTestGenAlgAdnCreateFree() {
-  int id = 1;
+  unsigned long int id = 1;
   int lengthAdnF = 2;
   int lengthAdnI = 3;
   GenAlgAdn* ent = GenAlgAdnCreate(id, lengthAdnF, lengthAdnI);
@@ -33,7 +33,7 @@ void UnitTestGenAlgAdnCreateFree() {
 }
 
 void UnitTestGenAlgAdnGetSet() {
-  int id = 1;
+  unsigned long int id = 1;
   int lengthAdnF = 2;
   int lengthAdnI = 3;
   GenAlgAdn* ent = GenAlgAdnCreate(id, lengthAdnF, lengthAdnI);
@@ -101,7 +101,7 @@ void UnitTestGenAlgAdnGetSet() {
 
 void UnitTestGenAlgAdnInit() {
   srandom(5);
-  int id = 1;
+  unsigned long int id = 1;
   int lengthAdnF = 2;
   int lengthAdnI = 2;
   GenAlgAdn* ent = GenAlgAdnCreate(id, lengthAdnF, lengthAdnI);

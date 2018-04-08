@@ -108,7 +108,7 @@ void GAAdnPrintln(GenAlgAdn* that, FILE* stream) {
     PBErrCatch(GenAlgErr);
   }
 #endif  
-  fprintf(stream, "id:%d age:%d", GAAdnGetId(that), GAAdnGetAge(that));
+  fprintf(stream, "id:%lu age:%lu", GAAdnGetId(that), GAAdnGetAge(that));
   fprintf(stream, "\n");
   fprintf(stream, "  adnF:");
   VecFloatPrint(GAAdnAdnF(that), stream,6);
@@ -527,7 +527,7 @@ void GAPrintln(GenAlg* that, FILE* stream) {
     PBErrCatch(GenAlgErr);
   }
 #endif  
-  fprintf(stream, "epoch:%d\n", GAGetCurEpoch(that));
+  fprintf(stream, "epoch:%lu\n", GAGetCurEpoch(that));
   fprintf(stream, "%d entities, %d elites\n", GAGetNbAdns(that), 
     GAGetNbElites(that));
   GSetIterBackward iter = GSetIterBackwardCreateStatic(GAAdns(that));
@@ -654,7 +654,7 @@ bool GALoad(GenAlg** that, FILE* stream) {
   // Allocate memory
   *that = GenAlgCreate(nbEnt, nbElite, lenAdnF, lenAdnI);
   // Load the epoch, nextId
-  ret = fscanf(stream, "%d %d", &((*that)->_curEpoch), 
+  ret = fscanf(stream, "%lu %lu", &((*that)->_curEpoch), 
     &((*that)->_nextId));
   // If we couldn't fscanf
   if (ret == EOF)
@@ -679,9 +679,9 @@ bool GALoad(GenAlg** that, FILE* stream) {
     GSetElem* setElem = GSetGetElem(GAAdns(*that), iEnt);
     GenAlgAdn* ent = (GenAlgAdn*)(setElem->_data);
     // Load the id, age and elo
-    int id, age;
+    unsigned long int id, age;
     float val;
-    int ret = fscanf(stream, "%d %d %f", &id, &age, &val);
+    int ret = fscanf(stream, "%lu %lu %f", &id, &age, &val);
     // If we couldn't fscanf
     if (ret == EOF)
       return false;
@@ -735,7 +735,7 @@ bool GASave(GenAlg* that, FILE* stream) {
   if (ret < 0)
     return false;
   // Save the epoch, nextId
-  ret = fprintf(stream, "%d %d\n", GAGetCurEpoch(that), that->_nextId);
+  ret = fprintf(stream, "%lu %lu\n", GAGetCurEpoch(that), that->_nextId);
   // If we couldn't fprintf
   if (ret < 0)
     return false;
@@ -751,7 +751,7 @@ bool GASave(GenAlg* that, FILE* stream) {
     GSetElem* setElem = GSetGetElem(GAAdns(that), iEnt);
     GenAlgAdn* ent = (GenAlgAdn*)(setElem->_data);
     // Save the id, age and elo
-    int ret = fprintf(stream, "%d %d %f\n", ent->_id, ent->_age, 
+    int ret = fprintf(stream, "%lu %lu %f\n", ent->_id, ent->_age, 
       setElem->_sortVal);
     // If we couldn't fprintf
     if (ret < 0)

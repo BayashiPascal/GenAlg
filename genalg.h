@@ -28,9 +28,9 @@ typedef struct GenAlg GenAlg;
 
 typedef struct GenAlgAdn {
   // ID
-  int _id;
+  unsigned long int _id;
   // Age
-  int _age;
+  unsigned long int _age;
   // Adn for floating point value
   VecFloat* _adnF;
   // Delta Adn during mutation
@@ -118,13 +118,13 @@ void GAAdnSetGeneI(GenAlgAdn* that, int iGene, short gene);
 #if BUILDMODE != 0
 inline
 #endif
-int GAAdnGetId(GenAlgAdn* that);
+unsigned long int GAAdnGetId(GenAlgAdn* that);
 
 // Get the age of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAAdnGetAge(GenAlgAdn* that);
+unsigned long int GAAdnGetAge(GenAlgAdn* that);
 
 // Print the information about the GenAlgAdn 'that' on the 
 // stream 'stream'
@@ -144,11 +144,11 @@ typedef struct GenAlg {
   // worst adn and the tail of the set is the best
   GSet* _adns;
   // Current epoch
-  int _curEpoch;
+  unsigned long int _curEpoch;
   // Nb elite entities in population
   int _nbElites;
   // Id of the next new GenAlgAdn
-  int _nextId;
+  unsigned long int _nextId;
   // Length of adn for floating point value
   int _lengthAdnF;
   // Length of adn for integer value
@@ -208,7 +208,7 @@ void GASetDiversityThreshold(GenAlg* that, float div);
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetCurEpoch(GenAlg* that);
+unsigned long int GAGetCurEpoch(GenAlg* that);
 
 // Set the nb of entities of the GenAlg 'that' to 'nb'
 // 'nb' must be greater than 1, if 'nb' is lower than the current nb 

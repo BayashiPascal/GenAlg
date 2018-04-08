@@ -150,7 +150,7 @@ void GAAdnSetGeneI(GenAlgAdn* that, int iGene, short gene) {
 #if BUILDMODE != 0
 inline
 #endif
-int GAAdnGetId(GenAlgAdn* that) {
+unsigned long int GAAdnGetId(GenAlgAdn* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -165,7 +165,7 @@ int GAAdnGetId(GenAlgAdn* that) {
 #if BUILDMODE != 0
 inline
 #endif
-int GAAdnGetAge(GenAlgAdn* that) {
+unsigned long int GAAdnGetAge(GenAlgAdn* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -229,7 +229,7 @@ int GAGetNbElites(GenAlg* that) {
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetCurEpoch(GenAlg* that) {
+unsigned long int GAGetCurEpoch(GenAlg* that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
