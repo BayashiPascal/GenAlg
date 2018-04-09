@@ -95,6 +95,17 @@ void UnitTestGenAlgAdnGetSet() {
     sprintf(GenAlgErr->_msg, "GAAdnGetId failed");
     PBErrCatch(GenAlgErr);
   }
+  if (GAAdnIsNew(ent) != true) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAAdnIsNew failed");
+    PBErrCatch(GenAlgErr);
+  }
+  ent->_age = 2;
+  if (GAAdnIsNew(ent) != false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAAdnIsNew failed");
+    PBErrCatch(GenAlgErr);
+  }
   GenAlgAdnFree(&ent);
   printf("UnitTestGenAlgAdnGetSet OK\n");
 }
@@ -521,9 +532,10 @@ void UnitTestGenAlgTest() {
 printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));*/
   do {
     for (int iEnt = GAGetNbAdns(ga); iEnt--;)
-      GASetAdnValue(ga, GAAdn(ga, iEnt), 
-        -1.0 * evaluate(GAAdnAdnF(GAAdn(ga, iEnt)), 
-        GAAdnAdnI(GAAdn(ga, iEnt))));
+      if (GAAdnIsNew(GAAdn(ga, iEnt)))
+        GASetAdnValue(ga, GAAdn(ga, iEnt), 
+          -1.0 * evaluate(GAAdnAdnF(GAAdn(ga, iEnt)), 
+          GAAdnAdnI(GAAdn(ga, iEnt))));
     GAStep(ga);
 //float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
 //if (step == 10){

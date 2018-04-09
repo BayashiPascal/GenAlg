@@ -130,6 +130,13 @@ unsigned long int GAAdnGetAge(GenAlgAdn* that);
 // stream 'stream'
 void GAAdnPrintln(GenAlgAdn* that, FILE* stream);
 
+// Return true if the GenAlgAdn 'that' is new, i.e. is age equals 1
+// Return false
+#if BUILDMODE != 0
+inline
+#endif
+bool GAAdnIsNew(GenAlgAdn* that);
+
 // ------------- GenAlg
 
 // ================= Define ===================

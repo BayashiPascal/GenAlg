@@ -176,6 +176,23 @@ unsigned long int GAAdnGetAge(GenAlgAdn* that) {
   return that->_age;
 }
 
+// Return true if the GenAlgAdn 'that' is new, i.e. is age equals 1
+// Return false
+#if BUILDMODE != 0
+inline
+#endif
+bool GAAdnIsNew(GenAlgAdn* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return (that->_age == 1);
+}
+
+
 // ------------- GenAlg
 
 // ================ Functions implementation ====================
