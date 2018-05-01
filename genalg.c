@@ -620,6 +620,272 @@ float GAGetDiversity(GenAlg* that) {
   return diversity;
 }
 
+// Function which return the JSON encoding of 'that' 
+JSONNode* GAAdnEncodeAsJSON(GenAlgAdn* that, float elo) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // Create the JSON structure
+  JSONNode* json = JSONCreate();
+  // Declare a buffer to convert value into string
+  char val[100];
+  // Encode the id
+  sprintf(val, "%lu", that->_id);
+  JSONAddProp(json, "_id", val);
+  // Encode the age
+  sprintf(val, "%lu", that->_age);
+  JSONAddProp(json, "_age", val);
+  // Encode the elo
+  sprintf(val, "%f", elo);
+  JSONAddProp(json, "_elo", val);
+  // Encode the genes
+  if (that->_adnF != NULL) {
+    JSONAddProp(json, "_adnF", VecEncodeAsJSON(that->_adnF));
+    JSONAddProp(json, "_deltaAdnF", VecEncodeAsJSON(that->_deltaAdnF));
+  }
+  if (that->_adnI != NULL)
+    JSONAddProp(json, "_adnI", VecEncodeAsJSON(that->_adnI));
+  // Return the created JSON 
+  return json;
+}
+
+// Function which return the JSON encoding of 'that' 
+JSONNode* GAEncodeAsJSON(GenAlg* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // Create the JSON structure
+  JSONNode* json = JSONCreate();
+  // Declare a buffer to convert value into string
+  char val[100];
+  // Encode the nb adns
+  sprintf(val, "%d", GAGetNbAdns(that));
+  JSONAddProp(json, "_nbAdns", val);
+  // Encode the nb elites
+  sprintf(val, "%d", GAGetNbElites(that));
+  JSONAddProp(json, "_nbElites", val);
+  // Encode the length adn float
+  sprintf(val, "%d", GAGetLengthAdnFloat(that));
+  JSONAddProp(json, "_lengthAdnF", val);
+  // Encode the length adn int
+  sprintf(val, "%d", GAGetLengthAdnInt(that));
+  JSONAddProp(json, "_lengthAdnI", val);
+  // Encode the epoch
+  sprintf(val, "%lu", GAGetCurEpoch(that));
+  JSONAddProp(json, "_curEpoch", val);
+  // Encode the next id
+  sprintf(val, "%lu", that->_nextId);
+  JSONAddProp(json, "_nextId", val);
+  // Encode the bounds
+  JSONArrayStruct setBoundFloat = JSONArrayStructCreateStatic();
+  if (GAGetLengthAdnFloat(that) > 0) {
+    for (int iBound = 0; iBound < GAGetLengthAdnFloat(that); ++iBound)
+      JSONArrayStructAdd(&setBoundFloat, 
+        VecEncodeAsJSON((VecFloat*)GABoundsAdnFloat(that, iBound)));
+    JSONAddProp(json, "_boundFloat", &setBoundFloat);
+  }
+  JSONArrayStruct setBoundInt = JSONArrayStructCreateStatic();
+  if (GAGetLengthAdnInt(that) > 0) {
+    for (int iBound = 0; iBound < GAGetLengthAdnInt(that); ++iBound)
+      JSONArrayStructAdd(&setBoundInt, 
+        VecEncodeAsJSON((VecShort*)GABoundsAdnInt(that, iBound)));
+    JSONAddProp(json, "_boundInt", &setBoundInt);
+  }
+  // Save the adns
+  JSONArrayStruct setAdn = JSONArrayStructCreateStatic();
+  for (int iEnt = 0; iEnt < GAGetNbAdns(that); ++iEnt) {
+    GSetElem* setElem = GSetGetElem(GAAdns(that), iEnt);
+    GenAlgAdn* ent = (GenAlgAdn*)(setElem->_data);
+    JSONArrayStructAdd(&setAdn, 
+      GAAdnEncodeAsJSON(ent, setElem->_sortVal));
+  }
+  JSONAddProp(json, "_adns", &setAdn);
+  // Free memory
+  JSONArrayStructFlush(&setBoundFloat);
+  JSONArrayStructFlush(&setBoundInt);
+  JSONArrayStructFlush(&setAdn);
+  // Return the created JSON 
+  return json;
+}
+
+// Function which decode from JSON encoding 'json' to 'that'
+bool GAAdnDecodeAsJSON(GenAlgAdn** that, JSONNode* json) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+  if (json == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'json' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // If 'that' is already allocated
+  if (*that != NULL)
+    // Free memory
+    GenAlgAdnFree(that);
+  // Get the id from the JSON
+  JSONNode* prop = JSONProperty(json, "_id");
+  if (prop == NULL) {
+    return false;
+  }
+  int id = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+  // Get the lengthAdnF from the JSON
+  int lengthAdnF = 0;
+  prop = JSONProperty(json, "_adnF");
+  if (prop != NULL) {
+    JSONNode* subprop = JSONProperty(prop, "_dim");
+    lengthAdnF = atoi(JSONLabel(JSONValue(subprop, 0)));
+  }
+  // Get the lengthAdnF from the JSON
+  int lengthAdnI = 0;
+  prop = JSONProperty(json, "_adnI");
+  if (prop != NULL) {
+    JSONNode* subprop = JSONProperty(prop, "_dim");
+    lengthAdnI = atoi(JSONLabel(JSONValue(subprop, 0)));
+  }
+  // Allocate memory
+  *that = GenAlgAdnCreate(id, lengthAdnF, lengthAdnI);
+  // Get the age from the JSON
+  prop = JSONProperty(json, "_age");
+  if (prop == NULL) {
+    return false;
+  }
+  (*that)->_age = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+  // Get the adnF from the JSON
+  prop = JSONProperty(json, "_adnF");
+  if (prop != NULL) {
+    if (JSONGetNbValue(prop) != lengthAdnF)
+      return false;
+    if (!VecDecodeAsJSON(&((*that)->_adnF), prop))
+      return false;
+    prop = JSONProperty(json, "_deltaAdnF");
+    if (prop == NULL)
+      return false;
+    if (!VecDecodeAsJSON(&((*that)->_deltaAdnF), prop))
+      return false;
+  }
+  // Get the adnI from the JSON
+  prop = JSONProperty(json, "_adnI");
+  if (prop != NULL)
+    if (JSONGetNbValue(prop) != lengthAdnI)
+      return false;
+    if (!VecDecodeAsJSON(&((*that)->_adnI), prop))
+      return false;
+  // Return the success code
+  return true;
+}
+
+// Function which decode from JSON encoding 'json' to 'that'
+bool GADecodeAsJSON(GenAlg** that, JSONNode* json) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+  if (json == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'json' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // If 'that' is already allocated
+  if (*that != NULL)
+    // Free memory
+    GenAlgFree(that);
+  // Decode the nb adns
+  JSONNode* prop = JSONProperty(json, "_nbAdns");
+  if (prop == NULL) {
+    return false;
+  }
+  int nbAdns = atoi(JSONLabel(JSONValue(prop, 0)));
+  // Decode the nb elites
+  prop = JSONProperty(json, "_nbElites");
+  if (prop == NULL) {
+    return false;
+  }
+  int nbElites = atoi(JSONLabel(JSONValue(prop, 0)));
+  // Decode the length adn float
+  prop = JSONProperty(json, "_lengthAdnF");
+  if (prop == NULL) {
+    return false;
+  }
+  int lengthAdnF = atoi(JSONLabel(JSONValue(prop, 0)));
+  // Decode the length adn int
+  prop = JSONProperty(json, "_lengthAdnI");
+  if (prop == NULL) {
+    return false;
+  }
+  int lengthAdnI = atoi(JSONLabel(JSONValue(prop, 0)));
+  // Allocate memory
+  *that = GenAlgCreate(nbAdns, nbElites, lengthAdnF, lengthAdnI);
+  // Decode the epoch
+  prop = JSONProperty(json, "_curEpoch");
+  if (prop == NULL) {
+    return false;
+  }
+  (*that)->_curEpoch = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+  // Decode the next id
+  prop = JSONProperty(json, "_nextId");
+  if (prop == NULL) {
+    return false;
+  }
+  (*that)->_nextId = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+  // Decode the bounds
+  prop = JSONProperty(json, "_boundFloat");
+  if (prop != NULL) {
+    if (JSONGetNbValue(prop) != GAGetLengthAdnFloat(*that))
+      return false;
+    for (int iBound = 0; iBound < GAGetLengthAdnFloat(*that); ++iBound) {
+      JSONNode* val = JSONValue(prop, iBound);
+      VecFloat2D* b = NULL;
+      if (!VecDecodeAsJSON((VecFloat**)&b, val))
+        return false;
+      GASetBoundsAdnFloat(*that, iBound, b);
+      VecFree((VecFloat**)&b);
+    }
+  }
+  prop = JSONProperty(json, "_boundInt");
+  if (prop != NULL) {
+    if (JSONGetNbValue(prop) != GAGetLengthAdnInt(*that))
+      return false;
+    for (int iBound = 0; iBound < GAGetLengthAdnInt(*that); ++iBound) {
+      JSONNode* val = JSONValue(prop, iBound);
+      VecShort2D* b = NULL;
+      if (!VecDecodeAsJSON((VecShort**)&b, val))
+        return false;
+      GASetBoundsAdnInt(*that, iBound, b);
+      VecFree((VecShort**)&b);
+    }
+  }
+  // Decode the adns
+  prop = JSONProperty(json, "_adns");
+  if (prop == NULL) {
+    return false;
+  }
+  if (JSONGetNbValue(prop) != GAGetNbAdns(*that))
+    return false;
+  for (int iEnt = 0; iEnt < GAGetNbAdns(*that); ++iEnt) {
+    JSONNode* val = JSONValue(prop, iEnt);
+    GSetElem* setElem = GSetGetElem(GAAdns(*that), iEnt);
+    if (!GAAdnDecodeAsJSON((GenAlgAdn**)&(setElem->_data), val))
+      return false;
+  }
+  // Return the success code
+  return true;
+}
+
 // Load the GenAlg 'that' from the stream 'stream'
 // If the GenAlg is already allocated, it is freed before loading
 // Return true in case of success, else false
@@ -636,85 +902,27 @@ bool GALoad(GenAlg** that, FILE* stream) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  // If 'that' is already allocated
-  if (*that != NULL) {
-    // Free memory
-    GenAlgFree(that);
-  }
-  // Load the number of entity and elite, and the length of adn
-  int nbEnt, nbElite, lenAdnF, lenAdnI;
-  int ret = fscanf(stream, "%d %d %d %d", &nbEnt, &nbElite, 
-    &lenAdnF, &lenAdnI);
-  // If we couldn't fscanf
-  if (ret == EOF)
+  // Declare a json to load the encoded data
+  JSONNode* json = JSONCreate();
+  // Load the whole encoded data
+  if (!JSONLoad(json, stream)) {
     return false;
-  // Check the data
-  if (nbEnt < 3 || nbElite < 2 || lenAdnF < 0 || lenAdnI < 0)
+  }
+  // Decode the data from the JSON
+  if (!GADecodeAsJSON(that, json)) {
     return false;
-  // Allocate memory
-  *that = GenAlgCreate(nbEnt, nbElite, lenAdnF, lenAdnI);
-  // Load the epoch, nextId
-  ret = fscanf(stream, "%lu %lu", &((*that)->_curEpoch), 
-    &((*that)->_nextId));
-  // If we couldn't fscanf
-  if (ret == EOF)
-    return false;
-  // Load the bounds
-  for (int iBound = 0; iBound < lenAdnF; ++iBound) {
-    VecFloat* b = NULL;
-    if (VecLoad(&b, stream) == false)
-      return false;
-    VecCopy(GABoundsAdnFloat(*that, iBound), b);
-    VecFree(&b);
   }
-  for (int iBound = 0; iBound < lenAdnI; ++iBound) {
-    VecShort* b = NULL;
-    if (VecLoad(&b, stream) == false)
-      return false;
-    VecCopy(GABoundsAdnInt(*that, iBound), b);
-    VecFree(&b);
-  }
-  // Load the adns
-  for (int iEnt = 0; iEnt < nbEnt; ++iEnt) {
-    GSetElem* setElem = GSetGetElem(GAAdns(*that), iEnt);
-    GenAlgAdn* ent = (GenAlgAdn*)(setElem->_data);
-    // Load the id, age and elo
-    unsigned long int id, age;
-    float val;
-    int ret = fscanf(stream, "%lu %lu %f", &id, &age, &val);
-    // If we couldn't fscanf
-    if (ret == EOF)
-      return false;
-    // Set the id and elo
-    ent->_id = id;
-    ent->_age = age;
-    setElem->_sortVal = val;
-    // Load the genes
-    if (lenAdnF > 0) {
-      VecFloat* v = NULL;
-      if (VecLoad(&v, stream) == false)
-        return false;
-      VecCopy(ent->_adnF, v);
-      if (VecLoad(&v, stream) == false)
-        return false;
-      VecCopy(ent->_deltaAdnF, v);
-      VecFree(&v);
-    }
-    if (lenAdnI > 0) {
-      VecShort* v = NULL;
-      if (VecLoad(&v, stream) == false)
-        return false;
-      VecCopy(ent->_adnI, v);
-      VecFree(&v);
-    }
-  }
-  // Return success code
+  // Free the memory used by the JSON
+  JSONFree(&json);
+  // Return the success code
   return true;
 }
 
 // Save the GenAlg 'that' to the stream 'stream'
+// If 'compact' equals true it saves in compact form, else it saves in 
+// readable form
 // Return true in case of success, else false
-bool GASave(GenAlg* that, FILE* stream) {
+bool GASave(GenAlg* that, FILE* stream, bool compact) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -727,46 +935,14 @@ bool GASave(GenAlg* that, FILE* stream) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  // Save the number of entity and elite, and the length of adn
-  int ret = fprintf(stream, "%d %d %d %d\n", GAGetNbAdns(that),
-    GAGetNbElites(that), GAGetLengthAdnFloat(that), 
-    GAGetLengthAdnInt(that));
-  // If we couldn't fprintf
-  if (ret < 0)
+  // Get the JSON encoding
+  JSONNode* json = GAEncodeAsJSON(that);
+  // Save the JSON
+  if (!JSONSave(json, stream, compact)) {
     return false;
-  // Save the epoch, nextId
-  ret = fprintf(stream, "%lu %lu\n", GAGetCurEpoch(that), that->_nextId);
-  // If we couldn't fprintf
-  if (ret < 0)
-    return false;
-  // Save the bounds
-  for (int iBound = 0; iBound < GAGetLengthAdnFloat(that); ++iBound)
-    if (VecSave(GABoundsAdnFloat(that, iBound), stream) == false)
-      return false;
-  for (int iBound = 0; iBound < GAGetLengthAdnInt(that); ++iBound)
-    if (VecSave(GABoundsAdnInt(that, iBound), stream) == false)
-      return false;
-  // Save the adns
-  for (int iEnt = 0; iEnt < GAGetNbAdns(that); ++iEnt) {
-    GSetElem* setElem = GSetGetElem(GAAdns(that), iEnt);
-    GenAlgAdn* ent = (GenAlgAdn*)(setElem->_data);
-    // Save the id, age and elo
-    int ret = fprintf(stream, "%lu %lu %f\n", ent->_id, ent->_age, 
-      setElem->_sortVal);
-    // If we couldn't fprintf
-    if (ret < 0)
-      return false;
-    // Save the genes
-    if (GAGetLengthAdnFloat(that) > 0) {
-      if (VecSave(ent->_adnF, stream) == false)
-        return false;
-      if (VecSave(ent->_deltaAdnF, stream) == false)
-        return false;
-    }
-    if (GAGetLengthAdnInt(that) > 0)
-      if (VecSave(ent->_adnI, stream) == false)
-        return false;
   }
+  // Free memory
+  JSONFree(&json);
   // Return success code
   return true;
 }

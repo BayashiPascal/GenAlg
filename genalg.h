@@ -290,14 +290,22 @@ void GAPrintln(GenAlg* that, FILE* stream);
 // 0.0 means all the elite entities have exactly the same adns 
 float GAGetDiversity(GenAlg* that);
 
+// Function which return the JSON encoding of 'that' 
+JSONNode* GAEncodeAsJSON(GenAlg* that);
+
+// Function which decode from JSON encoding 'json' to 'that'
+bool GADecodeAsJSON(GenAlg** that, JSONNode* json);
+
 // Load the GenAlg 'that' from the stream 'stream'
 // If the GenAlg is already allocated, it is freed before loading
 // Return true in case of success, else false
 bool GALoad(GenAlg** that, FILE* stream);
 
 // Save the GenAlg 'that' to the stream 'stream'
+// If 'compact' equals true it saves in compact form, else it saves in 
+// readable form
 // Return true in case of success, else false
-bool GASave(GenAlg* that, FILE* stream);
+bool GASave(GenAlg* that, FILE* stream, bool compact);
 
 // Set the value of the GenAlgAdn 'adn' of the GenAlg 'that' to 'val'
 #if BUILDMODE != 0
