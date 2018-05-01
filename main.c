@@ -430,13 +430,14 @@ void UnitTestGenAlgLoadSave() {
   VecCopy(GABoundsAdnFloat(ga, 1), &boundsF);
   VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
   VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
+  GASetDiversityThreshold(ga, 0.02);
   GAInit(ga);
   GAStep(ga);
   GSet* rank = GSetCreate();
   for (int i = 3; i--;)
     GSetAddSort(rank, GAAdn(ga, i), 3.0 - (float)i);
   FILE* stream = fopen("./UnitTestGenAlgLoadSave.txt", "w");
-  if (GASave(ga, stream) == false) {
+  if (GASave(ga, stream, false) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GASave failed");
     PBErrCatch(GenAlgErr);
@@ -450,9 +451,10 @@ void UnitTestGenAlgLoadSave() {
     PBErrCatch(GenAlgErr);
   }
   fclose(stream);
-  if (ga->_nextId != gaLoad->_nextId||
+  if (ga->_nextId != gaLoad->_nextId ||
     ga->_curEpoch != gaLoad->_curEpoch ||
     ga->_nbElites != gaLoad->_nbElites ||
+    !ISEQUALF(ga->_diversityThreshold, gaLoad->_diversityThreshold) ||
     ga->_lengthAdnF != gaLoad->_lengthAdnF ||
     ga->_lengthAdnI != gaLoad->_lengthAdnI ||
     VecIsEqual(ga->_boundsF, gaLoad->_boundsF) == false ||

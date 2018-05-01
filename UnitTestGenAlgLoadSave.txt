@@ -1,4 +1,5 @@
 {
+  "_diversityThreshold":"0.020000",
   "_nbAdns":"3",
   "_nbElites":"2",
   "_lengthAdnF":"2",

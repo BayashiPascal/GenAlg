@@ -666,6 +666,9 @@ JSONNode* GAEncodeAsJSON(GenAlg* that) {
   JSONNode* json = JSONCreate();
   // Declare a buffer to convert value into string
   char val[100];
+  // Encode the diversity threshold
+  sprintf(val, "%f", GAGetDiversityThreshold(that));
+  JSONAddProp(json, "_diversityThreshold", val);
   // Encode the nb adns
   sprintf(val, "%d", GAGetNbAdns(that));
   JSONAddProp(json, "_nbAdns", val);
@@ -830,6 +833,12 @@ bool GADecodeAsJSON(GenAlg** that, JSONNode* json) {
   int lengthAdnI = atoi(JSONLabel(JSONValue(prop, 0)));
   // Allocate memory
   *that = GenAlgCreate(nbAdns, nbElites, lengthAdnF, lengthAdnI);
+  // Decode the diversity threshold
+  prop = JSONProperty(json, "_diversityThreshold");
+  if (prop == NULL) {
+    return false;
+  }
+  (*that)->_diversityThreshold = atof(JSONLabel(JSONValue(prop, 0)));
   // Decode the epoch
   prop = JSONProperty(json, "_curEpoch");
   if (prop == NULL) {
