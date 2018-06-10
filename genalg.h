@@ -157,9 +157,9 @@ typedef struct GenAlg {
   // Id of the next new GenAlgAdn
   unsigned long int _nextId;
   // Length of adn for floating point value
-  int _lengthAdnF;
+  const int _lengthAdnF;
   // Length of adn for integer value
-  int _lengthAdnI;
+  const int _lengthAdnI;
   // Bounds (min, max) for floating point values adn
   VecFloat2D* _boundsF;
   // Bounds (min, max) for integer values adn

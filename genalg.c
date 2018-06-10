@@ -158,8 +158,8 @@ GenAlg* GenAlgCreate(int nbEntities, int nbElites, int lengthAdnF,
   // Set the properties
   that->_adns = GSetCreate();
   that->_curEpoch = 0;
-  that->_lengthAdnF = lengthAdnF;
-  that->_lengthAdnI = lengthAdnI;
+  *(int*)&(that->_lengthAdnF) = lengthAdnF;
+  *(int*)&(that->_lengthAdnI) = lengthAdnI;
   if (lengthAdnF > 0) {
     that->_boundsF = 
       PBErrMalloc(GenAlgErr, sizeof(VecFloat2D) * lengthAdnF);
