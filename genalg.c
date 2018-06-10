@@ -705,10 +705,9 @@ JSONNode* GAEncodeAsJSON(GenAlg* that) {
   // Save the adns
   JSONArrayStruct setAdn = JSONArrayStructCreateStatic();
   for (int iEnt = 0; iEnt < GAGetNbAdns(that); ++iEnt) {
-    GSetElem* setElem = GSetElement(GAAdns(that), iEnt);
-    GenAlgAdn* ent = (GenAlgAdn*)(setElem->_data);
-    JSONArrayStructAdd(&setAdn, 
-      GAAdnEncodeAsJSON(ent, setElem->_sortVal));
+    GenAlgAdn* ent = GSetElemData(GSetElement(GAAdns(that), iEnt));
+    float sortVal = GSetElemGetSortVal(GSetElement(GAAdns(that), iEnt));
+    JSONArrayStructAdd(&setAdn, GAAdnEncodeAsJSON(ent, sortVal));
   }
   JSONAddProp(json, "_adns", &setAdn);
   // Free memory
@@ -887,8 +886,8 @@ bool GADecodeAsJSON(GenAlg** that, JSONNode* json) {
     return false;
   for (int iEnt = 0; iEnt < GAGetNbAdns(*that); ++iEnt) {
     JSONNode* val = JSONValue(prop, iEnt);
-    GSetElem* setElem = GSetElement(GAAdns(*that), iEnt);
-    if (!GAAdnDecodeAsJSON((GenAlgAdn**)&(setElem->_data), val))
+    GenAlgAdn* data = GSetElemData(GSetElement(GAAdns(*that), iEnt));
+    if (!GAAdnDecodeAsJSON(&data, val))
       return false;
   }
   // Return the success code

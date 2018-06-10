@@ -424,7 +424,7 @@ void GASetAdnValue(GenAlg* that, GenAlgAdn* adn, float val) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  GSetFirstElem(GAAdns(that), adn)->_sortVal = val;
+  GSetElemSetSortVal((GSetElem*)GSetFirstElem(GAAdns(that), adn), val);
 }
 
 // Return the diversity threshold of the GenAlg 'that'
