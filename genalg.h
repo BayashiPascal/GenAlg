@@ -43,8 +43,8 @@ typedef struct GenAlgAdn {
 
 // Create a new GenAlgAdn with ID 'id', 'lengthAdnF' and 'lengthAdnI'
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
-GenAlgAdn* GenAlgAdnCreate(int id, int lengthAdnF, 
-  int lengthAdnI);
+GenAlgAdn* GenAlgAdnCreate(const int id, const int lengthAdnF, 
+  const int lengthAdnI);
 
 // Free memory used by the GenAlgAdn 'that'
 void GenAlgAdnFree(GenAlgAdn** that);
@@ -53,89 +53,92 @@ void GenAlgAdnFree(GenAlgAdn** that);
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat* GAAdnAdnF(GenAlgAdn* that);
+const VecFloat* GAAdnAdnF(const GenAlgAdn* const that);
 
 // Return the delta of adn for floating point values of the 
 // GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat* GAAdnDeltaAdnF(GenAlgAdn* that);
+const VecFloat* GAAdnDeltaAdnF(const GenAlgAdn* const that);
 
 // Return the adn for integer values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-VecShort* GAAdnAdnI(GenAlgAdn* that);
+const VecShort* GAAdnAdnI(const GenAlgAdn* const that);
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga'
-void GAAdnInit(GenAlgAdn* that, GenAlg* ga);
+void GAAdnInit(const GenAlgAdn* const that, const GenAlg* ga);
 
 // Get the 'iGene'-th gene of the adn for floating point values of the
 // GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-float GAAdnGetGeneF(GenAlgAdn* that, int iGene);
+float GAAdnGetGeneF(const GenAlgAdn* const that, const int iGene);
 
 // Get the delta of the 'iGene'-th gene of the adn for floating point 
 // values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-float GAAdnGetDeltaGeneF(GenAlgAdn* that, int iGene);
+float GAAdnGetDeltaGeneF(const GenAlgAdn* const that, const int iGene);
 
 // Get the 'iGene'-th gene of the adn for int values of the
 // GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAAdnGetGeneI(GenAlgAdn* that, int iGene);
+int GAAdnGetGeneI(const GenAlgAdn* const that, const int iGene);
 
 // Set the 'iGene'-th gene of the adn for floating point values of the
 // GenAlgAdn 'that' to 'gene'
 #if BUILDMODE != 0
 inline
 #endif
-void GAAdnSetGeneF(GenAlgAdn* that, int iGene, float gene);
+void GAAdnSetGeneF(GenAlgAdn* const that, const int iGene, 
+  const float gene);
 
 // Set the delta of the 'iGene'-th gene of the adn for floating point 
 // values of the GenAlgAdn 'that' to 'delta'
 #if BUILDMODE != 0
 inline
 #endif
-void GAAdnSetDeltaGeneF(GenAlgAdn* that, int iGene, float delta);
+void GAAdnSetDeltaGeneF(GenAlgAdn* const that, const int iGene, 
+  const float delta);
 
 // Set the 'iGene'-th gene of the adn for int values of the
 // GenAlgAdn 'that'to 'gene'
 #if BUILDMODE != 0
 inline
 #endif
-void GAAdnSetGeneI(GenAlgAdn* that, int iGene, short gene);
+void GAAdnSetGeneI(GenAlgAdn* const that, const int iGene, 
+  const short gene);
 
 // Get the id of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAAdnGetId(GenAlgAdn* that);
+unsigned long int GAAdnGetId(const GenAlgAdn* const that);
 
 // Get the age of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAAdnGetAge(GenAlgAdn* that);
+unsigned long int GAAdnGetAge(const GenAlgAdn* const that);
 
 // Print the information about the GenAlgAdn 'that' on the 
 // stream 'stream'
-void GAAdnPrintln(GenAlgAdn* that, FILE* stream);
+void GAAdnPrintln(const GenAlgAdn* const that, FILE* const stream);
 
 // Return true if the GenAlgAdn 'that' is new, i.e. is age equals 1
 // Return false
 #if BUILDMODE != 0
 inline
 #endif
-bool GAAdnIsNew(GenAlgAdn* that);
+bool GAAdnIsNew(const GenAlgAdn* const that);
 
 // ------------- GenAlg
 
@@ -175,8 +178,8 @@ typedef struct GenAlg {
 // 'nbEntities' must greater than 2
 // 'nbElites' must greater than 1
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
-GenAlg* GenAlgCreate(int nbEntities, int nbElites, int lengthAdnF, 
-  int lengthAdnI);
+GenAlg* GenAlgCreate(const int nbEntities, const int nbElites, 
+  const int lengthAdnF, const int lengthAdnI);
 
 // Free memory used by the GenAlg 'that'
 void GenAlgFree(GenAlg** that);
@@ -185,133 +188,139 @@ void GenAlgFree(GenAlg** that);
 #if BUILDMODE != 0
 inline
 #endif
-GSet* GAAdns(GenAlg* that);
+GSet* GAAdns(const GenAlg* const that);
 
 // Return the nb of entities of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetNbAdns(GenAlg* that);
+int GAGetNbAdns(const GenAlg* const that);
 
 // Return the nb of elites of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetNbElites(GenAlg* that);
+int GAGetNbElites(const GenAlg* const that);
 
 // Return the diversity threshold of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-float GAGetDiversityThreshold(GenAlg* that);
+float GAGetDiversityThreshold(const GenAlg* const that);
 
 // Set the diversity threshold of the GenAlg 'that' to 'div'
 #if BUILDMODE != 0
 inline
 #endif
-void GASetDiversityThreshold(GenAlg* that, float div);
+void GASetDiversityThreshold(GenAlg* const that, const float div);
 
 // Return the current epoch of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAGetCurEpoch(GenAlg* that);
+unsigned long int GAGetCurEpoch(const GenAlg* const that);
 
 // Set the nb of entities of the GenAlg 'that' to 'nb'
 // 'nb' must be greater than 1, if 'nb' is lower than the current nb 
 // of elite the number of elite is set to 'nb' - 1
-void GASetNbEntities(GenAlg* that, int nb);
+void GASetNbEntities(GenAlg* const that, const int nb);
 
 // Set the nb of elites of the GenAlg 'that' to 'nb'
 // 'nb' must be greater than 0, if 'nb' is greater or equal to the 
 // current nb of entities the number of entities is set to 'nb' + 1
-void GASetNbElites(GenAlg* that, int nb);
+void GASetNbElites(GenAlg* const that, const int nb);
 
 // Get the length of adn for floating point value
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetLengthAdnFloat(GenAlg* that);
+int GAGetLengthAdnFloat(const GenAlg* const that);
 
 // Get the length of adn for integer value
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetLengthAdnInt(GenAlg* that);
+int GAGetLengthAdnInt(const GenAlg* const that);
 
 // Get the bounds for the 'iGene'-th gene of adn for floating point 
 // values
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat2D* GABoundsAdnFloat(GenAlg* that, int iGene);
+const VecFloat2D* GABoundsAdnFloat(const GenAlg* const that, 
+  const int iGene);
 
 // Get the bounds for the 'iGene'-th gene of adn for integer values
 #if BUILDMODE != 0
 inline
 #endif
-VecShort2D* GABoundsAdnInt(GenAlg* that, int iGene);
+const VecShort2D* GABoundsAdnInt(const GenAlg* const that, 
+  const int iGene);
 
 // Set the bounds for the 'iGene'-th gene of adn for floating point 
 // values to a copy of 'bounds'
 #if BUILDMODE != 0
 inline
 #endif
-void GASetBoundsAdnFloat(GenAlg* that, int iGene, VecFloat2D* bounds);
+void GASetBoundsAdnFloat(GenAlg* const that, const int iGene, 
+  const VecFloat2D* const bounds);
 
 // Set the bounds for the 'iGene'-th gene of adn for integer values
 // to a copy of 'bounds'
 #if BUILDMODE != 0
 inline
 #endif
-void GASetBoundsAdnInt(GenAlg* that, int iGene, VecShort2D* bounds);
+void GASetBoundsAdnInt(GenAlg* const that, const int iGene, 
+  const VecShort2D* bounds);
 
 // Get the GenAlgAdn of the GenAlg 'that' currently at rank 'iRank'
 #if BUILDMODE != 0
 inline
 #endif
-GenAlgAdn* GAAdn(GenAlg* that, int iRank);
+GenAlgAdn* GAAdn(const GenAlg* const that, const int iRank);
 
 // Init the GenAlg 'that'
 // Must be called after the bounds have been set
 // The random generator must have been initialised before calling this
 // function
-void GAInit(GenAlg* that);
+void GAInit(GenAlg* const that);
 
 // Step an epoch for the GenAlg 'that' with the current ranking of
 // GenAlgAdn
-void GAStep(GenAlg* that); 
+void GAStep(GenAlg* const that); 
 
 // Print the information about the GenAlg 'that' on the stream 'stream'
-void GAPrintln(GenAlg* that, FILE* stream);
+void GAPrintln(const GenAlg* const that, FILE* const stream);
 
 // Get the level of diversity of curent entities of the GenAlg 'that'
 // The return value is in [0.0, 1.0]
 // 0.0 means all the elite entities have exactly the same adns 
-float GAGetDiversity(GenAlg* that);
+float GAGetDiversity(const GenAlg* const that);
 
 // Function which return the JSON encoding of 'that' 
-JSONNode* GAEncodeAsJSON(GenAlg* that);
+JSONNode* GAEncodeAsJSON(const GenAlg* const that);
 
 // Function which decode from JSON encoding 'json' to 'that'
-bool GADecodeAsJSON(GenAlg** that, JSONNode* json);
+bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json);
 
 // Load the GenAlg 'that' from the stream 'stream'
 // If the GenAlg is already allocated, it is freed before loading
 // Return true in case of success, else false
-bool GALoad(GenAlg** that, FILE* stream);
+bool GALoad(GenAlg** that, FILE* const stream);
 
 // Save the GenAlg 'that' to the stream 'stream'
 // If 'compact' equals true it saves in compact form, else it saves in 
 // readable form
 // Return true in case of success, else false
-bool GASave(GenAlg* that, FILE* stream, bool compact);
+bool GASave(const GenAlg* const that, FILE* const stream, 
+  const bool compact);
 
 // Set the value of the GenAlgAdn 'adn' of the GenAlg 'that' to 'val'
 #if BUILDMODE != 0
 inline
 #endif
-void GASetAdnValue(GenAlg* that, GenAlgAdn* adn, float val);
+void GASetAdnValue(GenAlg* const that, const GenAlgAdn* const adn, 
+  const float val);
 
 // ================= Polymorphism ==================
 

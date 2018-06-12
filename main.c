@@ -122,10 +122,10 @@ void UnitTestGenAlgAdnInit() {
   VecShort2D boundsI = VecShortCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
-  VecCopy(GABoundsAdnFloat(ga, 0), &boundsF);
-  VecCopy(GABoundsAdnFloat(ga, 1), &boundsF);
-  VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
-  VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
+  GASetBoundsAdnFloat(ga, 0, &boundsF);
+  GASetBoundsAdnFloat(ga, 1, &boundsF);
+  GASetBoundsAdnInt(ga, 0, &boundsI);
+  GASetBoundsAdnInt(ga, 1, &boundsI);
   GAAdnInit(ent, ga);
   if (ISEQUALF(VecGet(ent->_adnF, 0), -0.907064) == false ||
     ISEQUALF(VecGet(ent->_adnF, 1), -0.450509) == false ||
@@ -282,10 +282,10 @@ void UnitTestGenAlgInit() {
   VecShort2D boundsI = VecShortCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
-  VecCopy(GABoundsAdnFloat(ga, 0), &boundsF);
-  VecCopy(GABoundsAdnFloat(ga, 1), &boundsF);
-  VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
-  VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
+  GASetBoundsAdnFloat(ga, 0, &boundsF);
+  GASetBoundsAdnFloat(ga, 1, &boundsF);
+  GASetBoundsAdnInt(ga, 0, &boundsI);
+  GASetBoundsAdnInt(ga, 1, &boundsI);
   GAInit(ga);
   GenAlgAdn* ent = (GenAlgAdn*)(GAAdns(ga)->_head->_data);
   if (ISEQUALF(VecGet(ent->_adnF, 0), -0.907064) == false ||
@@ -309,10 +309,10 @@ void UnitTestGenAlgPrint() {
   VecShort2D boundsI = VecShortCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
-  VecCopy(GABoundsAdnFloat(ga, 0), &boundsF);
-  VecCopy(GABoundsAdnFloat(ga, 1), &boundsF);
-  VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
-  VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
+  GASetBoundsAdnFloat(ga, 0, &boundsF);
+  GASetBoundsAdnFloat(ga, 1, &boundsF);
+  GASetBoundsAdnInt(ga, 0, &boundsI);
+  GASetBoundsAdnInt(ga, 1, &boundsI);
   GAInit(ga);
   GAPrintln(ga, stdout);
   GenAlgFree(&ga);
@@ -329,10 +329,10 @@ void UnitTestGenAlgGetDiversity() {
   VecShort2D boundsI = VecShortCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
-  VecCopy(GABoundsAdnFloat(ga, 0), &boundsF);
-  VecCopy(GABoundsAdnFloat(ga, 1), &boundsF);
-  VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
-  VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
+  GASetBoundsAdnFloat(ga, 0, &boundsF);
+  GASetBoundsAdnFloat(ga, 1, &boundsF);
+  GASetBoundsAdnInt(ga, 0, &boundsI);
+  GASetBoundsAdnInt(ga, 1, &boundsI);
   GASetNbElites(ga, 2);
   GASetNbEntities(ga, 3);
   GAInit(ga);
@@ -361,10 +361,10 @@ void UnitTestGenAlgStep() {
   VecShort2D boundsI = VecShortCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
-  VecCopy(GABoundsAdnFloat(ga, 0), &boundsF);
-  VecCopy(GABoundsAdnFloat(ga, 1), &boundsF);
-  VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
-  VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
+  GASetBoundsAdnFloat(ga, 0, &boundsF);
+  GASetBoundsAdnFloat(ga, 1, &boundsF);
+  GASetBoundsAdnInt(ga, 0, &boundsI);
+  GASetBoundsAdnInt(ga, 1, &boundsI);
   GAInit(ga);
   for (int i = 3; i--;)
     GASetAdnValue(ga, GAAdn(ga, i), 3.0 - (float)i);
@@ -426,10 +426,10 @@ void UnitTestGenAlgLoadSave() {
   VecShort2D boundsI = VecShortCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
-  VecCopy(GABoundsAdnFloat(ga, 0), &boundsF);
-  VecCopy(GABoundsAdnFloat(ga, 1), &boundsF);
-  VecCopy(GABoundsAdnInt(ga, 0), &boundsI);
-  VecCopy(GABoundsAdnInt(ga, 1), &boundsI);
+  GASetBoundsAdnFloat(ga, 0, &boundsF);
+  GASetBoundsAdnFloat(ga, 1, &boundsF);
+  GASetBoundsAdnInt(ga, 0, &boundsI);
+  GASetBoundsAdnInt(ga, 1, &boundsI);
   GASetDiversityThreshold(ga, 0.02);
   GAInit(ga);
   GAStep(ga);
@@ -499,7 +499,7 @@ float ftarget(float x) {
   return -0.5 * fastpow(x, 3) + 0.314 * fastpow(x, 2) - 0.7777 * x + 0.1;
 }
 
-float evaluate(VecFloat* adnF, VecShort* adnI) {
+float evaluate(const VecFloat* adnF, const VecShort* adnI) {
   float delta = 0.02;
   int nb = (int)round(4.0 / delta);
   float res = 0.0;
@@ -524,8 +524,8 @@ void UnitTestGenAlgTest() {
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 0); VecSet(&boundsI, 1, 4);
   for (int i = lengthAdnF; i--;) {
-    VecCopy(GABoundsAdnFloat(ga, i), &boundsF);
-    VecCopy(GABoundsAdnInt(ga, i), &boundsI);
+    GASetBoundsAdnFloat(ga, i, &boundsF);
+    GASetBoundsAdnInt(ga, i, &boundsI);
   }
   GAInit(ga);
 //float best = 1.0;

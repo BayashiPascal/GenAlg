@@ -15,8 +15,8 @@
 
 // Create a new GenAlgAdn with ID 'id', 'lengthAdnF' and 'lengthAdnI'
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
-GenAlgAdn* GenAlgAdnCreate(int id, int lengthAdnF, 
-  int lengthAdnI) {
+GenAlgAdn* GenAlgAdnCreate(const int id, const int lengthAdnF, 
+  const int lengthAdnI) {
 #if BUILDMODE == 0
   if (lengthAdnF < 0) {
     GenAlgErr->_type = PBErrTypeInvalidArg;
@@ -69,7 +69,7 @@ void GenAlgAdnFree(GenAlgAdn** that) {
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga'
-void GAAdnInit(GenAlgAdn* that, GenAlg* ga) {
+void GAAdnInit(const GenAlgAdn* const that, const GenAlg* const ga) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -95,7 +95,7 @@ void GAAdnInit(GenAlgAdn* that, GenAlg* ga) {
 
 // Print the information about the GenAlgAdn 'that' on the 
 // stream 'stream'
-void GAAdnPrintln(GenAlgAdn* that, FILE* stream) {
+void GAAdnPrintln(const GenAlgAdn* const that, FILE* const stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -127,22 +127,24 @@ void GAAdnPrintln(GenAlgAdn* that, FILE* stream) {
 
 // Select the rank of two parents for the SRM algorithm
 // Return the ranks in 'parents', with parents[0] <= parents[1]
-void GASelectParents(GenAlg* that, int* parents);
+void GASelectParents(const GenAlg* const that, int* const parents);
 
 // Set the genes of the entity at rank 'iChild' as a 50/50 mix of the 
 // genes of entities at ranks 'parents[0]' and 'parents[1]'
-void GAReproduction(GenAlg* that, int* parents, int iChild);
+void GAReproduction(GenAlg* const that, const int* const parents, 
+  const int iChild);
 
 // Mute the genes of the entity at rank 'iChild'
 // The probability of mutation for one gene is equal to 
 // 'rankChild'/'that'->_nbEntities
 // The amplitude of the mutation
 // is equal to (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
-void GAMute(GenAlg* that, int* parents, int iChild);
+void GAMute(GenAlg* const that, const int* const parents, 
+  const int iChild);
 
 // Reset the GenAlg 'that'
 // Randomize all the gene except those of the first adn
-void GAKTEvent(GenAlg* that);
+void GAKTEvent(GenAlg* const that);
 
 // ================ Functions implementation ====================
 
@@ -151,8 +153,8 @@ void GAKTEvent(GenAlg* that);
 // 'nbEntities' must greater than 2
 // 'nbElites' must greater than 1
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
-GenAlg* GenAlgCreate(int nbEntities, int nbElites, int lengthAdnF, 
-  int lengthAdnI) {
+GenAlg* GenAlgCreate(const int nbEntities, const int nbElites, 
+  const int lengthAdnF, const int lengthAdnI) {
   // Allocate memory
   GenAlg* that = PBErrMalloc(GenAlgErr, sizeof(GenAlg));
   // Set the properties
@@ -206,7 +208,7 @@ void GenAlgFree(GenAlg** that) {
 // Set the nb of entities of the GenAlg 'that' to 'nb'
 // 'nb' must be greater than 1, if 'nb' is lower than the current nb 
 // of elite the number of elite is set to 'nb' - 1
-void GASetNbEntities(GenAlg* that, int nb) {
+void GASetNbEntities(GenAlg* const that, const int nb) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -235,7 +237,7 @@ void GASetNbEntities(GenAlg* that, int nb) {
 // Set the nb of elites of the GenAlg 'that' to 'nb'
 // 'nb' must be greater than 0, if 'nb' is greater or equal to the 
 // current nb of entities the number of entities is set to 'nb' + 1
-void GASetNbElites(GenAlg* that, int nb) {
+void GASetNbElites(GenAlg* const that, const int nb) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -257,7 +259,7 @@ void GASetNbElites(GenAlg* that, int nb) {
 // Must be called after the bounds have been set
 // The random generator must have been initialised before calling this
 // function
-void GAInit(GenAlg* that) {
+void GAInit(GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -277,7 +279,7 @@ void GAInit(GenAlg* that) {
 
 // Reset the GenAlg 'that'
 // Randomize all the gene except those of the best adn
-void GAKTEvent(GenAlg* that) {
+void GAKTEvent(GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -302,7 +304,7 @@ void GAKTEvent(GenAlg* that) {
 
 // Step an epoch for the GenAlg 'that' with the current ranking of
 // GenAlgAdn
-void GAStep(GenAlg* that) {
+void GAStep(GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -346,7 +348,7 @@ void GAStep(GenAlg* that) {
 
 // Select the rank of two parents for the SRM algorithm
 // Return the ranks in 'parents', with parents[0] <= parents[1]
-void GASelectParents(GenAlg* that, int* parents) {
+void GASelectParents(const GenAlg* const that, int* const parents) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -379,7 +381,8 @@ void GASelectParents(GenAlg* that, int* parents) {
 
 // Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
 // genes of adns at ranks 'parents[0]' and 'parents[1]'
-void GAReproduction(GenAlg* that, int* parents, int iChild) {
+void GAReproduction(GenAlg* const that, const int* const parents, 
+  const int iChild) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -434,7 +437,8 @@ void GAReproduction(GenAlg* that, int* parents, int iChild) {
 // 'rankChild'/'that'->_nbEntities
 // The amplitude of the mutation
 // is equal to (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
-void GAMute(GenAlg* that, int* parents, int iChild) {
+void GAMute(GenAlg* const that, const int* const parents, 
+  const int iChild) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -464,7 +468,7 @@ void GAMute(GenAlg* that, int* parents, int iChild) {
     // If this gene mutes
     if (rnd() < probMute) {
       // Get the bounds
-      VecFloat2D* bounds = GABoundsAdnFloat(that, iGene);
+      const VecFloat2D* const bounds = GABoundsAdnFloat(that, iGene);
       // Declare a variable to memorize the previous value of the gene
       float prevVal = GAAdnGetGeneF(child, iGene);
       // Apply the mutation
@@ -491,7 +495,7 @@ void GAMute(GenAlg* that, int* parents, int iChild) {
     // If this gene mutes
     if (rnd() < probMute) {
       // Get the bounds
-      VecShort2D* boundsI = GABoundsAdnInt(that, iGene);
+      const VecShort2D* const boundsI = GABoundsAdnInt(that, iGene);
       VecFloat2D bounds = VecShortToFloat2D(boundsI);
       // Apply the mutation (as it is int value, ensure the amplitude
       // is big enough to have an effect
@@ -514,7 +518,7 @@ void GAMute(GenAlg* that, int* parents, int iChild) {
 }
 
 // Print the information about the GenAlg 'that' on the stream 'stream'
-void GAPrintln(GenAlg* that, FILE* stream) {
+void GAPrintln(const GenAlg* const that, FILE* const stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -546,7 +550,7 @@ void GAPrintln(GenAlg* that, FILE* stream) {
 // Get the level of diversity of curent entities of the GenAlg 'that'
 // The return value is in [0.0, 1.0]
 // 0.0 means all the elite entities have exactly the same adns 
-float GAGetDiversity(GenAlg* that) {
+float GAGetDiversity(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -621,7 +625,8 @@ float GAGetDiversity(GenAlg* that) {
 }
 
 // Function which return the JSON encoding of 'that' 
-JSONNode* GAAdnEncodeAsJSON(GenAlgAdn* that, float elo) {
+JSONNode* GAAdnEncodeAsJSON(const GenAlgAdn* const that, 
+  const float elo) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -654,7 +659,7 @@ JSONNode* GAAdnEncodeAsJSON(GenAlgAdn* that, float elo) {
 }
 
 // Function which return the JSON encoding of 'that' 
-JSONNode* GAEncodeAsJSON(GenAlg* that) {
+JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -719,7 +724,7 @@ JSONNode* GAEncodeAsJSON(GenAlg* that) {
 }
 
 // Function which decode from JSON encoding 'json' to 'that'
-bool GAAdnDecodeAsJSON(GenAlgAdn** that, JSONNode* json) {
+bool GAAdnDecodeAsJSON(GenAlgAdn** that, const JSONNode* const json) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -789,7 +794,7 @@ bool GAAdnDecodeAsJSON(GenAlgAdn** that, JSONNode* json) {
 }
 
 // Function which decode from JSON encoding 'json' to 'that'
-bool GADecodeAsJSON(GenAlg** that, JSONNode* json) {
+bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
 #if BUILDMODE == 0
   if (that == NULL) {
     PBMathErr->_type = PBErrTypeNullPointer;
@@ -897,7 +902,7 @@ bool GADecodeAsJSON(GenAlg** that, JSONNode* json) {
 // Load the GenAlg 'that' from the stream 'stream'
 // If the GenAlg is already allocated, it is freed before loading
 // Return true in case of success, else false
-bool GALoad(GenAlg** that, FILE* stream) {
+bool GALoad(GenAlg** that, FILE* const stream) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -930,7 +935,8 @@ bool GALoad(GenAlg** that, FILE* stream) {
 // If 'compact' equals true it saves in compact form, else it saves in 
 // readable form
 // Return true in case of success, else false
-bool GASave(GenAlg* that, FILE* stream, bool compact) {
+bool GASave(const GenAlg* const that, FILE* const stream, 
+  const bool compact) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;

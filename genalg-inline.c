@@ -8,7 +8,7 @@
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat* GAAdnAdnF(GenAlgAdn* that) {
+const VecFloat* GAAdnAdnF(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -24,7 +24,7 @@ VecFloat* GAAdnAdnF(GenAlgAdn* that) {
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat* GAAdnDeltaAdnF(GenAlgAdn* that) {
+const VecFloat* GAAdnDeltaAdnF(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -39,7 +39,7 @@ VecFloat* GAAdnDeltaAdnF(GenAlgAdn* that) {
 #if BUILDMODE != 0
 inline
 #endif
-VecShort* GAAdnAdnI(GenAlgAdn* that) {
+const VecShort* GAAdnAdnI(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -55,7 +55,7 @@ VecShort* GAAdnAdnI(GenAlgAdn* that) {
 #if BUILDMODE != 0
 inline
 #endif
-float GAAdnGetGeneF(GenAlgAdn* that, int iGene) {
+float GAAdnGetGeneF(const GenAlgAdn* const that, const int iGene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -71,7 +71,7 @@ float GAAdnGetGeneF(GenAlgAdn* that, int iGene) {
 #if BUILDMODE != 0
 inline
 #endif
-float GAAdnGetDeltaGeneF(GenAlgAdn* that, int iGene) {
+float GAAdnGetDeltaGeneF(const GenAlgAdn* const that, const int iGene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -87,7 +87,7 @@ float GAAdnGetDeltaGeneF(GenAlgAdn* that, int iGene) {
 #if BUILDMODE != 0
 inline
 #endif
-int GAAdnGetGeneI(GenAlgAdn* that, int iGene) {
+int GAAdnGetGeneI(const GenAlgAdn* const that, const int iGene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -103,7 +103,8 @@ int GAAdnGetGeneI(GenAlgAdn* that, int iGene) {
 #if BUILDMODE != 0
 inline
 #endif
-void GAAdnSetGeneF(GenAlgAdn* that, int iGene, float gene) {
+void GAAdnSetGeneF(GenAlgAdn* const that, const int iGene, 
+  const float gene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -119,7 +120,8 @@ void GAAdnSetGeneF(GenAlgAdn* that, int iGene, float gene) {
 #if BUILDMODE != 0
 inline
 #endif
-void GAAdnSetDeltaGeneF(GenAlgAdn* that, int iGene, float delta) {
+void GAAdnSetDeltaGeneF(GenAlgAdn* const that, const int iGene, 
+  const float delta) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -135,7 +137,8 @@ void GAAdnSetDeltaGeneF(GenAlgAdn* that, int iGene, float delta) {
 #if BUILDMODE != 0
 inline
 #endif
-void GAAdnSetGeneI(GenAlgAdn* that, int iGene, short gene) {
+void GAAdnSetGeneI(GenAlgAdn* const that, const int iGene, 
+  const short gene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -150,7 +153,7 @@ void GAAdnSetGeneI(GenAlgAdn* that, int iGene, short gene) {
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAAdnGetId(GenAlgAdn* that) {
+unsigned long int GAAdnGetId(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -165,7 +168,7 @@ unsigned long int GAAdnGetId(GenAlgAdn* that) {
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAAdnGetAge(GenAlgAdn* that) {
+unsigned long int GAAdnGetAge(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -181,7 +184,7 @@ unsigned long int GAAdnGetAge(GenAlgAdn* that) {
 #if BUILDMODE != 0
 inline
 #endif
-bool GAAdnIsNew(GenAlgAdn* that) {
+bool GAAdnIsNew(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -201,7 +204,7 @@ bool GAAdnIsNew(GenAlgAdn* that) {
 #if BUILDMODE != 0
 inline
 #endif
-GSet* GAAdns(GenAlg* that) {
+GSet* GAAdns(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -216,7 +219,7 @@ GSet* GAAdns(GenAlg* that) {
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetNbAdns(GenAlg* that) {
+int GAGetNbAdns(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -231,7 +234,7 @@ int GAGetNbAdns(GenAlg* that) {
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetNbElites(GenAlg* that) {
+int GAGetNbElites(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -246,7 +249,7 @@ int GAGetNbElites(GenAlg* that) {
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAGetCurEpoch(GenAlg* that) {
+unsigned long int GAGetCurEpoch(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -261,7 +264,7 @@ unsigned long int GAGetCurEpoch(GenAlg* that) {
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetLengthAdnFloat(GenAlg* that) {
+int GAGetLengthAdnFloat(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -276,7 +279,7 @@ int GAGetLengthAdnFloat(GenAlg* that) {
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetLengthAdnInt(GenAlg* that) {
+int GAGetLengthAdnInt(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -292,7 +295,8 @@ int GAGetLengthAdnInt(GenAlg* that) {
 #if BUILDMODE != 0
 inline
 #endif
-void GASetBoundsAdnFloat(GenAlg* that, int iGene, VecFloat2D* bounds) {
+void GASetBoundsAdnFloat(GenAlg* const that, const int iGene, 
+  const VecFloat2D* const bounds) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -319,7 +323,8 @@ void GASetBoundsAdnFloat(GenAlg* that, int iGene, VecFloat2D* bounds) {
 #if BUILDMODE != 0
 inline
 #endif
-void GASetBoundsAdnInt(GenAlg* that, int iGene, VecShort2D* bounds) {
+void GASetBoundsAdnInt(GenAlg* const that, const int iGene, 
+  const VecShort2D* const bounds) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -346,7 +351,8 @@ void GASetBoundsAdnInt(GenAlg* that, int iGene, VecShort2D* bounds) {
 #if BUILDMODE != 0
 inline
 #endif
-VecFloat2D* GABoundsAdnFloat(GenAlg* that, int iGene) {
+const VecFloat2D* GABoundsAdnFloat(const GenAlg* const that, 
+  const int iGene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -367,7 +373,8 @@ VecFloat2D* GABoundsAdnFloat(GenAlg* that, int iGene) {
 #if BUILDMODE != 0
 inline
 #endif
-VecShort2D* GABoundsAdnInt(GenAlg* that, int iGene) {
+const VecShort2D* GABoundsAdnInt(const GenAlg* const that, 
+  const int iGene) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -389,7 +396,7 @@ VecShort2D* GABoundsAdnInt(GenAlg* that, int iGene) {
 #if BUILDMODE != 0
 inline
 #endif
-GenAlgAdn* GAAdn(GenAlg* that, int iRank) {
+GenAlgAdn* GAAdn(const GenAlg* const that, const int iRank) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -411,7 +418,8 @@ GenAlgAdn* GAAdn(GenAlg* that, int iRank) {
 #if BUILDMODE != 0
 inline
 #endif
-void GASetAdnValue(GenAlg* that, GenAlgAdn* adn, float val) {
+void GASetAdnValue(GenAlg* const that, const GenAlgAdn* const adn, 
+  const float val) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -431,7 +439,7 @@ void GASetAdnValue(GenAlg* that, GenAlgAdn* adn, float val) {
 #if BUILDMODE != 0
 inline
 #endif
-float GAGetDiversityThreshold(GenAlg* that) {
+float GAGetDiversityThreshold(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -446,7 +454,7 @@ float GAGetDiversityThreshold(GenAlg* that) {
 #if BUILDMODE != 0
 inline
 #endif
-void GASetDiversityThreshold(GenAlg* that, float div) {
+void GASetDiversityThreshold(GenAlg* const that, const float div) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
