@@ -570,29 +570,35 @@ void GAUpdateNormRange(GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  // Declare a vector to memorize the ranges in float gene values
-  VecFloat* range = VecFloatCreate(GAGetLengthAdnFloat(that)); 
-  // Calculate the ranges in gene values
-  for (int iGene = GAGetLengthAdnFloat(that); iGene--;)
-    VecSet(range, iGene, 
-      VecGet(GABoundsAdnFloat(that, iGene), 1) - 
-      VecGet(GABoundsAdnFloat(that, iGene), 0));
-  // Calculate the norm of the range
-  that->_normRangeFloat = VecNorm(range);
-  // Free memory
-  VecFree(&range);
+  // If there are float adn
+  if (GAGetLengthAdnFloat(that) > 0) {
+    // Declare a vector to memorize the ranges in float gene values
+    VecFloat* range = VecFloatCreate(GAGetLengthAdnFloat(that)); 
+    // Calculate the ranges in gene values
+    for (int iGene = GAGetLengthAdnFloat(that); iGene--;)
+      VecSet(range, iGene, 
+        VecGet(GABoundsAdnFloat(that, iGene), 1) - 
+        VecGet(GABoundsAdnFloat(that, iGene), 0));
+    // Calculate the norm of the range
+    that->_normRangeFloat = VecNorm(range);
+    // Free memory
+    VecFree(&range);
+  }
 
-  // Declare a vector to memorize the ranges in int gene values
-  range = VecFloatCreate(GAGetLengthAdnInt(that)); 
-  // Calculate the ranges in gene values
-  for (int iGene = GAGetLengthAdnInt(that); iGene--;)
-    VecSet(range, iGene, 
-      VecGet(GABoundsAdnInt(that, iGene), 1) - 
-      VecGet(GABoundsAdnInt(that, iGene), 0));
-  // Calculate the norm of the range
-  that->_normRangeInt = VecNorm(range);
-  // Free memory
-  VecFree(&range);
+  // If there are int adn
+  if (GAGetLengthAdnInt(that) > 0) {
+    // Declare a vector to memorize the ranges in int gene values
+    VecFloat* range = VecFloatCreate(GAGetLengthAdnInt(that)); 
+    // Calculate the ranges in gene values
+    for (int iGene = GAGetLengthAdnInt(that); iGene--;)
+      VecSet(range, iGene, 
+        VecGet(GABoundsAdnInt(that, iGene), 1) - 
+        VecGet(GABoundsAdnInt(that, iGene), 0));
+    // Calculate the norm of the range
+    that->_normRangeInt = VecNorm(range);
+    // Free memory
+    VecFree(&range);
+  }
 }
 
 
@@ -803,7 +809,7 @@ bool GAAdnDecodeAsJSON(GenAlgAdn** that, const JSONNode* const json) {
     JSONNode* subprop = JSONProperty(prop, "_dim");
     lengthAdnF = atoi(JSONLabel(JSONValue(subprop, 0)));
   }
-  // Get the lengthAdnF from the JSON
+  // Get the lengthAdnI from the JSON
   int lengthAdnI = 0;
   prop = JSONProperty(json, "_adnI");
   if (prop != NULL) {
@@ -821,23 +827,23 @@ bool GAAdnDecodeAsJSON(GenAlgAdn** that, const JSONNode* const json) {
   // Get the adnF from the JSON
   prop = JSONProperty(json, "_adnF");
   if (prop != NULL) {
-    if (JSONGetNbValue(prop) != lengthAdnF)
+    if (!VecDecodeAsJSON(&((*that)->_adnF), prop)) {
       return false;
-    if (!VecDecodeAsJSON(&((*that)->_adnF), prop))
-      return false;
+    }
     prop = JSONProperty(json, "_deltaAdnF");
-    if (prop == NULL)
+    if (prop == NULL) {
       return false;
-    if (!VecDecodeAsJSON(&((*that)->_deltaAdnF), prop))
+    }
+    if (!VecDecodeAsJSON(&((*that)->_deltaAdnF), prop)) {
       return false;
+    }
   }
   // Get the adnI from the JSON
   prop = JSONProperty(json, "_adnI");
   if (prop != NULL)
-    if (JSONGetNbValue(prop) != lengthAdnI)
+    if (!VecDecodeAsJSON(&((*that)->_adnI), prop)) {
       return false;
-    if (!VecDecodeAsJSON(&((*that)->_adnI), prop))
-      return false;
+    }
   // Return the success code
   return true;
 }
@@ -897,7 +903,8 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  (*that)->_curEpoch = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+  (*that)->_curEpoch = 
+    strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
   // Decode the next id
   prop = JSONProperty(json, "_nextId");
   if (prop == NULL) {
@@ -912,8 +919,9 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
     for (int iBound = 0; iBound < GAGetLengthAdnFloat(*that); ++iBound) {
       JSONNode* val = JSONValue(prop, iBound);
       VecFloat2D* b = NULL;
-      if (!VecDecodeAsJSON((VecFloat**)&b, val))
+      if (!VecDecodeAsJSON((VecFloat**)&b, val)) {
         return false;
+      }
       GASetBoundsAdnFloat(*that, iBound, b);
       VecFree((VecFloat**)&b);
     }
@@ -925,8 +933,9 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
     for (int iBound = 0; iBound < GAGetLengthAdnInt(*that); ++iBound) {
       JSONNode* val = JSONValue(prop, iBound);
       VecShort2D* b = NULL;
-      if (!VecDecodeAsJSON((VecShort**)&b, val))
+      if (!VecDecodeAsJSON((VecShort**)&b, val)) {
         return false;
+      }
       GASetBoundsAdnInt(*that, iBound, b);
       VecFree((VecShort**)&b);
     }
@@ -943,8 +952,9 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   for (int iEnt = 0; iEnt < GAGetNbAdns(*that); ++iEnt) {
     JSONNode* val = JSONValue(prop, iEnt);
     GenAlgAdn* data = GSetElemData(GSetElement(GAAdns(*that), iEnt));
-    if (!GAAdnDecodeAsJSON(&data, val))
+    if (!GAAdnDecodeAsJSON(&data, val)) {
       return false;
+    }
   }
   // Return the success code
   return true;
