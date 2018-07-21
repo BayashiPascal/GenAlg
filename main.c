@@ -336,7 +336,7 @@ void UnitTestGenAlgGetDiversity() {
   GASetNbElites(ga, 2);
   GASetNbEntities(ga, 3);
   GAInit(ga);
-  if (ISEQUALF(GAGetDiversity(ga), 0.182041) == false) {
+  if (ISEQUALF(GAGetDiversity(ga), 0.455102) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAGetDiversity failed");
     PBErrCatch(GenAlgErr);
@@ -387,28 +387,6 @@ void UnitTestGenAlgStep() {
     GAAdnGetAge(GAAdn(ga, 1)) != 2 ||
     GAAdnGetId(GAAdn(ga, 0)) != 0 ||
     GAAdnGetId(GAAdn(ga, 1)) != 1) {
-    GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAStep failed");
-    PBErrCatch(GenAlgErr);
-  }
-  VecCopy(GAAdn(ga, 1)->_adnF, GAAdn(ga, 0)->_adnF);
-  VecCopy(GAAdn(ga, 1)->_adnI, GAAdn(ga, 0)->_adnI);
-  GAStep(ga);
-  printf("After StepEpoch with interbreeding:\n");
-  GAPrintln(ga, stdout);
-  if (ga->_nextId != 6 || GAAdnGetId(child) != 5 || 
-    GAAdnGetAge(child) != 1 ||
-    ISEQUALF(GAAdnGetGeneF(child, 0), 0.289982) == false ||
-    ISEQUALF(GAAdnGetGeneF(child, 1), -0.910199) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.081678) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.0) == false ||
-    GAAdnGetGeneI(child, 0) != 9 ||
-    GAAdnGetGeneI(child, 1) != 8 ||
-    GAAdn(ga, 2) != child ||
-    GAAdnGetAge(GAAdn(ga, 0)) != 2 ||
-    GAAdnGetAge(GAAdn(ga, 1)) != 1 ||
-    GAAdnGetId(GAAdn(ga, 0)) != 0 ||
-    GAAdnGetId(GAAdn(ga, 1)) != 4) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAStep failed");
     PBErrCatch(GenAlgErr);
@@ -528,11 +506,12 @@ void UnitTestGenAlgTest() {
     GASetBoundsAdnInt(ga, i, &boundsI);
   }
   GAInit(ga);
+  //GASetDiversityThreshold(ga, 0.0);
 //float best = 1.0;
 //int step = 0;
-/*float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
-printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));*/
   do {
+//float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
+//printf("%lu %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));
     for (int iEnt = GAGetNbAdns(ga); iEnt--;)
       if (GAAdnIsNew(GAAdn(ga, iEnt)))
         GASetAdnValue(ga, GAAdn(ga, iEnt), 
@@ -546,7 +525,7 @@ printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));*/
 //} else step++;
 /*if (best - ev > PBMATH_EPSILON) {
   best = ev;
-  printf("%d %f ", GAGetCurEpoch(ga), best);
+  printf("%lu %f ", GAGetCurEpoch(ga), best);
   VecFloatPrint(GABestAdnF(ga), stdout, 6);
   printf(" ");
   VecPrint(GABestAdnI(ga), stdout);

@@ -33,7 +33,7 @@ typedef struct GenAlgAdn {
   unsigned long int _age;
   // Adn for floating point value
   VecFloat* _adnF;
-  // Delta Adn during mutation
+  // Delta Adn during mutation for floating point value
   VecFloat* _deltaAdnF;
   // Adn for integer point value
   VecShort* _adnI;
@@ -169,6 +169,10 @@ typedef struct GenAlg {
   VecShort2D* _boundsI;
   // Diversity threshold for KTEvent
   float _diversityThreshold;
+  // Norm of the range value for adns (optimization for diversity
+  // calculation)
+  float _normRangeFloat;
+  float _normRangeInt;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -292,9 +296,12 @@ void GAStep(GenAlg* const that);
 // Print the information about the GenAlg 'that' on the stream 'stream'
 void GAPrintln(const GenAlg* const that, FILE* const stream);
 
-// Get the level of diversity of curent entities of the GenAlg 'that'
+// Get the average diversity of current entities of the GenAlg 'that'
 // The return value is in [0.0, 1.0]
 // 0.0 means all the elite entities have exactly the same adns 
+// 1.0 means all the elite entities except the first one have adns 
+// as different compare to the first one's adn as possible given the 
+// range of adn values
 float GAGetDiversity(const GenAlg* const that);
 
 // Function which return the JSON encoding of 'that' 
@@ -321,6 +328,10 @@ inline
 #endif
 void GASetAdnValue(GenAlg* const that, const GenAlgAdn* const adn, 
   const float val);
+
+// Update the norm of the range value for adans of the GenAlg 'that'
+void GAUpdateNormRange(GenAlg* const that);
+
 
 // ================= Polymorphism ==================
 

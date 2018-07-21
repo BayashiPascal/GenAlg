@@ -51,30 +51,15 @@ epoch:1
   adnF:<0.367611,0.174965>
   deltaAdnF:<0.081678,0.000000>
   adnI:<4,9>
-After StepEpoch with interbreeding:
-epoch:2
-3 entities, 2 elites
-#0 value:3.000000 elite id:0 age:2
-  adnF:<0.285933,0.174965>
-  deltaAdnF:<0.000000,0.000000>
-  adnI:<4,10>
-#1 value:2.000000 elite id:4 age:1
-  adnF:<0.700961,0.779526>
-  deltaAdnF:<0.000000,0.000000>
-  adnI:<2,4>
-#2 value:1.000000 id:5 age:1
-  adnF:<0.289982,-0.910199>
-  deltaAdnF:<0.081678,0.000000>
-  adnI:<9,8>
 UnitTestGenAlgStep OK
 UnitTestGenAlgLoadSave OK
 target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1
 approx: 
-id:1398651 age:2540
-  adnF:<-0.498029,0.315586,-0.782081,0.098697>
-  deltaAdnF:<-0.001548,0.001122,-0.001722,-0.002712>
-  adnI:<3,2,1,0>
-error: 0.002374
+id:1448376 age:138
+  adnF:<-0.501354,-0.774919,0.314189,0.099895>
+  deltaAdnF:<0.000099,0.000207,-0.000430,0.000671>
+  adnI:<3,1,2,0>
+error: 0.001367
 UnitTestGenAlgTest OK
 UnitTestGenAlg OK
 UnitTestAll OK

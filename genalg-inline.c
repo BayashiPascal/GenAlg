@@ -316,6 +316,7 @@ void GASetBoundsAdnFloat(GenAlg* const that, const int iGene,
   }
 #endif
   VecCopy(that->_boundsF + iGene, bounds);
+  GAUpdateNormRange(that);
 }
 
 // Set the bounds for the 'iGene'-th gene of adn for integer values
@@ -344,6 +345,7 @@ void GASetBoundsAdnInt(GenAlg* const that, const int iGene,
   }
 #endif
   VecCopy(that->_boundsI + iGene, bounds);
+  GAUpdateNormRange(that);
 }
 
 // Get the bounds for the 'iGene'-th gene of adn for floating point 

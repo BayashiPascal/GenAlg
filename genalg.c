@@ -138,7 +138,8 @@ void GAReproduction(GenAlg* const that, const int* const parents,
 // The probability of mutation for one gene is equal to 
 // 'rankChild'/'that'->_nbEntities
 // The amplitude of the mutation
-// is equal to (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
+// is equal to 
+// (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
 void GAMute(GenAlg* const that, const int* const parents, 
   const int iChild);
 
@@ -146,6 +147,11 @@ void GAMute(GenAlg* const that, const int* const parents,
 // Randomize all the gene except those of the first adn
 void GAKTEvent(GenAlg* const that);
 
+// Get the diversity value of 'adnA' against 'adnB'
+// The diversity is equal to 
+float GAAdnGetDiversity(const GenAlgAdn* const adnA, 
+  const GenAlgAdn* const adnB, const GenAlg* const ga);
+  
 // ================ Functions implementation ====================
 
 // Create a new GenAlg with 'nbEntities', 'nbElites', 'lengthAdnF' 
@@ -176,6 +182,8 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
       that->_boundsI[iGene] = VecShortCreateStatic2D();
   } else
     that->_boundsI = NULL;
+  that->_normRangeFloat = 1.0;
+  that->_normRangeInt = 1.0;
   that->_nbElites = 0;
   that->_nextId = 0;
   that->_diversityThreshold = GENALG_DIVERSITYTHRESHOLD;
@@ -290,15 +298,21 @@ void GAKTEvent(GenAlg* const that) {
   // For each adn except the best one
   GSetIterBackward iter = GSetIterBackwardCreateStatic(GAAdns(that));
   GSetIterStep(&iter);
+  // We suppose here thre is at least 2 adns in the pool
   do {
     // Get the adn
     GenAlgAdn* adn = GSetIterGet(&iter);
-    // Initialise randomly the genes of the adn
-    GAAdnInit(adn, that);
-    // Reset the age of the child
-    adn->_age = 1;
-    // Set the id of the child
-    adn->_id = (that->_nextId)++;
+    // Get the diversity of this adn against the first one
+    float diversity = GAAdnGetDiversity(adn, GAAdn(that, 0), that);
+    // If the diversity is under the threhsold
+    if (diversity < GAGetDiversityThreshold(that)) {
+      // Initialise randomly the genes of the adn
+      GAAdnInit(adn, that);
+      // Reset the age of the child
+      adn->_age = 1;
+      // Set the id of the child
+      adn->_id = (that->_nextId)++;
+    }
   } while (GSetIterStep(&iter));
 }
 
@@ -320,8 +334,8 @@ void GAStep(GenAlg* const that) {
   // Get the diversity level
   float diversity = GAGetDiversity(that);
   // If the diversity level is too low
-  if (diversity < GENALG_DIVERSITYTHRESHOLD) {
-    // Break the diversity by applying KT event (in memory of 
+  if (diversity < GAGetDiversityThreshold(that)) {
+    // Break the diversity by applying a KT event (in memory of 
     // chickens' grand pa and grand ma)
     GAKTEvent(that);
   // Else, the diversity level is ok
@@ -547,9 +561,95 @@ void GAPrintln(const GenAlg* const that, FILE* const stream) {
   } while (GSetIterStep(&iter));
 }
 
-// Get the level of diversity of curent entities of the GenAlg 'that'
+// Update the norm of the range value for adans of the GenAlg 'that'
+void GAUpdateNormRange(GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Declare a vector to memorize the ranges in float gene values
+  VecFloat* range = VecFloatCreate(GAGetLengthAdnFloat(that)); 
+  // Calculate the ranges in gene values
+  for (int iGene = GAGetLengthAdnFloat(that); iGene--;)
+    VecSet(range, iGene, 
+      VecGet(GABoundsAdnFloat(that, iGene), 1) - 
+      VecGet(GABoundsAdnFloat(that, iGene), 0));
+  // Calculate the norm of the range
+  that->_normRangeFloat = VecNorm(range);
+  // Free memory
+  VecFree(&range);
+
+  // Declare a vector to memorize the ranges in int gene values
+  range = VecFloatCreate(GAGetLengthAdnInt(that)); 
+  // Calculate the ranges in gene values
+  for (int iGene = GAGetLengthAdnInt(that); iGene--;)
+    VecSet(range, iGene, 
+      VecGet(GABoundsAdnInt(that, iGene), 1) - 
+      VecGet(GABoundsAdnInt(that, iGene), 0));
+  // Calculate the norm of the range
+  that->_normRangeInt = VecNorm(range);
+  // Free memory
+  VecFree(&range);
+}
+
+
+// Get the diversity value of 'adnA' against 'adnB'
+// The diversity is equal to 
+float GAAdnGetDiversity(const GenAlgAdn* const adnA, 
+  const GenAlgAdn* const adnB, const GenAlg* const ga) {
+#if BUILDMODE == 0
+  if (adnA == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'adnA' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (adnB == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'adnB' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Declare a variable to memorize the result
+  float diversity = 0.0;
+  // If there are adn for floating point values
+  if (GAAdnAdnF(adnA) != NULL && GAAdnAdnF(adnB) != NULL) {
+    // Get the difference in adn with the first entity
+    VecFloat* diff = 
+      VecGetOp(GAAdnAdnF(adnA), 1.0, GAAdnAdnF(adnB), -1.0);
+    // Calculate the diversity
+    diversity += VecNorm(diff) / ga->_normRangeFloat;
+    // Free memory
+    VecFree(&diff);
+  }
+  // If there are adn for int values
+  if (GAAdnAdnI(adnA) != NULL && GAAdnAdnI(adnB) != NULL) {
+    // Get the difference in adn with the first entity
+    VecShort* diffI = 
+      VecGetOp(GAAdnAdnI(adnA), 1, GAAdnAdnI(adnB), -1);
+    VecFloat* diff = VecShortToFloat(diffI);
+    // Calculate the diversity
+    diversity += VecNorm(diff) / ga->_normRangeInt;
+    // Free memory
+    VecFree(&diffI);
+    VecFree(&diff);
+  }
+  // Correct diversity if there was both float and int adns
+  if (GAAdnAdnF(adnA) != NULL && GAAdnAdnF(adnB) != NULL && 
+    GAAdnAdnI(adnA) != NULL && GAAdnAdnI(adnB) != NULL)
+    diversity /= 2.0;
+  // Return the result
+  return diversity;
+}
+
+// Get the average diversity of current entities of the GenAlg 'that'
 // The return value is in [0.0, 1.0]
 // 0.0 means all the elite entities have exactly the same adns 
+// 1.0 means all the elite entities except the first one have adns 
+// as different compare to the first one's adn as possible given the 
+// range of adn values
 float GAGetDiversity(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
@@ -558,68 +658,17 @@ float GAGetDiversity(const GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  // Declare a variable to memorize the result
-  float diversity = 0.0;
-  // Declare a variable for calculation
-  int nb = 1;
-  // If there are adn for floating point values
-  if (GAGetLengthAdnFloat(that) > 0) {
-    // Declare a vector to memorize the ranges in gene values
-    VecFloat* range = VecFloatCreate(GAGetLengthAdnFloat(that)); 
-    // Calculate the ranges in gene values
-    for (int iGene = GAGetLengthAdnFloat(that); iGene--;)
-      VecSet(range, iGene, 
-        VecGet(GABoundsAdnFloat(that, iGene), 1) - 
-        VecGet(GABoundsAdnFloat(that, iGene), 0));
-    // Calculate the norm of the range
-    float normRange = VecNorm(range);
-    // For each elite entity except the first one
-    for (int iEnt = 1; iEnt < GAGetNbElites(that); ++iEnt) {
-      // Get the difference in adn with the first entity
-      VecFloat* diff = VecGetOp(GAAdnAdnF(GAAdn(that, iEnt)), 1.0, 
-        GAAdnAdnF(GAAdn(that, 0)), -1.0);
-      // Calculate the diversity
-      diversity += VecNorm(diff) / 
-        (normRange * (float)GAAdnGetAge(GAAdn(that, iEnt)));
-      // Free memory
-      VecFree(&diff);
-    }
-    // Calculate the diversity
-    nb += GAGetNbElites(that);
-    // Free memory
-    VecFree(&range);
+  // Declare a variable for calculation of the average of diversities
+  float sumDiversity = 0.0;
+  // For each elite entity except the first one
+  for (int iEnt = 1; iEnt < GAGetNbElites(that); ++iEnt) {
+    // Sum the diversity of this entity against the first one
+    // for float values
+    sumDiversity += 
+      GAAdnGetDiversity(GAAdn(that, 0), GAAdn(that, iEnt), that);
   }
-  // If there are adn for floating point values
-  if (GAGetLengthAdnInt(that) > 0) {
-    // Declare a vector to memorize the ranges in gene values
-    VecFloat* range = VecFloatCreate(GAGetLengthAdnInt(that));
-    // Calculate the ranges in gene values
-    for (int iGene = GAGetLengthAdnInt(that); iGene--;)
-      VecSet(range, iGene, 
-        (float)(VecGet(GABoundsAdnInt(that, iGene), 1) - 
-        VecGet(GABoundsAdnInt(that, iGene), 0)));
-    // Calculate the norm of the range
-    float normRange = VecNorm(range);
-    // For each elite entity except the first one
-    for (int iEnt = 1; iEnt < GAGetNbElites(that); ++iEnt) {
-      // Get the difference in adn with the first entity
-      VecShort* diff = VecGetOp(GAAdnAdnI(GAAdn(that, iEnt)), 1, 
-        GAAdnAdnI(GAAdn(that, 0)), -1);
-      VecFloat* diffF = VecShortToFloat(diff);
-      // Calculate the diversity
-      diversity += VecNorm(diffF) / 
-        (normRange * (float)GAAdnGetAge(GAAdn(that, iEnt)));
-      // Free memory
-      VecFree(&diffF);
-      VecFree(&diff);
-    }
-    // Calculate the diversity
-    nb += GAGetNbElites(that);
-    // Free memory
-    VecFree(&range);
-  }
-  // Calculate the diversity
-  diversity /= (float)nb;
+  // Calculate the average diversity
+  float diversity = sumDiversity / (float)(GAGetNbElites(that) - 1);
   // Return the result
   return diversity;
 }
@@ -882,6 +931,8 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
       VecFree((VecShort**)&b);
     }
   }
+  // Upadte the norm of the range values
+  GAUpdateNormRange(*that);
   // Decode the adns
   prop = JSONProperty(json, "_adns");
   if (prop == NULL) {
