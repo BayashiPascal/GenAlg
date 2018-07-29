@@ -317,6 +317,56 @@ void GAKTEvent(GenAlg* const that) {
 }
 
 // Step an epoch for the GenAlg 'that' with the current ranking of
+// GenAlgAdn, only considering the first 'nbGeneF' genes of float adn
+// and the first 'nbGeneI' of int adn
+void GAStepSubset(GenAlg* const that, const int nbGeneF, 
+  const int nbGeneI) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (nbGeneF <= 0 || nbGeneF > GAGetLengthAdnFloat(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'nbGeneF' is invalid (0<%d<=%d)",
+      nbGeneF, GAGetLengthAdnFloat(that));
+    PBErrCatch(GenAlgErr);
+  }
+  if (nbGeneI <= 0 || nbGeneI > GAGetLengthAdnInt(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'nbGeneI' is invalid (0<%d<=%d)",
+      nbGeneI, GAGetLengthAdnInt(that));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Declare variables to memorize the real size of float and int adn
+  int realNbGeneF = GAGetLengthAdnFloat(that);
+  int realNbGeneI = GAGetLengthAdnInt(that);
+  // Trick the length of adns
+  *(int*)&(that->_lengthAdnF) = nbGeneF;
+  *(int*)&(that->_lengthAdnI) = nbGeneI;
+  for (int iAdn = GAGetNbAdns(that); iAdn--;) {
+    GenAlgAdn* adn = GAAdn(that, iAdn);
+    adn->_adnF->_dim = nbGeneF;
+    adn->_deltaAdnF->_dim = nbGeneF;
+    adn->_adnI->_dim = nbGeneI;
+  }
+  // Step the GenAlg
+  GAStep(that);
+  // Reset the true length of adns
+  *(int*)&(that->_lengthAdnF) = realNbGeneF;
+  *(int*)&(that->_lengthAdnI) = realNbGeneI;
+  for (int iAdn = GAGetNbAdns(that); iAdn--;) {
+    GenAlgAdn* adn = GAAdn(that, iAdn);
+    adn->_adnF->_dim = realNbGeneF;
+    adn->_deltaAdnF->_dim = realNbGeneF;
+    adn->_adnI->_dim = realNbGeneI;
+  }
+
+}
+
+// Step an epoch for the GenAlg 'that' with the current ranking of
 // GenAlgAdn
 void GAStep(GenAlg* const that) {
 #if BUILDMODE == 0

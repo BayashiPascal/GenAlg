@@ -293,6 +293,12 @@ void GAInit(GenAlg* const that);
 // GenAlgAdn
 void GAStep(GenAlg* const that); 
 
+// Step an epoch for the GenAlg 'that' with the current ranking of
+// GenAlgAdn, only considering the first 'nbGeneF' genes of float adn
+// and the first 'nbGeneI' of int adn
+void GAStepSubset(GenAlg* const that, const int nbGeneF, 
+  const int nbGeneI); 
+
 // Print the information about the GenAlg 'that' on the stream 'stream'
 void GAPrintln(const GenAlg* const that, FILE* const stream);
 

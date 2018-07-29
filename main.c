@@ -395,6 +395,49 @@ void UnitTestGenAlgStep() {
   printf("UnitTestGenAlgStep OK\n");
 }
 
+void UnitTestGenAlgStepSubset() {
+  srandom(2);
+  int lengthAdnF = 2;
+  int lengthAdnI = 2;
+  GenAlg* ga = GenAlgCreate(3, 2, lengthAdnF, lengthAdnI);
+  VecFloat2D boundsF = VecFloatCreateStatic2D();
+  VecShort2D boundsI = VecShortCreateStatic2D();
+  VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
+  VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
+  GASetBoundsAdnFloat(ga, 0, &boundsF);
+  GASetBoundsAdnFloat(ga, 1, &boundsF);
+  GASetBoundsAdnInt(ga, 0, &boundsI);
+  GASetBoundsAdnInt(ga, 1, &boundsI);
+  GAInit(ga);
+  for (int i = 3; i--;)
+    GASetAdnValue(ga, GAAdn(ga, i), 3.0 - (float)i);
+  printf("Before StepSubset:\n");
+  GAPrintln(ga, stdout);
+  GenAlgAdn* child = GAAdn(ga, 2);
+  GAStepSubset(ga, 1, 1);
+  printf("After StepSubset:\n");
+  GAPrintln(ga, stdout);
+  if (ga->_nextId != 4 || GAAdnGetId(child) != 3 || 
+    GAAdnGetAge(child) != 1 ||
+    ISEQUALF(GAAdnGetGeneF(child, 0), 0.698748) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 1), 0.401953) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.412815) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.0) == false ||
+    GAAdnGetGeneI(child, 0) != 4 ||
+    GAAdnGetGeneI(child, 1) != 2 ||
+    GAAdn(ga, 2) != child ||
+    GAAdnGetAge(GAAdn(ga, 0)) != 2 ||
+    GAAdnGetAge(GAAdn(ga, 1)) != 2 ||
+    GAAdnGetId(GAAdn(ga, 0)) != 0 ||
+    GAAdnGetId(GAAdn(ga, 1)) != 1) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAStepSubset failed");
+    PBErrCatch(GenAlgErr);
+  }
+  GenAlgFree(&ga);
+  printf("UnitTestGenAlgStepSubset OK\n");
+}
+
 void UnitTestGenAlgLoadSave() {
   srandom(5);
   int lengthAdnF = 2;
@@ -548,6 +591,7 @@ void UnitTestGenAlg() {
   UnitTestGenAlgPrint();
   UnitTestGenAlgGetDiversity();
   UnitTestGenAlgStep();
+  UnitTestGenAlgStepSubset();
   UnitTestGenAlgLoadSave();
   UnitTestGenAlgTest();
   printf("UnitTestGenAlg OK\n");

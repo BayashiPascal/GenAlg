@@ -52,6 +52,37 @@ epoch:1
   deltaAdnF:<0.081678,0.000000>
   adnI:<4,9>
 UnitTestGenAlgStep OK
+Before StepSubset:
+epoch:0
+3 entities, 2 elites
+#0 value:3.000000 elite id:0 age:1
+  adnF:<0.285933,0.174965>
+  deltaAdnF:<0.000000,0.000000>
+  adnI:<4,10>
+#1 value:2.000000 elite id:1 age:1
+  adnF:<-0.156076,-0.303386>
+  deltaAdnF:<0.000000,0.000000>
+  adnI:<2,7>
+#2 value:1.000000 id:2 age:1
+  adnF:<0.619353,0.401953>
+  deltaAdnF:<0.000000,0.000000>
+  adnI:<2,2>
+After StepSubset:
+epoch:1
+3 entities, 2 elites
+#0 value:3.000000 elite id:0 age:2
+  adnF:<0.285933,0.174965>
+  deltaAdnF:<0.000000,0.000000>
+  adnI:<4,10>
+#1 value:2.000000 elite id:1 age:2
+  adnF:<-0.156076,-0.303386>
+  deltaAdnF:<0.000000,0.000000>
+  adnI:<2,7>
+#2 value:1.000000 id:3 age:1
+  adnF:<0.698748,0.401953>
+  deltaAdnF:<0.412815,0.000000>
+  adnI:<4,2>
+UnitTestGenAlgStepSubset OK
 UnitTestGenAlgLoadSave OK
 target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1
 approx: 
