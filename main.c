@@ -390,19 +390,19 @@ void UnitTestGenAlgStep() {
   GAStep(ga);
   printf("After Step:\n");
   GAPrintln(ga, stdout);
-  if (ga->_nextId != 4 || GAAdnGetId(child) != 3 /*|| 
+  if (ga->_nextId != 4 || GAAdnGetId(child) != 3 || 
     GAAdnGetAge(child) != 1 ||
-    ISEQUALF(GAAdnGetGeneF(child, 0), 0.367611) == false ||
-    ISEQUALF(GAAdnGetGeneF(child, 1), 0.174965) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.081678) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.0) == false ||
-    GAAdnGetGeneI(child, 0) != 4 ||
-    GAAdnGetGeneI(child, 1) != 9 ||
+    ISEQUALF(GAAdnGetGeneF(child, 0), 0.285933) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 1), 0.256643) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.000000) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.081678) == false ||
+    GAAdnGetGeneI(child, 0) != 2 ||
+    GAAdnGetGeneI(child, 1) != 7 ||
     GAAdn(ga, 2) != child ||
     GAAdnGetAge(GAAdn(ga, 0)) != 2 ||
     GAAdnGetAge(GAAdn(ga, 1)) != 2 ||
     GAAdnGetId(GAAdn(ga, 0)) != 0 ||
-    GAAdnGetId(GAAdn(ga, 1)) != 1*/) {
+    GAAdnGetId(GAAdn(ga, 1)) != 1) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAStep failed");
     PBErrCatch(GenAlgErr);
