@@ -11,6 +11,19 @@
 
 // ================ Functions declaration ====================
 
+// Get the diversity value of 'adnA' against 'adnB'
+// The diversity is equal to 
+float GAAdnGetDiversity(const GenAlgAdn* const adnA, 
+  const GenAlgAdn* const adnB, const GenAlg* const ga);
+
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
+// GenAlg 'ga'
+void GAAdnInitDefault(const GenAlgAdn* const that, const GenAlg* ga);
+
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
+// GenAlg 'ga', version used to calculate the parameters of a NeuraNet
+void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga);
+  
 // ================ Functions implementation ====================
 
 // Create a new GenAlgAdn with ID 'id', 'lengthAdnF' and 'lengthAdnI'
@@ -68,8 +81,29 @@ void GenAlgAdnFree(GenAlgAdn** that) {
 }
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
-// GenAlg 'ga'
+// GenAlg 'ga' according to the type of GenAlg
 void GAAdnInit(const GenAlgAdn* const that, const GenAlg* const ga) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  switch (GAGetType(ga)) {
+    case genAlgTypeNeuraNet:
+      GAAdnInitNeuraNet(that, ga);
+      break;
+    case genAlgTypeDefault:
+    default:
+      GAAdnInitDefault(that, ga);
+  }
+}
+
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
+// GenAlg 'ga'
+void GAAdnInitDefault(const GenAlgAdn* const that, 
+  const GenAlg* const ga) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -90,6 +124,47 @@ void GAAdnInit(const GenAlgAdn* const that, const GenAlg* const ga) {
     short max = VecGet(GABoundsAdnInt(ga, iGene), 1);
     short val = (short)round((float)min + (float)(max - min) * rnd());
     VecSet(that->_adnI, iGene, val);
+  }
+}
+
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
+// GenAlg 'ga', version used to calculate the parameters of a NeuraNet
+void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Init the base functions randomly
+  // For each floating point value gene
+  for (int iGene = GAGetLengthAdnFloat(ga); iGene--;) {
+    float min = VecGet(GABoundsAdnFloat(ga, iGene), 0);
+    float max = VecGet(GABoundsAdnFloat(ga, iGene), 1);
+    float val = min + (max - min) * rnd();
+    VecSet(that->_adnF, iGene, val);
+  }
+  // Init the links by ensuring there is at least one link reaching 
+  // each output and use inputs as start of the initial links
+  // For each integer value gene
+  int shiftOut = ga->_NNdata._nbIn + ga->_NNdata._nbHid;
+  for (int iGene = 0; iGene < GAGetLengthAdnInt(ga); iGene += 3)
+    VecSet(that->_adnI, iGene, -1);
+  for (int iOut = 0; iOut < ga->_NNdata._nbOut; ++iOut) {
+    // The base function is randomly choosen but can't be an 
+    // inactive link
+    short min = 0;
+    short max = VecGet(GABoundsAdnInt(ga, iOut * 3), 1);
+    short val = (short)round((float)min + (float)(max - min) * rnd());
+    VecSet(that->_adnI, iOut * 3, val);
+    // The start of the link is randomly choosen amongst inputs
+    min = 0;
+    max = ga->_NNdata._nbIn - 1;
+    val = (short)round((float)min + (float)(max - min) * rnd());
+    VecSet(that->_adnI, iOut * 3 + 1, val);
+    // The end of the link is choosen sequencially amongst outputs
+    VecSet(that->_adnI, iOut * 3 + 2, iOut + shiftOut);
   }
 }
 
@@ -134,24 +209,34 @@ void GASelectParents(const GenAlg* const that, int* const parents);
 void GAReproduction(GenAlg* const that, const int* const parents, 
   const int iChild);
 
-// Mute the genes of the entity at rank 'iChild'
-// The probability of mutation for one gene is equal to 
-// 'rankChild'/'that'->_nbEntities
-// The amplitude of the mutation
-// is equal to 
-// (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
+// Set the genes of the entity at rank 'iChild' as a 50/50 mix of the 
+// genes of entities at ranks 'parents[0]' and 'parents[1]'
+void GAReproductionDefault(GenAlg* const that, 
+  const int* const parents, const int iChild);
+
+// Set the genes of the entity at rank 'iChild' as a 50/50 mix of the 
+// genes of entities at ranks 'parents[0]' and 'parents[1]'
+// This version is optimised to calculate the parameters of a NeuraNet
+// by inheriting whole bases and links from parents
+void GAReproductionNeuraNet(GenAlg* const that, 
+  const int* const parents, const int iChild);
+
+// Router toward the appropriate Mute function according to the type 
+// of GenAlg
 void GAMute(GenAlg* const that, const int* const parents, 
   const int iChild);
-
-// Reset the GenAlg 'that'
-// Randomize all the gene except those of the first adn
-void GAKTEvent(GenAlg* const that);
-
-// Get the diversity value of 'adnA' against 'adnB'
-// The diversity is equal to 
-float GAAdnGetDiversity(const GenAlgAdn* const adnA, 
-  const GenAlgAdn* const adnB, const GenAlg* const ga);
   
+// Mute the genes of the entity at rank 'iChild'
+void GAMuteDefault(GenAlg* const that, const int* const parents, 
+  const int iChild);
+
+// Mute the genes of the entity at rank 'iChild'
+// This version is optimised to calculate the parameters of a NeuraNet
+// by ensuring coherence in links: outputs have at least one link
+// and there is no dead link
+void GAMuteNeuraNet(GenAlg* const that, const int* const parents, 
+  const int iChild);
+
 // ================ Functions implementation ====================
 
 // Create a new GenAlg with 'nbEntities', 'nbElites', 'lengthAdnF' 
@@ -164,6 +249,7 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   // Allocate memory
   GenAlg* that = PBErrMalloc(GenAlgErr, sizeof(GenAlg));
   // Set the properties
+  that->_type = genAlgTypeDefault;
   that->_adns = GSetCreate();
   that->_curEpoch = 0;
   *(int*)&(that->_lengthAdnF) = lengthAdnF;
@@ -295,75 +381,33 @@ void GAKTEvent(GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  // For each adn except the best one
-  GSetIterBackward iter = GSetIterBackwardCreateStatic(GAAdns(that));
-  GSetIterStep(&iter);
-  // We suppose here thre is at least 2 adns in the pool
-  do {
-    // Get the adn
-    GenAlgAdn* adn = GSetIterGet(&iter);
-    // Get the diversity of this adn against the first one
-    float diversity = GAAdnGetDiversity(adn, GAAdn(that, 0), that);
-    // If the diversity is under the threhsold
-    if (diversity < GAGetDiversityThreshold(that)) {
-      // Initialise randomly the genes of the adn
-      GAAdnInit(adn, that);
-      // Reset the age of the child
-      adn->_age = 1;
-      // Set the id of the child
-      adn->_id = (that->_nextId)++;
+  // For each pair of elite entities
+  float threshold = GAGetDiversityThreshold(that);
+  for (int iEnt = GAGetNbElites(that); iEnt-- && iEnt > 0;) {
+    GenAlgAdn* adn = GAAdn(that, iEnt);
+    for (int jEnt = GAGetNbElites(that); jEnt--;) {
+      // Check the diversity of this entity against the first one
+      // for float values
+      float div = GAAdnGetDiversity(GAAdn(that, jEnt), adn, that);
+      if (iEnt != jEnt && div < threshold) {
+        // Initialise randomly the genes of the adn
+        GAAdnInit(adn, that);
+        // Reset the age of the child
+        adn->_age = 1;
+        // Set the id of the child
+        adn->_id = (that->_nextId)++;
+        // skip the end of the loop
+        jEnt = GAGetNbElites(that);
+      }
     }
-  } while (GSetIterStep(&iter));
-}
-
-// Step an epoch for the GenAlg 'that' with the current ranking of
-// GenAlgAdn, only considering the first 'nbGeneF' genes of float adn
-// and the first 'nbGeneI' of int adn
-void GAStepSubset(GenAlg* const that, const int nbGeneF, 
-  const int nbGeneI) {
-#if BUILDMODE == 0
-  if (that == NULL) {
-    GenAlgErr->_type = PBErrTypeNullPointer;
-    sprintf(GenAlgErr->_msg, "'that' is null");
-    PBErrCatch(GenAlgErr);
   }
-  if (nbGeneF <= 0 || nbGeneF > GAGetLengthAdnFloat(that)) {
-    GenAlgErr->_type = PBErrTypeInvalidArg;
-    sprintf(GenAlgErr->_msg, "'nbGeneF' is invalid (0<%d<=%d)",
-      nbGeneF, GAGetLengthAdnFloat(that));
-    PBErrCatch(GenAlgErr);
+  for (int iEnt = GAGetNbElites(that); iEnt < GAGetNbAdns(that); 
+    ++iEnt) {
+    GenAlgAdn* adn = GAAdn(that, iEnt);
+    GAAdnInit(adn, that);
+    adn->_age = 1;
+    adn->_id = (that->_nextId)++;
   }
-  if (nbGeneI <= 0 || nbGeneI > GAGetLengthAdnInt(that)) {
-    GenAlgErr->_type = PBErrTypeInvalidArg;
-    sprintf(GenAlgErr->_msg, "'nbGeneI' is invalid (0<%d<=%d)",
-      nbGeneI, GAGetLengthAdnInt(that));
-    PBErrCatch(GenAlgErr);
-  }
-#endif
-  // Declare variables to memorize the real size of float and int adn
-  int realNbGeneF = GAGetLengthAdnFloat(that);
-  int realNbGeneI = GAGetLengthAdnInt(that);
-  // Trick the length of adns
-  *(int*)&(that->_lengthAdnF) = nbGeneF;
-  *(int*)&(that->_lengthAdnI) = nbGeneI;
-  for (int iAdn = GAGetNbAdns(that); iAdn--;) {
-    GenAlgAdn* adn = GAAdn(that, iAdn);
-    adn->_adnF->_dim = nbGeneF;
-    adn->_deltaAdnF->_dim = nbGeneF;
-    adn->_adnI->_dim = nbGeneI;
-  }
-  // Step the GenAlg
-  GAStep(that);
-  // Reset the true length of adns
-  *(int*)&(that->_lengthAdnF) = realNbGeneF;
-  *(int*)&(that->_lengthAdnI) = realNbGeneI;
-  for (int iAdn = GAGetNbAdns(that); iAdn--;) {
-    GenAlgAdn* adn = GAAdn(that, iAdn);
-    adn->_adnF->_dim = realNbGeneF;
-    adn->_deltaAdnF->_dim = realNbGeneF;
-    adn->_adnI->_dim = realNbGeneI;
-  }
-
 }
 
 // Step an epoch for the GenAlg 'that' with the current ranking of
@@ -384,7 +428,10 @@ void GAStep(GenAlg* const that) {
   // Get the diversity level
   float diversity = GAGetDiversity(that);
   // If the diversity level is too low
-  if (diversity < GAGetDiversityThreshold(that)) {
+  float thresholdByAge = 0.0; //1.0 - 1.0 / 
+    //sqrt((float)(GAAdn(that, GAGetNbElites(that) - 1)->_age + 1));
+  if (diversity < GAGetDiversityThreshold(that) ||
+    rnd() < thresholdByAge) {
     // Break the diversity by applying a KT event (in memory of 
     // chickens' grand pa and grand ma)
     GAKTEvent(that);
@@ -445,8 +492,107 @@ void GASelectParents(const GenAlg* const that, int* const parents) {
 
 // Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
 // genes of adns at ranks 'parents[0]' and 'parents[1]'
-void GAReproduction(GenAlg* const that, const int* const parents, 
-  const int iChild) {
+void GAReproduction(GenAlg* const that, 
+  const int* const parents, const int iChild) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (parents == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'parents' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
+      iChild, GAGetNbAdns(that));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  switch (GAGetType(that)) {
+    case genAlgTypeNeuraNet:
+      GAReproductionNeuraNet(that, parents, iChild);
+      break;
+    case genAlgTypeDefault:
+    default:
+      GAReproductionDefault(that, parents, iChild);
+  }
+}
+
+// Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
+// genes of adns at ranks 'parents[0]' and 'parents[1]'
+// This version is optimised to calculate the parameters of a NeuraNet
+// by inheriting whole bases and links from parents
+void GAReproductionNeuraNet(GenAlg* const that, 
+  const int* const parents, const int iChild) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (parents == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'parents' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
+      iChild, GAGetNbAdns(that));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Get the parents and child
+  GenAlgAdn* parentA = GAAdn(that, parents[0]);
+  GenAlgAdn* parentB = GAAdn(that, parents[1]);
+  GenAlgAdn* child = GAAdn(that, iChild);
+  // For each gene of the adn for floating point value
+  for (int iGene = 0; iGene < GAGetLengthAdnFloat(that); iGene += 3) {
+    // Get the gene from one parent or the other with equal 
+    // probabililty
+    if (rnd() < 0.5) {
+      for (int jGene = 3; jGene--;) {
+        VecSet(child->_adnF, iGene + jGene, 
+          VecGet(parentA->_adnF, iGene + jGene));
+        VecSet(child->_deltaAdnF, iGene + jGene, 
+          VecGet(parentA->_deltaAdnF, iGene + jGene));
+      }
+    } else {
+      for (int jGene = 3; jGene--;) {
+        VecSet(child->_adnF, iGene + jGene, 
+          VecGet(parentB->_adnF, iGene + jGene));
+        VecSet(child->_deltaAdnF, iGene + jGene, 
+          VecGet(parentB->_deltaAdnF, iGene + jGene));
+      }
+    }
+  }
+  // For each gene of the adn for int value
+  for (int iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
+    // Get the gene from one parent or the other with equal probabililty
+    if (rnd() < 0.5) {
+      for (int jGene = 3; jGene--;)
+        VecSet(child->_adnI, iGene + jGene, 
+          VecGet(parentA->_adnI, iGene + jGene));
+    } else { 
+      for (int jGene = 3; jGene--;)
+        VecSet(child->_adnI, iGene + jGene, 
+          VecGet(parentB->_adnI, iGene + jGene));
+    }
+  }
+  // Reset the age of the child
+  child->_age = 1;
+  // Set the id of the child
+  child->_id = (that->_nextId)++;
+}
+
+// Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
+// genes of adns at ranks 'parents[0]' and 'parents[1]'
+void GAReproductionDefault(GenAlg* const that, 
+  const int* const parents, const int iChild) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -496,12 +642,121 @@ void GAReproduction(GenAlg* const that, const int* const parents,
   child->_id = (that->_nextId)++;
 }
 
-// Mute the genes of the entity at rank 'iChild'
-// The probability of mutation for one gene is equal to 
-// 'rankChild'/'that'->_nbEntities
-// The amplitude of the mutation
-// is equal to (max-min).(gauss(0.0, 1.0)+deltaAdn).ln('parents[0]'.age)
+// Router toward the appropriate Mute function according to the type 
+// of GenAlg
 void GAMute(GenAlg* const that, const int* const parents, 
+  const int iChild) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (parents == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'parents' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
+      iChild, GAGetNbAdns(that));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  switch (GAGetType(that)) {
+    case genAlgTypeNeuraNet:
+      GAMuteNeuraNet(that, parents, iChild);
+      break;
+    case genAlgTypeDefault:
+    default:
+      GAMuteDefault(that, parents, iChild);
+  }
+}
+
+// Mute the genes of the entity at rank 'iChild'
+// This version is optimised to calculate the parameters of a NeuraNet
+// by ensuring coherence in links: outputs have at least one link
+// and there is no dead link
+void GAMuteNeuraNet(GenAlg* const that, const int* const parents, 
+  const int iChild) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (parents == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'parents' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
+      iChild, GAGetNbAdns(that));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Get the first parent and child
+  GenAlgAdn* parentA = GAAdn(that, parents[0]);
+  GenAlgAdn* child = GAAdn(that, iChild);
+  // Get the proba and amplitude of mutation
+  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
+  float amp = 1.0 - 1.0 / sqrt((float)(parentA->_age + 1) * 0.1);
+  probMute *= amp;
+  // For each gene of the adn for floating point value (base functions)
+  for (int iGene = 0; iGene < GAGetLengthAdnFloat(that); iGene += 3) {
+    // If this gene mutes
+    if (rnd() < probMute) {
+      for (int jGene = 3; jGene--;) {
+        // Get the bounds
+        const VecFloat2D* const bounds = 
+          GABoundsAdnFloat(that, iGene + jGene);
+        // Declare a variable to memorize the previous value of the gene
+        float prevVal = GAAdnGetGeneF(child, iGene + jGene);
+        // Apply the mutation
+        GAAdnSetGeneF(child, iGene + jGene, 
+          GAAdnGetGeneF(child, iGene + jGene) + 
+          (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
+          (rnd() - 0.5 + GAAdnGetDeltaGeneF(child, iGene + jGene)));
+        // Keep the gene value in bounds
+        while (GAAdnGetGeneF(child, iGene + jGene) < 
+          VecGet(bounds, 0) ||
+          GAAdnGetGeneF(child, iGene + jGene) > VecGet(bounds, 1)) {
+          if (GAAdnGetGeneF(child, iGene + jGene) > VecGet(bounds, 1))
+            GAAdnSetGeneF(child, iGene + jGene, 
+              2.0 * VecGet(bounds, 1) - 
+              GAAdnGetGeneF(child, iGene + jGene));
+          else if (GAAdnGetGeneF(child, iGene + jGene) < 
+            VecGet(bounds, 0))
+            GAAdnSetGeneF(child, iGene + jGene, 
+              2.0 * VecGet(bounds, 0) - 
+              GAAdnGetGeneF(child, iGene + jGene));
+        }
+        // Update the deltaAdn
+        GAAdnSetDeltaGeneF(child, iGene + jGene, 
+          GAAdnGetGeneF(child, iGene + jGene) - prevVal);
+      }
+    }
+  }
+  // For each gene of the adn for int value (links definitions)
+  for (int iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
+    // If the link mutes
+    if (rnd() < probMute) {
+      for (int jGene = 3; jGene--;) {
+        short min = VecGet(GABoundsAdnInt(that, iGene + jGene), 0);
+        short max = VecGet(GABoundsAdnInt(that, iGene + jGene), 1);
+        short val = (short)round((float)min + 
+          (float)(max - min) * rnd());
+        GAAdnSetGeneI(child, iGene + jGene, val);
+      }
+    }
+  }
+}
+
+// Mute the genes of the entity at rank 'iChild'
+void GAMuteDefault(GenAlg* const that, const int* const parents, 
   const int iChild) {
 #if BUILDMODE == 0
   if (that == NULL) {
@@ -527,6 +782,7 @@ void GAMute(GenAlg* const that, const int* const parents,
   // Get the proba amplitude of mutation
   float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
   float amp = 1.0 - 1.0 / sqrt((float)(parentA->_age + 1));
+  probMute *= amp;
   // For each gene of the adn for floating point value
   for (int iGene = GAGetLengthAdnFloat(that); iGene--;) {
     // If this gene mutes
@@ -609,6 +865,36 @@ void GAPrintln(const GenAlg* const that, FILE* const stream) {
     GAAdnPrintln(ent, stream);
     ++iEnt;
   } while (GSetIterStep(&iter));
+}
+
+// Print a summary about the elite entities of the GenAlg 'that'
+// on the stream 'stream'
+void GAEliteSummaryPrintln(const GenAlg* const that, 
+  FILE* const stream) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (stream == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'stream' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif  
+  GSetIterBackward iter = GSetIterBackwardCreateStatic(GAAdns(that));
+  int iEnt = 0;
+  GenAlgAdn* leader = GSetIterGet(&iter);
+  fprintf(stream, "(age,val,div) ");
+  do {
+    GenAlgAdn* ent = GSetIterGet(&iter);
+    fprintf(stream, "(%lu,%.3f,%.3f) ", GAAdnGetAge(ent), 
+      GSetIterGetElem(&iter)->_sortVal, 
+      GAAdnGetDiversity(ent, leader, that));
+    ++iEnt;
+  } while (GSetIterStep(&iter) && iEnt < GAGetNbElites(that));
+  fprintf(stream, "\n");
 }
 
 // Update the norm of the range value for adans of the GenAlg 'that'
@@ -700,7 +986,7 @@ float GAAdnGetDiversity(const GenAlgAdn* const adnA,
   return diversity;
 }
 
-// Get the average diversity of current entities of the GenAlg 'that'
+// Get the min diversity of current entities of the GenAlg 'that'
 // The return value is in [0.0, 1.0]
 // 0.0 means all the elite entities have exactly the same adns 
 // 1.0 means all the elite entities except the first one have adns 
@@ -716,15 +1002,19 @@ float GAGetDiversity(const GenAlg* const that) {
 #endif
   // Declare a variable for calculation of the average of diversities
   float sumDiversity = 0.0;
+  int nb = 0;
   // For each elite entity except the first one
-  for (int iEnt = 1; iEnt < GAGetNbElites(that); ++iEnt) {
-    // Sum the diversity of this entity against the first one
-    // for float values
-    sumDiversity += 
-      GAAdnGetDiversity(GAAdn(that, 0), GAAdn(that, iEnt), that);
+  for (int iEnt = 0; iEnt < GAGetNbElites(that) - 1; ++iEnt) {
+    for (int jEnt = iEnt + 1; jEnt < GAGetNbElites(that); ++jEnt) {
+      // Sum the diversity of this entity against the first one
+      // for float values
+      sumDiversity += 
+        GAAdnGetDiversity(GAAdn(that, jEnt), GAAdn(that, iEnt), that);
+      ++nb;
+    }
   }
   // Calculate the average diversity
-  float diversity = sumDiversity / (float)(GAGetNbElites(that) - 1);
+  float diversity = sumDiversity / (float)nb;
   // Return the result
   return diversity;
 }
@@ -779,6 +1069,20 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
   // Encode the diversity threshold
   sprintf(val, "%f", GAGetDiversityThreshold(that));
   JSONAddProp(json, "_diversityThreshold", val);
+  // Encode the type
+  sprintf(val, "%d", GAGetType(that));
+  JSONAddProp(json, "_type", val);
+  switch (GAGetType(that)) {
+    case genAlgTypeNeuraNet:
+      sprintf(val, "%d", that->_NNdata._nbIn);
+      JSONAddProp(json, "NN_nbIn", val);
+      sprintf(val, "%d", that->_NNdata._nbHid);
+      JSONAddProp(json, "NN_nbHid", val);
+      sprintf(val, "%d", that->_NNdata._nbOut);
+      JSONAddProp(json, "NN_nbOut", val);
+    default:
+      break;
+  }
   // Encode the nb adns
   sprintf(val, "%d", GAGetNbAdns(that));
   JSONAddProp(json, "_nbAdns", val);
@@ -942,6 +1246,33 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   int lengthAdnI = atoi(JSONLabel(JSONValue(prop, 0)));
   // Allocate memory
   *that = GenAlgCreate(nbAdns, nbElites, lengthAdnF, lengthAdnI);
+  // Decode the type
+  prop = JSONProperty(json, "_type");
+  if (prop == NULL) {
+    return false;
+  }
+  int type = atoi(JSONLabel(JSONValue(prop, 0)));
+  switch (type) {
+    case genAlgTypeNeuraNet:
+      prop = JSONProperty(json, "NN_nbIn");
+      if (prop == NULL) {
+        return false;
+      }
+      int nbIn = atoi(JSONLabel(JSONValue(prop, 0)));
+      prop = JSONProperty(json, "NN_nbOut");
+      if (prop == NULL) {
+        return false;
+      }
+      int nbOut = atoi(JSONLabel(JSONValue(prop, 0)));
+      prop = JSONProperty(json, "NN_nbHid");
+      if (prop == NULL) {
+        return false;
+      }
+      int nbHid = atoi(JSONLabel(JSONValue(prop, 0)));
+      GASetTypeNeuraNet(*that, nbIn, nbHid, nbOut);
+    default:
+      break;
+  }
   // Decode the diversity threshold
   prop = JSONProperty(json, "_diversityThreshold");
   if (prop == NULL) {
@@ -1001,8 +1332,8 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
     return false;
   for (int iEnt = 0; iEnt < GAGetNbAdns(*that); ++iEnt) {
     JSONNode* val = JSONValue(prop, iEnt);
-    GenAlgAdn* data = GSetElemData(GSetElement(GAAdns(*that), iEnt));
-    if (!GAAdnDecodeAsJSON(&data, val)) {
+    if (!GAAdnDecodeAsJSON(
+      (GenAlgAdn**)&(GSetElement(GAAdns(*that), iEnt)->_data), val)) {
       return false;
     }
   }

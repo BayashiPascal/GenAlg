@@ -69,8 +69,12 @@ inline
 const VecShort* GAAdnAdnI(const GenAlgAdn* const that);
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
-// GenAlg 'ga'
+// GenAlg 'ga' according to the type of the GenAlg
 void GAAdnInit(const GenAlgAdn* const that, const GenAlg* ga);
+
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
+// GenAlg 'ga', version used to calculate the parameters of a NeuraNet
+void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga);
 
 // Get the 'iGene'-th gene of the adn for floating point values of the
 // GenAlgAdn 'that'
@@ -149,10 +153,25 @@ bool GAAdnIsNew(const GenAlgAdn* const that);
 
 // ================= Data structure ===================
 
+typedef enum GenAlgType {
+  genAlgTypeDefault,
+  genAlgTypeNeuraNet
+} GenAlgType;
+
+// Data used when GenAlg is applied to a NeuraNet
+typedef struct GANeuraNet {
+  // Nb of input, hidden and output of the NeuraNet
+  int _nbIn;
+  int _nbHid;
+  int _nbOut;
+} GANeuraNet;
+
 typedef struct GenAlg {
   // GSet of GenAlgAdn, sortval == score so the head of the set is the 
   // worst adn and the tail of the set is the best
   GSet* _adns;
+  // Type of the GenAlg
+  GenAlgType _type;
   // Current epoch
   unsigned long int _curEpoch;
   // Nb elite entities in population
@@ -173,6 +192,8 @@ typedef struct GenAlg {
   // calculation)
   float _normRangeFloat;
   float _normRangeInt;
+  // Data used if the GenAlg is applied to a NeuraNet
+  GANeuraNet _NNdata;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -187,6 +208,21 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
 
 // Free memory used by the GenAlg 'that'
 void GenAlgFree(GenAlg** that);
+
+// Get the type of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+GenAlgType GAGetType(const GenAlg* const that);
+
+// Set the type of the GenAlg 'that' to genAlgTypeNeuraNet, the GenAlg
+// will be used with a NeuraNet having 'nbIn' inputs, 'nbHid' hidden 
+// values and 'nbOut' outputs
+#if BUILDMODE != 0
+inline
+#endif
+void GASetTypeNeuraNet(GenAlg* const that, const int nbIn, 
+  const int nbHid, const int nbOut);
 
 // Return the GSet of the GenAlg 'that'
 #if BUILDMODE != 0
@@ -293,14 +329,13 @@ void GAInit(GenAlg* const that);
 // GenAlgAdn
 void GAStep(GenAlg* const that); 
 
-// Step an epoch for the GenAlg 'that' with the current ranking of
-// GenAlgAdn, only considering the first 'nbGeneF' genes of float adn
-// and the first 'nbGeneI' of int adn
-void GAStepSubset(GenAlg* const that, const int nbGeneF, 
-  const int nbGeneI); 
-
 // Print the information about the GenAlg 'that' on the stream 'stream'
 void GAPrintln(const GenAlg* const that, FILE* const stream);
+
+// Print a summary about the elite entities of the GenAlg 'that'
+// on the stream 'stream'
+void GAEliteSummaryPrintln(const GenAlg* const that, 
+  FILE* const stream);
 
 // Get the average diversity of current entities of the GenAlg 'that'
 // The return value is in [0.0, 1.0]
@@ -338,6 +373,9 @@ void GASetAdnValue(GenAlg* const that, const GenAlgAdn* const adn,
 // Update the norm of the range value for adans of the GenAlg 'that'
 void GAUpdateNormRange(GenAlg* const that);
 
+// Reset the GenAlg 'that'
+// Randomize all the gene except those of the first adn
+void GAKTEvent(GenAlg* const that);
 
 // ================= Polymorphism ==================
 

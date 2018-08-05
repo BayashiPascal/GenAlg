@@ -200,6 +200,42 @@ bool GAAdnIsNew(const GenAlgAdn* const that) {
 
 // ================ Functions implementation ====================
 
+// Get the type of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+GenAlgType GAGetType(const GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_type;
+}
+
+// Set the type of the GenAlg 'that' to genAlgTypeNeuraNet, the GenAlg
+// will be used with a NeuraNet having 'nbIn' inputs, 'nbHid' hidden 
+// values and 'nbOut' outputs
+#if BUILDMODE != 0
+inline
+#endif
+void GASetTypeNeuraNet(GenAlg* const that, const int nbIn, 
+  const int nbHid, const int nbOut) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  that->_type = genAlgTypeNeuraNet;
+  that->_NNdata._nbIn = nbIn;
+  that->_NNdata._nbHid = nbHid;
+  that->_NNdata._nbOut = nbOut;
+}
+
 // Return the GSet of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
