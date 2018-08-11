@@ -66,7 +66,7 @@ const VecFloat* GAAdnDeltaAdnF(const GenAlgAdn* const that);
 #if BUILDMODE != 0
 inline
 #endif
-const VecShort* GAAdnAdnI(const GenAlgAdn* const that);
+VecShort* GAAdnAdnI(const GenAlgAdn* const that);
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga' according to the type of the GenAlg

@@ -39,7 +39,7 @@ const VecFloat* GAAdnDeltaAdnF(const GenAlgAdn* const that) {
 #if BUILDMODE != 0
 inline
 #endif
-const VecShort* GAAdnAdnI(const GenAlgAdn* const that) {
+VecShort* GAAdnAdnI(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
