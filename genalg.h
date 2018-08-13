@@ -18,7 +18,6 @@
 
 #define GENALG_NBENTITIES 100
 #define GENALG_NBELITES 20
-#define GENALG_DIVERSITYTHRESHOLD 0.01
 
 // ------------- GenAlgAdn
 
@@ -37,6 +36,8 @@ typedef struct GenAlgAdn {
   VecFloat* _deltaAdnF;
   // Adn for integer point value
   VecShort* _adnI;
+  // Value
+  float _val;
 } GenAlgAdn;
 
 // ================ Functions declaration ====================
@@ -186,8 +187,6 @@ typedef struct GenAlg {
   VecFloat2D* _boundsF;
   // Bounds (min, max) for integer values adn
   VecShort2D* _boundsI;
-  // Diversity threshold for KTEvent
-  float _diversityThreshold;
   // Norm of the range value for adns (optimization for diversity
   // calculation)
   float _normRangeFloat;
@@ -241,18 +240,6 @@ int GAGetNbAdns(const GenAlg* const that);
 inline
 #endif
 int GAGetNbElites(const GenAlg* const that);
-
-// Return the diversity threshold of the GenAlg 'that'
-#if BUILDMODE != 0
-inline
-#endif
-float GAGetDiversityThreshold(const GenAlg* const that);
-
-// Set the diversity threshold of the GenAlg 'that' to 'div'
-#if BUILDMODE != 0
-inline
-#endif
-void GASetDiversityThreshold(GenAlg* const that, const float div);
 
 // Return the current epoch of the GenAlg 'that'
 #if BUILDMODE != 0
@@ -337,12 +324,10 @@ void GAPrintln(const GenAlg* const that, FILE* const stream);
 void GAEliteSummaryPrintln(const GenAlg* const that, 
   FILE* const stream);
 
-// Get the average diversity of current entities of the GenAlg 'that'
-// The return value is in [0.0, 1.0]
-// 0.0 means all the elite entities have exactly the same adns 
-// 1.0 means all the elite entities except the first one have adns 
-// as different compare to the first one's adn as possible given the 
-// range of adn values
+// Get the diversity of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
 float GAGetDiversity(const GenAlg* const that);
 
 // Function which return the JSON encoding of 'that' 
@@ -367,7 +352,7 @@ bool GASave(const GenAlg* const that, FILE* const stream,
 #if BUILDMODE != 0
 inline
 #endif
-void GASetAdnValue(GenAlg* const that, const GenAlgAdn* const adn, 
+void GASetAdnValue(GenAlg* const that, GenAlgAdn* const adn, 
   const float val);
 
 // Update the norm of the range value for adans of the GenAlg 'that'

@@ -456,7 +456,7 @@ GenAlgAdn* GAAdn(const GenAlg* const that, const int iRank) {
 #if BUILDMODE != 0
 inline
 #endif
-void GASetAdnValue(GenAlg* const that, const GenAlgAdn* const adn, 
+void GASetAdnValue(GenAlg* const that, GenAlgAdn* const adn, 
   const float val) {
 #if BUILDMODE == 0
   if (that == NULL) {
@@ -470,14 +470,19 @@ void GASetAdnValue(GenAlg* const that, const GenAlgAdn* const adn,
     PBErrCatch(GenAlgErr);
   }
 #endif
-  GSetElemSetSortVal((GSetElem*)GSetFirstElem(GAAdns(that), adn), val);
+  adn->_val = val;
+  // Slowly depreciate old adns
+  float corVal = val - (float)(adn->_age) / 10000.0;
+  // Set the value
+  GSetElemSetSortVal((GSetElem*)GSetFirstElem(GAAdns(that), adn),
+    corVal);
 }
 
-// Return the diversity threshold of the GenAlg 'that'
+// Get the diversity of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-float GAGetDiversityThreshold(const GenAlg* const that) {
+float GAGetDiversity(const GenAlg* const that) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -485,21 +490,8 @@ float GAGetDiversityThreshold(const GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  return that->_diversityThreshold;
-}
-
-// Set the diversity threshold of the GenAlg 'that' to 'div'
-#if BUILDMODE != 0
-inline
-#endif
-void GASetDiversityThreshold(GenAlg* const that, const float div) {
-#if BUILDMODE == 0
-  if (that == NULL) {
-    GenAlgErr->_type = PBErrTypeNullPointer;
-    sprintf(GenAlgErr->_msg, "'that' is null");
-    PBErrCatch(GenAlgErr);
-  }
-#endif
-  that->_diversityThreshold = div;
+  float diversity = 
+    GAAdn(that, 0)->_val - GAAdn(that, GAGetNbElites(that) - 1)->_val;
+  return diversity;
 }
 

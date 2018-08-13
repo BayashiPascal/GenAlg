@@ -149,8 +149,9 @@ void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga) {
   // each output and use inputs as start of the initial links
   // For each integer value gene
   int shiftOut = ga->_NNdata._nbIn + ga->_NNdata._nbHid;
-  for (int iGene = 0; iGene < GAGetLengthAdnInt(ga); iGene += 3)
+  for (int iGene = 0; iGene < GAGetLengthAdnInt(ga); iGene += 3) {
     VecSet(that->_adnI, iGene, -1);
+  }
   for (int iOut = 0; iOut < ga->_NNdata._nbOut; ++iOut) {
     // The base function is randomly choosen but can't be an 
     // inactive link
@@ -272,7 +273,6 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   that->_normRangeInt = 1.0;
   that->_nbElites = 0;
   that->_nextId = 0;
-  that->_diversityThreshold = GENALG_DIVERSITYTHRESHOLD;
   GASetNbEntities(that, nbEntities);
   GASetNbElites(that, nbElites);
   // Return the new GenAlg
@@ -381,28 +381,7 @@ void GAKTEvent(GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  // For each pair of elite entities
-  float threshold = GAGetDiversityThreshold(that);
-  for (int iEnt = GAGetNbElites(that); iEnt-- && iEnt > 0;) {
-    GenAlgAdn* adn = GAAdn(that, iEnt);
-    for (int jEnt = GAGetNbElites(that); jEnt--;) {
-      // Check the diversity of this entity against the first one
-      // for float values
-      float div = GAAdnGetDiversity(GAAdn(that, jEnt), adn, that);
-      if (iEnt != jEnt && div < threshold) {
-        // Initialise randomly the genes of the adn
-        GAAdnInit(adn, that);
-        // Reset the age of the child
-        adn->_age = 1;
-        // Set the id of the child
-        adn->_id = (that->_nextId)++;
-        // skip the end of the loop
-        jEnt = GAGetNbElites(that);
-      }
-    }
-  }
-  for (int iEnt = GAGetNbElites(that); iEnt < GAGetNbAdns(that); 
-    ++iEnt) {
+  for (int iEnt = 1; iEnt < GAGetNbAdns(that); ++iEnt) {
     GenAlgAdn* adn = GAAdn(that, iEnt);
     GAAdnInit(adn, that);
     adn->_age = 1;
@@ -428,11 +407,8 @@ void GAStep(GenAlg* const that) {
   // Get the diversity level
   float diversity = GAGetDiversity(that);
   // If the diversity level is too low
-  float thresholdByAge = 0.0; //1.0 - 1.0 / 
-    //sqrt((float)(GAAdn(that, GAGetNbElites(that) - 1)->_age + 1));
-  if (diversity < GAGetDiversityThreshold(that) ||
-    rnd() < thresholdByAge) {
-    // Break the diversity by applying a KT event (in memory of 
+  if (false && diversity < PBMATH_EPSILON) {
+    // Renew diversity by applying a KT event (in memory of 
     // chickens' grand pa and grand ma)
     GAKTEvent(that);
   // Else, the diversity level is ok
@@ -440,7 +416,7 @@ void GAStep(GenAlg* const that) {
     // For each adn which is an elite
     for (int iAdn = 0; iAdn < GAGetNbElites(that); ++iAdn) {
       // Increment age
-      (GAAdn(that, iAdn)->_age)++;
+      ++(GAAdn(that, iAdn)->_age);
     }
     // For each adn which is not an elite
     for (int iAdn = GAGetNbElites(that); iAdn < GAGetNbAdns(that); 
@@ -702,22 +678,45 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba and amplitude of mutation
-  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
-  float amp = 1.0 - 1.0 / sqrt((float)(parentA->_age + 1) * 0.1);
-  probMute *= amp;
+  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
+  float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age));
+  probMute /= (float)(GAGetLengthAdnInt(that));
+  probMute += (float)(parentA->_age) / 10000.0;
   // If there is a probability of mutation
   if (probMute > PBMATH_EPSILON) {
     // For each gene of the adn for int value (links definitions)
     for (int iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
       // If the link mutes
       if (rnd() < probMute) {
-        // Choose between activation or inactivation of the link
-        for (int jGene = 3; jGene--;) {
-          short min = VecGet(GABoundsAdnInt(that, iGene + jGene), 0);
-          short max = VecGet(GABoundsAdnInt(that, iGene + jGene), 1);
-          short val = (short)round((float)min + 
-            (float)(max - min) * rnd());
-          GAAdnSetGeneI(child, iGene + jGene, val);
+        // If this link is currently inactivated
+        if (GAAdnGetGeneI(child, iGene) == -1) {
+          for (int jGene = 3; jGene--;) {
+            short min = 
+              VecGet(GABoundsAdnInt(that, iGene + jGene), 0);
+            short max = 
+              VecGet(GABoundsAdnInt(that, iGene + jGene), 1);
+            // Ensure activation of the link
+            if (jGene == 0)
+              min = 0;
+            short val = (short)round((float)min + 
+              (float)(max - min) * rnd());
+            GAAdnSetGeneI(child, iGene + jGene, val);
+          }
+        // Else, this link is currently activated
+        } else {
+          // Choose between inactivation or mutation
+          if (rnd() < 0.5) {
+            // Inactivate the link
+            GAAdnSetGeneI(child, iGene, -1);
+          } else {
+            for (int jGene = 3; jGene-- && jGene != 0;) {
+              short min = VecGet(GABoundsAdnInt(that, iGene + jGene), 0);
+              short max = VecGet(GABoundsAdnInt(that, iGene + jGene), 1);
+              short val = (short)round((float)min + 
+                (float)(max - min) * rnd());
+              GAAdnSetGeneI(child, iGene + jGene, val);
+            }
+          }
         }
       }
       // Get the index of the base function
@@ -793,9 +792,16 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba amplitude of mutation
-  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
+  /*float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
   float amp = 1.0 - 1.0 / sqrt((float)(parentA->_age + 1));
-  probMute *= amp;
+  probMute *= amp;*/
+
+
+  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
+  float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age));
+  probMute /= (float)(GAGetLengthAdnInt(that));
+  probMute += (float)(parentA->_age) / 10000.0;
+
   // If the probability of mutation is not null
   if (probMute > PBMATH_EPSILON) {
     // For each gene of the adn for floating point value
@@ -1002,39 +1008,6 @@ float GAAdnGetDiversity(const GenAlgAdn* const adnA,
   return diversity;
 }
 
-// Get the min diversity of current entities of the GenAlg 'that'
-// The return value is in [0.0, 1.0]
-// 0.0 means all the elite entities have exactly the same adns 
-// 1.0 means all the elite entities except the first one have adns 
-// as different compare to the first one's adn as possible given the 
-// range of adn values
-float GAGetDiversity(const GenAlg* const that) {
-#if BUILDMODE == 0
-  if (that == NULL) {
-    GenAlgErr->_type = PBErrTypeNullPointer;
-    sprintf(GenAlgErr->_msg, "'that' is null");
-    PBErrCatch(GenAlgErr);
-  }
-#endif
-  // Declare a variable for calculation of the average of diversities
-  float sumDiversity = 0.0;
-  int nb = 0;
-  // For each elite entity except the first one
-  for (int iEnt = 0; iEnt < GAGetNbElites(that) - 1; ++iEnt) {
-    for (int jEnt = iEnt + 1; jEnt < GAGetNbElites(that); ++jEnt) {
-      // Sum the diversity of this entity against the first one
-      // for float values
-      sumDiversity += 
-        GAAdnGetDiversity(GAAdn(that, jEnt), GAAdn(that, iEnt), that);
-      ++nb;
-    }
-  }
-  // Calculate the average diversity
-  float diversity = sumDiversity / (float)nb;
-  // Return the result
-  return diversity;
-}
-
 // Function which return the JSON encoding of 'that' 
 JSONNode* GAAdnEncodeAsJSON(const GenAlgAdn* const that, 
   const float elo) {
@@ -1082,9 +1055,6 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
   JSONNode* json = JSONCreate();
   // Declare a buffer to convert value into string
   char val[100];
-  // Encode the diversity threshold
-  sprintf(val, "%f", GAGetDiversityThreshold(that));
-  JSONAddProp(json, "_diversityThreshold", val);
   // Encode the type
   sprintf(val, "%d", GAGetType(that));
   JSONAddProp(json, "_type", val);
@@ -1289,12 +1259,6 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
     default:
       break;
   }
-  // Decode the diversity threshold
-  prop = JSONProperty(json, "_diversityThreshold");
-  if (prop == NULL) {
-    return false;
-  }
-  (*that)->_diversityThreshold = atof(JSONLabel(JSONValue(prop, 0)));
   // Decode the epoch
   prop = JSONProperty(json, "_curEpoch");
   if (prop == NULL) {

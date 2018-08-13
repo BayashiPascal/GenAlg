@@ -158,8 +158,6 @@ void UnitTestGenAlgCreateFree() {
     ga->_nbElites != GENALG_NBELITES ||
     ga->_lengthAdnF != lengthAdnF ||
     ga->_lengthAdnI != lengthAdnI ||
-    ISEQUALF(ga->_diversityThreshold, 
-      GENALG_DIVERSITYTHRESHOLD) == false ||
     GSetNbElem(GAAdns(ga)) != GENALG_NBENTITIES) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GenAlgCreate failed");
@@ -266,21 +264,10 @@ void UnitTestGenAlgGetSet() {
     PBErrCatch(GenAlgErr);
   }
   GASetAdnValue(ga, GAAdn(ga, 0), 1.0);
-  if (ISEQUALF(ga->_adns->_tail->_sortVal, 1.0) == false) {
+  if (ISEQUALF(GAAdn(ga, 0)->_val, 1.0) == false ||
+    ISEQUALF(ga->_adns->_tail->_sortVal, 0.9999) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GASetAdnValue failed");
-    PBErrCatch(GenAlgErr);
-  }
-  if (ISEQUALF(GAGetDiversityThreshold(ga),   
-    ga->_diversityThreshold) == false) {
-    GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GAGetDiversityThreshold failed");
-    PBErrCatch(GenAlgErr);
-  }
-  GASetDiversityThreshold(ga, 0.5);
-  if (ISEQUALF(GAGetDiversityThreshold(ga), 0.5) == false) {
-    GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GASetDiversityThreshold failed");
     PBErrCatch(GenAlgErr);
   }
   GenAlgFree(&ga);
@@ -352,7 +339,7 @@ void UnitTestGenAlgGetDiversity() {
   GASetNbElites(ga, 2);
   GASetNbEntities(ga, 3);
   GAInit(ga);
-  if (ISEQUALF(GAGetDiversity(ga), 0.455102) == false) {
+  if (ISEQUALF(GAGetDiversity(ga), 0.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAGetDiversity failed");
     PBErrCatch(GenAlgErr);
@@ -392,12 +379,12 @@ void UnitTestGenAlgStep() {
   GAPrintln(ga, stdout);
   if (ga->_nextId != 4 || GAAdnGetId(child) != 3 || 
     GAAdnGetAge(child) != 1 ||
-    ISEQUALF(GAAdnGetGeneF(child, 0), 0.285933) == false ||
-    ISEQUALF(GAAdnGetGeneF(child, 1), 0.256643) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.000000) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.081678) == false ||
-    GAAdnGetGeneI(child, 0) != 2 ||
-    GAAdnGetGeneI(child, 1) != 7 ||
+    ISEQUALF(GAAdnGetGeneF(child, 0), 0.342535) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 1), 0.174965) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.056603) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.000000) == false ||
+    GAAdnGetGeneI(child, 0) != 4 ||
+    GAAdnGetGeneI(child, 1) != 10 ||
     GAAdn(ga, 2) != child ||
     GAAdnGetAge(GAAdn(ga, 0)) != 2 ||
     GAAdnGetAge(GAAdn(ga, 1)) != 2 ||
@@ -424,7 +411,6 @@ void UnitTestGenAlgLoadSave() {
   GASetBoundsAdnFloat(ga, 1, &boundsF);
   GASetBoundsAdnInt(ga, 0, &boundsI);
   GASetBoundsAdnInt(ga, 1, &boundsI);
-  GASetDiversityThreshold(ga, 0.02);
   GAInit(ga);
   GAStep(ga);
   GSet* rank = GSetCreate();
@@ -449,7 +435,6 @@ void UnitTestGenAlgLoadSave() {
     ga->_curEpoch != gaLoad->_curEpoch ||
     ga->_nbElites != gaLoad->_nbElites ||
     ga->_type != genAlgTypeDefault ||
-    !ISEQUALF(ga->_diversityThreshold, gaLoad->_diversityThreshold) ||
     ga->_lengthAdnF != gaLoad->_lengthAdnF ||
     ga->_lengthAdnI != gaLoad->_lengthAdnI ||
     VecIsEqual(ga->_boundsF, gaLoad->_boundsF) == false ||
@@ -626,6 +611,7 @@ void UnitTestAll() {
 
 int main() {
   UnitTestAll();
+  //UnitTestGenAlgPerf();
   // Return success code
   return 0;
 }
