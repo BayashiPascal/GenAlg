@@ -407,7 +407,7 @@ void GAStep(GenAlg* const that) {
   // Get the diversity level
   float diversity = GAGetDiversity(that);
   // If the diversity level is too low
-  if (false && diversity < PBMATH_EPSILON) {
+  if (diversity < PBMATH_EPSILON) {
     // Renew diversity by applying a KT event (in memory of 
     // chickens' grand pa and grand ma)
     GAKTEvent(that);
@@ -682,12 +682,15 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
   float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age));
   probMute /= (float)(GAGetLengthAdnInt(that));
   probMute += (float)(parentA->_age) / 10000.0;
-  // If there is a probability of mutation
-  if (probMute > PBMATH_EPSILON) {
+  if (probMute < PBMATH_EPSILON)
+    probMute = PBMATH_EPSILON;
+  bool hasMuted = false;
+  do {
     // For each gene of the adn for int value (links definitions)
     for (int iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
       // If the link mutes
       if (rnd() < probMute) {
+        hasMuted= true;
         // If this link is currently inactivated
         if (GAAdnGetGeneI(child, iGene) == -1) {
           for (int jGene = 3; jGene--;) {
@@ -764,7 +767,7 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
         }
       }
     }
-  }
+  } while (hasMuted == false);
 }
 
 // Mute the genes of the entity at rank 'iChild'
@@ -792,22 +795,19 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba amplitude of mutation
-  /*float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
-  float amp = 1.0 - 1.0 / sqrt((float)(parentA->_age + 1));
-  probMute *= amp;*/
-
-
   float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
   float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age));
   probMute /= (float)(GAGetLengthAdnInt(that));
   probMute += (float)(parentA->_age) / 10000.0;
-
-  // If the probability of mutation is not null
-  if (probMute > PBMATH_EPSILON) {
+  if (probMute < PBMATH_EPSILON)
+    probMute = PBMATH_EPSILON;
+  bool hasMuted = false;
+  do {
     // For each gene of the adn for floating point value
     for (int iGene = GAGetLengthAdnFloat(that); iGene--;) {
       // If this gene mutes
       if (rnd() < probMute) {
+        hasMuted = true;
         // Get the bounds
         const VecFloat2D* const bounds = GABoundsAdnFloat(that, iGene);
         // Declare a variable to memorize the previous value of the gene
@@ -835,6 +835,7 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
     for (int iGene = GAGetLengthAdnInt(that); iGene--;) {
       // If this gene mutes
       if (rnd() < probMute) {
+        hasMuted = true;
         // Get the bounds
         const VecShort2D* const boundsI = GABoundsAdnInt(that, iGene);
         VecFloat2D bounds = VecShortToFloat2D(boundsI);
@@ -856,7 +857,7 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
         }
       }
     }
-  }
+  } while (hasMuted == false);
 }
 
 // Print the information about the GenAlg 'that' on the stream 'stream'
