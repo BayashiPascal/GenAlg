@@ -179,6 +179,21 @@ unsigned long int GAAdnGetAge(const GenAlgAdn* const that) {
   return that->_age;
 }
 
+// Get the value of the GenAlgAdn 'that'
+#if BUILDMODE != 0
+inline
+#endif
+float GAAdnGetVal(const GenAlgAdn* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_val;
+}
+
 // Return true if the GenAlgAdn 'that' is new, i.e. is age equals 1
 // Return false
 #if BUILDMODE != 0
@@ -195,6 +210,30 @@ bool GAAdnIsNew(const GenAlgAdn* const that) {
   return (that->_age == 1);
 }
 
+// Copy the GenAlgAdn 'tho' into the GenAlgAdn 'that'
+#if BUILDMODE != 0
+inline
+#endif
+void GAAdnCopy(GenAlgAdn* const that, const GenAlgAdn* const tho) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (tho == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'tho' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  that->_id = tho->_id;
+  that->_age = tho->_age;
+  that->_val = tho->_val;
+  VecCopy(that->_adnF, tho->_adnF);
+  VecCopy(that->_deltaAdnF, tho->_deltaAdnF);
+  VecCopy(that->_adnI, tho->_adnI);
+}
 
 // ------------- GenAlg
 
@@ -230,6 +269,11 @@ void GASetTypeNeuraNet(GenAlg* const that, const int nbIn,
     PBErrCatch(GenAlgErr);
   }
 #endif
+  if (GAGetLengthAdnFloat(that) != GAGetLengthAdnInt(that)) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "Must have the same nb of bases and links");
+    PBErrCatch(GenAlgErr);
+  }
   that->_type = genAlgTypeNeuraNet;
   that->_NNdata._nbIn = nbIn;
   that->_NNdata._nbHid = nbHid;
@@ -295,6 +339,22 @@ unsigned long int GAGetCurEpoch(const GenAlg* const that) {
 #endif
   return that->_curEpoch;
 }
+
+// Return the number of KTEvent of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+unsigned long int GAGetNbKTEvent(const GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_nbKTEvent;
+}
+
 
 // Get the length of adn for floating point value
 #if BUILDMODE != 0
@@ -470,12 +530,9 @@ void GASetAdnValue(GenAlg* const that, GenAlgAdn* const adn,
     PBErrCatch(GenAlgErr);
   }
 #endif
-  adn->_val = val;
-  // Slowly depreciate old adns
-  float corVal = val - (float)(adn->_age) / 10000.0;
   // Set the value
-  GSetElemSetSortVal((GSetElem*)GSetFirstElem(GAAdns(that), adn),
-    corVal);
+  adn->_val = val;
+  GSetElemSetSortVal((GSetElem*)GSetFirstElem(GAAdns(that), adn), val);
 }
 
 // Get the diversity of the GenAlg 'that'
@@ -493,5 +550,20 @@ float GAGetDiversity(const GenAlg* const that) {
   float diversity = 
     GAAdn(that, 0)->_val - GAAdn(that, GAGetNbElites(that) - 1)->_val;
   return diversity;
+}
+
+// Return the best adn of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+const GenAlgAdn* GABestAdn(const GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_bestAdn;
 }
 

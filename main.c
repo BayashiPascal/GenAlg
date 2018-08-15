@@ -90,6 +90,12 @@ void UnitTestGenAlgAdnGetSet() {
     sprintf(GenAlgErr->_msg, "GAAdnGetAge failed");
     PBErrCatch(GenAlgErr);
   }
+  ent->_val = 2.0;
+  if (ISEQUALF(GAAdnGetVal(ent), 2.0) == false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAAdnGetVal failed");
+    PBErrCatch(GenAlgErr);
+  }
   if (GAAdnGetId(ent) != id) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAAdnGetId failed");
@@ -154,6 +160,7 @@ void UnitTestGenAlgCreateFree() {
     lengthAdnF, lengthAdnI);
   if (ga->_type != genAlgTypeDefault ||
     ga->_curEpoch != 0 ||
+    ga->_nbKTEvent != 0 ||
     ga->_nextId != GENALG_NBENTITIES ||
     ga->_nbElites != GENALG_NBELITES ||
     ga->_lengthAdnF != lengthAdnF ||
@@ -182,15 +189,6 @@ void UnitTestGenAlgGetSet() {
     sprintf(GenAlgErr->_msg, "GAGetType failed");
     PBErrCatch(GenAlgErr);
   }
-  GASetTypeNeuraNet(ga, 1, 2, 3);
-  if (GAGetType(ga) != genAlgTypeNeuraNet ||
-    ga->_NNdata._nbIn != 1 ||
-    ga->_NNdata._nbHid != 2 ||
-    ga->_NNdata._nbOut != 3) {
-    GenAlgErr->_type = PBErrTypeUnitTestFailed;
-    sprintf(GenAlgErr->_msg, "GASetTypeNeuraNet failed");
-    PBErrCatch(GenAlgErr);
-  }
   if (GAAdns(ga) != ga->_adns) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAEloRank failed");
@@ -209,6 +207,11 @@ void UnitTestGenAlgGetSet() {
   if (GAGetCurEpoch(ga) != 0) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAGetCurEpoch failed");
+    PBErrCatch(GenAlgErr);
+  }
+  if (GAGetNbKTEvent(ga) != 0) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAGetNbKTEvent failed");
     PBErrCatch(GenAlgErr);
   }
   GASetNbEntities(ga, 10);
@@ -265,9 +268,20 @@ void UnitTestGenAlgGetSet() {
   }
   GASetAdnValue(ga, GAAdn(ga, 0), 1.0);
   if (ISEQUALF(GAAdn(ga, 0)->_val, 1.0) == false ||
-    ISEQUALF(ga->_adns->_tail->_sortVal, 0.9999) == false) {
+    ISEQUALF(ga->_adns->_tail->_sortVal, 1.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GASetAdnValue failed");
+    PBErrCatch(GenAlgErr);
+  }
+  GenAlgFree(&ga);
+  ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES, 3, 3);
+  GASetTypeNeuraNet(ga, 1, 2, 3);
+  if (GAGetType(ga) != genAlgTypeNeuraNet ||
+    ga->_NNdata._nbIn != 1 ||
+    ga->_NNdata._nbHid != 2 ||
+    ga->_NNdata._nbOut != 3) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetTypeNeuraNet failed");
     PBErrCatch(GenAlgErr);
   }
   GenAlgFree(&ga);
@@ -379,12 +393,12 @@ void UnitTestGenAlgStep() {
   GAPrintln(ga, stdout);
   if (ga->_nextId != 4 || GAAdnGetId(child) != 3 || 
     GAAdnGetAge(child) != 1 ||
-    ISEQUALF(GAAdnGetGeneF(child, 0), 0.342535) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 0), -0.156076) == false ||
     ISEQUALF(GAAdnGetGeneF(child, 1), 0.174965) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.056603) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.000000) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.0) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.0) == false ||
     GAAdnGetGeneI(child, 0) != 4 ||
-    GAAdnGetGeneI(child, 1) != 10 ||
+    GAAdnGetGeneI(child, 1) != 7 ||
     GAAdn(ga, 2) != child ||
     GAAdnGetAge(GAAdn(ga, 0)) != 2 ||
     GAAdnGetAge(GAAdn(ga, 1)) != 2 ||
@@ -537,7 +551,7 @@ if (best - ev > PBMATH_EPSILON) {
     evaluate(GABestAdnF(ga), GABestAdnI(ga)) < PBMATH_EPSILON);
   printf("target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1\n");
   printf("approx: \n");
-  GAAdnPrintln(GAAdn(ga, 0), stdout);
+  GAAdnPrintln(GABestAdn(ga), stdout);
   printf("error: %f\n", evaluate(GABestAdnF(ga), GABestAdnI(ga)));
   GenAlgFree(&ga);
   printf("UnitTestGenAlgTest OK\n");
@@ -580,9 +594,9 @@ void UnitTestGenAlgPerf() {
       bestEv = ev;
     if (iRun == 0 || maxEv < ev)
       maxEv = ev;
-    GenAlgFree(&ga);
 //avgEv = sumEv / (float)iRun;
-//printf("best: %f, worst: %f, avg: %f\n", bestEv, maxEv, avgEv);
+//printf("best: %f, worst: %f, avg: %f, %lu\n", bestEv, maxEv, avgEv, ga->_nbKTEvent);
+    GenAlgFree(&ga);
   }
   avgEv = sumEv / (float)nbRun;
   printf("in %d runs, %lu epochs, best: %f, worst: %f, avg: %f\n", 

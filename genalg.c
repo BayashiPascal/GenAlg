@@ -253,6 +253,8 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   that->_type = genAlgTypeDefault;
   that->_adns = GSetCreate();
   that->_curEpoch = 0;
+  that->_nbKTEvent = 0;
+  that->_bestAdn = GenAlgAdnCreate(0, lengthAdnF, lengthAdnI);
   *(int*)&(that->_lengthAdnF) = lengthAdnF;
   *(int*)&(that->_lengthAdnI) = lengthAdnI;
   if (lengthAdnF > 0) {
@@ -294,6 +296,7 @@ void GenAlgFree(GenAlg** that) {
     free((*that)->_boundsF);
   if ((*that)->_boundsI != NULL)
     free((*that)->_boundsI);
+  GenAlgAdnFree(&((*that)->_bestAdn));
   free(*that);
   // Set the pointer to null
   *that = NULL;
@@ -381,7 +384,16 @@ void GAKTEvent(GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  for (int iEnt = 1; iEnt < GAGetNbAdns(that); ++iEnt) {
+  ++(that->_nbKTEvent);
+  GenAlgAdn* adn = GAAdn(that, 0);
+  unsigned long int age = adn->_age;
+  GAAdnCopy(adn, GABestAdn(that));
+  adn->_age = age;
+  int parents[2] = {0};
+  GAMute(that, parents, 0);
+  adn->_age = 1;
+  for (int iEnt = 1; iEnt < GAGetNbAdns(that); 
+    ++iEnt) {
     GenAlgAdn* adn = GAAdn(that, iEnt);
     GAAdnInit(adn, that);
     adn->_age = 1;
@@ -402,12 +414,20 @@ void GAStep(GenAlg* const that) {
   // Selection, Reproduction, Mutation
   // Ensure the set of adns is sorted
   GSetSort(GAAdns(that));
+  // Update the best adn if necessary
+  if (that->_curEpoch == 1 || 
+    GAAdnGetVal(GAAdn(that, 0)) > GAAdnGetVal(GABestAdn(that))) {
+    GAAdnCopy(that->_bestAdn, GAAdn(that, 0));
+  }
   // Declare a variable to memorize the parents
   int parents[2];
   // Get the diversity level
   float diversity = GAGetDiversity(that);
+  // Correct the diversity level with the age of the best adn
+  //diversity *= 
+    //1.0 - fsquare((float)(GAAdnGetAge(GAAdn(that, 0))) / 1000.0);
   // If the diversity level is too low
-  if (diversity < PBMATH_EPSILON) {
+  if (diversity < PBMATH_EPSILON || GAAdnGetAge(GAAdn(that, 0)) > 200) {
     // Renew diversity by applying a KT event (in memory of 
     // chickens' grand pa and grand ma)
     GAKTEvent(that);
@@ -450,12 +470,14 @@ void GASelectParents(const GenAlg* const that, int* const parents) {
 #endif
   // Declare a variable to memorize the parents' rank
   int p[2];
-  for (int i = 2; i--;)
-    // p[i] below may be equal to the rank of the highest non elite 
-    // adn, but it's not a problem so leave it and let's call that 
-    // the Hawking radiation of this function in memory of this great 
-    // man.
-    p[i] = (int)floor(rnd() * (float)GAGetNbElites(that));
+  do {
+    for (int i = 2; i--;)
+      // p[i] below may be equal to the rank of the highest non elite 
+      // adn, but it's not a problem so leave it and let's call that 
+      // the Hawking radiation of this function in memory of this great 
+      // man.
+      p[i] = (int)floor(rnd() * (float)GAGetNbElites(that));
+  } while (p[0] == p[1]);
   // Memorize the sorted parents' rank
   if (p[0] < p[1]) {
     parents[0] = p[0];
@@ -679,7 +701,7 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba and amplitude of mutation
   float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
-  float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age));
+  float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age + 1));
   probMute /= (float)(GAGetLengthAdnInt(that));
   probMute += (float)(parentA->_age) / 10000.0;
   if (probMute < PBMATH_EPSILON)
@@ -693,17 +715,16 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
         hasMuted= true;
         // If this link is currently inactivated
         if (GAAdnGetGeneI(child, iGene) == -1) {
-          for (int jGene = 3; jGene--;) {
+          int iBase = (int)round((float)iGene / 3.0);
+          GAAdnSetGeneI(child, iGene, iBase);
+          for (int jGene = 2; jGene--;) {
             short min = 
-              VecGet(GABoundsAdnInt(that, iGene + jGene), 0);
+              VecGet(GABoundsAdnInt(that, iGene + jGene + 1), 0);
             short max = 
-              VecGet(GABoundsAdnInt(that, iGene + jGene), 1);
-            // Ensure activation of the link
-            if (jGene == 0)
-              min = 0;
+              VecGet(GABoundsAdnInt(that, iGene + jGene + 1), 1);
             short val = (short)round((float)min + 
               (float)(max - min) * rnd());
-            GAAdnSetGeneI(child, iGene + jGene, val);
+            GAAdnSetGeneI(child, iGene + jGene + 1, val);
           }
         // Else, this link is currently activated
         } else {
@@ -712,12 +733,14 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
             // Inactivate the link
             GAAdnSetGeneI(child, iGene, -1);
           } else {
-            for (int jGene = 3; jGene-- && jGene != 0;) {
-              short min = VecGet(GABoundsAdnInt(that, iGene + jGene), 0);
-              short max = VecGet(GABoundsAdnInt(that, iGene + jGene), 1);
+            for (int jGene = 2; jGene--;) {
+              short min = 
+                VecGet(GABoundsAdnInt(that, iGene + jGene + 1), 0);
+              short max = 
+                VecGet(GABoundsAdnInt(that, iGene + jGene + 1), 1);
               short val = (short)round((float)min + 
                 (float)(max - min) * rnd());
-              GAAdnSetGeneI(child, iGene + jGene, val);
+              GAAdnSetGeneI(child, iGene + jGene + 1, val);
             }
           }
         }
@@ -759,8 +782,6 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
                   GAAdnGetGeneF(child, baseFunGene + jGene));
             }
             // Update the deltaAdn
-            // TODO: should be cumulative as the same base may mutes
-            // several times 
             GAAdnSetDeltaGeneF(child, baseFunGene + jGene, 
               GAAdnGetGeneF(child, baseFunGene + jGene) - prevVal);
           }

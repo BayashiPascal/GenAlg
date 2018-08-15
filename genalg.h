@@ -134,6 +134,12 @@ inline
 #endif
 unsigned long int GAAdnGetAge(const GenAlgAdn* const that);
 
+// Get the value of the GenAlgAdn 'that'
+#if BUILDMODE != 0
+inline
+#endif
+float GAAdnGetVal(const GenAlgAdn* const that);
+
 // Print the information about the GenAlgAdn 'that' on the 
 // stream 'stream'
 void GAAdnPrintln(const GenAlgAdn* const that, FILE* const stream);
@@ -145,12 +151,18 @@ inline
 #endif
 bool GAAdnIsNew(const GenAlgAdn* const that);
 
+// Copy the GenAlgAdn 'tho' into the GenAlgAdn 'that'
+#if BUILDMODE != 0
+inline
+#endif
+void GAAdnCopy(GenAlgAdn* const that, const GenAlgAdn* const tho);
+
 // ------------- GenAlg
 
 // ================= Define ===================
 
-#define GABestAdnF(that) GAAdnAdnF(GAAdn(that, 0))
-#define GABestAdnI(that) GAAdnAdnI(GAAdn(that, 0))
+#define GABestAdnF(that) GAAdnAdnF(GABestAdn(that))
+#define GABestAdnI(that) GAAdnAdnI(GABestAdn(that))
 
 // ================= Data structure ===================
 
@@ -171,6 +183,8 @@ typedef struct GenAlg {
   // GSet of GenAlgAdn, sortval == score so the head of the set is the 
   // worst adn and the tail of the set is the best
   GSet* _adns;
+  // Copy of the best adn
+  GenAlgAdn* _bestAdn;
   // Type of the GenAlg
   GenAlgType _type;
   // Current epoch
@@ -193,6 +207,8 @@ typedef struct GenAlg {
   float _normRangeInt;
   // Data used if the GenAlg is applied to a NeuraNet
   GANeuraNet _NNdata;
+  // Number of ktevent
+  unsigned long int _nbKTEvent;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -246,6 +262,12 @@ int GAGetNbElites(const GenAlg* const that);
 inline
 #endif
 unsigned long int GAGetCurEpoch(const GenAlg* const that);
+
+// Return the number of KTEvent of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+unsigned long int GAGetNbKTEvent(const GenAlg* const that);
 
 // Set the nb of entities of the GenAlg 'that' to 'nb'
 // 'nb' must be greater than 1, if 'nb' is lower than the current nb 
@@ -361,6 +383,12 @@ void GAUpdateNormRange(GenAlg* const that);
 // Reset the GenAlg 'that'
 // Randomize all the gene except those of the first adn
 void GAKTEvent(GenAlg* const that);
+
+// Return the best adn of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+const GenAlgAdn* GABestAdn(const GenAlg* const that);
 
 // ================= Polymorphism ==================
 
