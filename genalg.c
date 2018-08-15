@@ -820,6 +820,7 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
       }
     }
   } while (hasMuted == false);
+  free(isUsed);
 }
 
 // Mute the genes of the entity at rank 'iChild'
@@ -1084,6 +1085,9 @@ JSONNode* GAAdnEncodeAsJSON(const GenAlgAdn* const that,
   // Encode the elo
   sprintf(val, "%f", elo);
   JSONAddProp(json, "_elo", val);
+  // Encode the value
+  sprintf(val, "%f", that->_val);
+  JSONAddProp(json, "_val", val);
   // Encode the genes
   if (that->_adnF != NULL) {
     JSONAddProp(json, "_adnF", VecEncodeAsJSON(that->_adnF));
@@ -1163,6 +1167,9 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
     JSONArrayStructAdd(&setAdn, GAAdnEncodeAsJSON(ent, sortVal));
   }
   JSONAddProp(json, "_adns", &setAdn);
+  // Save the best adn
+  JSONAddProp(json, "_bestAdn", 
+    GAAdnEncodeAsJSON(GABestAdn(that), 0.0));
   // Free memory
   JSONArrayStructFlush(&setBoundFloat);
   JSONArrayStructFlush(&setBoundInt);
@@ -1237,6 +1244,12 @@ bool GAAdnDecodeAsJSON(GenAlgAdn** that, const JSONNode* const json) {
     if (!VecDecodeAsJSON(&((*that)->_adnI), prop)) {
       return false;
     }
+  // Get the value
+  prop = JSONProperty(json, "_val");
+  if (prop == NULL) {
+    return false;
+  }
+  (*that)->_val = atof(JSONLabel(JSONValue(prop, 0)));
   // Return the success code
   return true;
 }
@@ -1370,6 +1383,15 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
       return false;
     }
   }
+  // Decode the best adn
+  prop = JSONProperty(json, "_bestAdn");
+  if (prop == NULL) {
+    return false;
+  }
+  if (!GAAdnDecodeAsJSON((GenAlgAdn**)&((*that)->_bestAdn), prop)) {
+    return false;
+  }
+  
   // Return the success code
   return true;
 }
