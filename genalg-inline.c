@@ -270,7 +270,7 @@ void GASetTypeNeuraNet(GenAlg* const that, const int nbIn,
   }
 #endif
   if (GAGetLengthAdnFloat(that) != GAGetLengthAdnInt(that)) {
-    GenAlgErr->_type = PBErrTypeNullPointer;
+    GenAlgErr->_type = PBErrTypeInvalidArg;
     sprintf(GenAlgErr->_msg, "Must have the same nb of bases and links");
     PBErrCatch(GenAlgErr);
   }

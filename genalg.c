@@ -704,10 +704,20 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
   float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age + 1));
   probMute /= (float)(GAGetLengthAdnInt(that));
   probMute += (float)(parentA->_age) / 10000.0;
+  // Ensure the proba is not null
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
+  // Declare a variable to memorize if there has been mutation
   bool hasMuted = false;
+  // Declare a variable to memorize the used values amongst input and 
+  // hidden
+  int nbMaxUsedVal = that->_NNdata._nbIn + that->_NNdata._nbHid;
+  char* isUsed = PBErrMalloc(GenAlgErr, sizeof(char) * nbMaxUsedVal);
+  // Loop until there has been at least one mutation
   do {
+    // Reset the used values
+    memset(isUsed, 0, sizeof(char) * nbMaxUsedVal);
+    memset(isUsed, 1, sizeof(char) * that->_NNdata._nbIn);
     // For each gene of the adn for int value (links definitions)
     for (int iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
       // If the link mutes
@@ -715,17 +725,28 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
         hasMuted= true;
         // If this link is currently inactivated
         if (GAAdnGetGeneI(child, iGene) == -1) {
+          // Base function
           int iBase = (int)round((float)iGene / 3.0);
           GAAdnSetGeneI(child, iGene, iBase);
-          for (int jGene = 2; jGene--;) {
-            short min = 
-              VecGet(GABoundsAdnInt(that, iGene + jGene + 1), 0);
-            short max = 
-              VecGet(GABoundsAdnInt(that, iGene + jGene + 1), 1);
-            short val = (short)round((float)min + 
+          // Input
+          short min = 
+            VecGet(GABoundsAdnInt(that, iGene + 1), 0);
+          short max = 
+            VecGet(GABoundsAdnInt(that, iGene + 1), 1);
+          short val = min;
+          // Ensure the input is a used value
+          do {
+            val = (short)round((float)min + 
               (float)(max - min) * rnd());
-            GAAdnSetGeneI(child, iGene + jGene + 1, val);
-          }
+          } while (isUsed[val] == 0);
+          GAAdnSetGeneI(child, iGene + 1, val);
+          // Output
+          min = MAX(val, VecGet(GABoundsAdnInt(that, iGene + 2), 0));
+          max = VecGet(GABoundsAdnInt(that, iGene + 2), 1);
+          val = (short)round((float)min + (float)(max - min) * rnd());
+          GAAdnSetGeneI(child, iGene + 2, val);
+          if (val < nbMaxUsedVal)
+            isUsed[val] = 1;
         // Else, this link is currently activated
         } else {
           // Choose between inactivation or mutation
@@ -733,15 +754,25 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
             // Inactivate the link
             GAAdnSetGeneI(child, iGene, -1);
           } else {
-            for (int jGene = 2; jGene--;) {
-              short min = 
-                VecGet(GABoundsAdnInt(that, iGene + jGene + 1), 0);
-              short max = 
-                VecGet(GABoundsAdnInt(that, iGene + jGene + 1), 1);
-              short val = (short)round((float)min + 
+            // Input
+            short min = 
+              VecGet(GABoundsAdnInt(that, iGene + 1), 0);
+            short max = 
+              VecGet(GABoundsAdnInt(that, iGene + 1), 1);
+            short val = min;
+            // Ensure the input is a used value
+            do {
+              val = (short)round((float)min + 
                 (float)(max - min) * rnd());
-              GAAdnSetGeneI(child, iGene + jGene + 1, val);
-            }
+            } while (isUsed[val] == 0);
+            GAAdnSetGeneI(child, iGene + 1, val);
+            // Output
+            min = MAX(val, VecGet(GABoundsAdnInt(that, iGene + 2), 0));
+            max = VecGet(GABoundsAdnInt(that, iGene + 2), 1);
+            val = (short)round((float)min + (float)(max - min) * rnd());
+            GAAdnSetGeneI(child, iGene + 2, val);
+            if (val < nbMaxUsedVal)
+              isUsed[val] = 1;
           }
         }
       }
