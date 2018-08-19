@@ -109,7 +109,7 @@ id:1167158 age:1
   adnI:<2,1,0,3>
 error: 0.000674
 UnitTestGenAlgTest OK
-in 500 runs, 2000 epochs, best: 0.000212, worst: 0.006605, avg: 0.002259
+in 500 runs, 2000 epochs, best: 0.000285, worst: 0.007826, avg: 0.002240
 UnitTestGenAlgPerf OK
 UnitTestGenAlg OK
 UnitTestAll OK

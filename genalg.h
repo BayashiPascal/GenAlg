@@ -168,7 +168,8 @@ void GAAdnCopy(GenAlgAdn* const that, const GenAlgAdn* const tho);
 
 typedef enum GenAlgType {
   genAlgTypeDefault,
-  genAlgTypeNeuraNet
+  genAlgTypeNeuraNet,
+  genAlgTypeNeuraNetConv
 } GenAlgType;
 
 // Data used when GenAlg is applied to a NeuraNet
@@ -177,6 +178,8 @@ typedef struct GANeuraNet {
   int _nbIn;
   int _nbHid;
   int _nbOut;
+  int _nbBaseConv;
+  int _nbBaseCellConv;
 } GANeuraNet;
 
 typedef struct GenAlg {
@@ -238,6 +241,17 @@ inline
 #endif
 void GASetTypeNeuraNet(GenAlg* const that, const int nbIn, 
   const int nbHid, const int nbOut);
+
+// Set the type of the GenAlg 'that' to genAlgTypeNeuraNetConv, 
+// the GenAlg will be used with a NeuraNet having 'nbIn' inputs, 
+// 'nbHid' hidden values, 'nbOut' outputs, 'nbBaseConv' bases function
+// dedicated to the convolution and 'nbBaseCellConv' bases function per cell of convolution
+#if BUILDMODE != 0
+inline
+#endif
+void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn, 
+  const int nbHid, const int nbOut, const int nbBaseConv,
+  const int nbBaseCellConv);
 
 // Return the GSet of the GenAlg 'that'
 #if BUILDMODE != 0

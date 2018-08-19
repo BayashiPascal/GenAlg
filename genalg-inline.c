@@ -278,6 +278,37 @@ void GASetTypeNeuraNet(GenAlg* const that, const int nbIn,
   that->_NNdata._nbIn = nbIn;
   that->_NNdata._nbHid = nbHid;
   that->_NNdata._nbOut = nbOut;
+  that->_NNdata._nbBaseConv = 0;
+}
+
+// Set the type of the GenAlg 'that' to genAlgTypeNeuraNetConv, 
+// the GenAlg will be used with a NeuraNet having 'nbIn' inputs, 
+// 'nbHid' hidden values, 'nbOut' outputs, 'nbBaseConv' bases function
+// dedicated to the convolution and 'nbBaseCellConv' bases function per cell of convolution
+#if BUILDMODE != 0
+inline
+#endif
+void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn, 
+  const int nbHid, const int nbOut, const int nbBaseConv,
+  const int nbBaseCellConv) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  if (GAGetLengthAdnFloat(that) != GAGetLengthAdnInt(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "Must have the same nb of bases and links");
+    PBErrCatch(GenAlgErr);
+  }
+  that->_type = genAlgTypeNeuraNet;
+  that->_NNdata._nbIn = nbIn;
+  that->_NNdata._nbHid = nbHid;
+  that->_NNdata._nbOut = nbOut;
+  that->_NNdata._nbBaseConv = nbBaseConv;
+  that->_NNdata._nbBaseCellConv = nbBaseCellConv;
 }
 
 // Return the GSet of the GenAlg 'that'

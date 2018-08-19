@@ -23,7 +23,13 @@ void GAAdnInitDefault(const GenAlgAdn* const that, const GenAlg* ga);
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga', version used to calculate the parameters of a NeuraNet
 void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga);
-  
+
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
+// GenAlg 'ga', version used to calculate the parameters of a NeuraNet
+// with convolution
+void GAAdnInitNeuraNetConv(const GenAlgAdn* const that, 
+  const GenAlg* const ga);
+    
 // ================ Functions implementation ====================
 
 // Create a new GenAlgAdn with ID 'id', 'lengthAdnF' and 'lengthAdnI'
@@ -94,6 +100,9 @@ void GAAdnInit(const GenAlgAdn* const that, const GenAlg* const ga) {
     case genAlgTypeNeuraNet:
       GAAdnInitNeuraNet(that, ga);
       break;
+    case genAlgTypeNeuraNetConv:
+      GAAdnInitNeuraNetConv(that, ga);
+      break;
     case genAlgTypeDefault:
     default:
       GAAdnInitDefault(that, ga);
@@ -124,6 +133,27 @@ void GAAdnInitDefault(const GenAlgAdn* const that,
     short max = VecGet(GABoundsAdnInt(ga, iGene), 1);
     short val = (short)round((float)min + (float)(max - min) * rnd());
     VecSet(that->_adnI, iGene, val);
+  }
+}
+
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
+// GenAlg 'ga', version used to calculate the parameters of a NeuraNet
+// with convolution
+void GAAdnInitNeuraNetConv(const GenAlgAdn* const that, 
+  const GenAlg* const ga) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // For each floating point value gene
+  for (int iGene = GAGetLengthAdnFloat(ga); iGene--;) {
+    float min = VecGet(GABoundsAdnFloat(ga, iGene), 0);
+    float max = VecGet(GABoundsAdnFloat(ga, iGene), 1);
+    float val = min + (max - min) * rnd();
+    VecSet(that->_adnF, iGene, val);
   }
 }
 
@@ -215,6 +245,13 @@ void GAReproduction(GenAlg* const that, const int* const parents,
 void GAReproductionDefault(GenAlg* const that, 
   const int* const parents, const int iChild);
 
+// Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
+// genes of adns at ranks 'parents[0]' and 'parents[1]'
+// This version is optimised to calculate the parameters of a NeuraNet
+// with convolution by inheriting whole bases from parents
+void GAReproductionNeuraNetConv(GenAlg* const that, 
+  const int* const parents, const int iChild);
+  
 // Set the genes of the entity at rank 'iChild' as a 50/50 mix of the 
 // genes of entities at ranks 'parents[0]' and 'parents[1]'
 // This version is optimised to calculate the parameters of a NeuraNet
@@ -238,6 +275,12 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
 void GAMuteNeuraNet(GenAlg* const that, const int* const parents, 
   const int iChild);
 
+// Mute the genes of the entity at rank 'iChild'
+// This version is optimised to calculate the parameters of a NeuraNet
+// with convolution by muting bases function per cell
+void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents, 
+  const int iChild);
+  
 // ================ Functions implementation ====================
 
 // Create a new GenAlg with 'nbEntities', 'nbElites', 'lengthAdnF' 
@@ -372,6 +415,7 @@ void GAInit(GenAlg* const that) {
     // Initialise randomly the genes of the adn
     GAAdnInit(adn, that);
   } while (GSetIterStep(&iter));
+  GAAdnCopy(that->_bestAdn, GAAdn(that, 0));
 }
 
 // Reset the GenAlg 'that'
@@ -514,6 +558,9 @@ void GAReproduction(GenAlg* const that,
     case genAlgTypeNeuraNet:
       GAReproductionNeuraNet(that, parents, iChild);
       break;
+    case genAlgTypeNeuraNetConv:
+      GAReproductionNeuraNetConv(that, parents, iChild);
+      break;
     case genAlgTypeDefault:
     default:
       GAReproductionDefault(that, parents, iChild);
@@ -579,6 +626,85 @@ void GAReproductionNeuraNet(GenAlg* const that,
       for (int jGene = 3; jGene--;)
         VecSet(child->_adnI, iGene + jGene, 
           VecGet(parentB->_adnI, iGene + jGene));
+    }
+  }
+  // Reset the age of the child
+  child->_age = 1;
+  // Set the id of the child
+  child->_id = (that->_nextId)++;
+}
+
+// Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
+// genes of adns at ranks 'parents[0]' and 'parents[1]'
+// This version is optimised to calculate the parameters of a NeuraNet
+// with convolution by inheriting whole bases from parents
+void GAReproductionNeuraNetConv(GenAlg* const that, 
+  const int* const parents, const int iChild) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (parents == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'parents' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
+      iChild, GAGetNbAdns(that));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Get the parents and child
+  GenAlgAdn* parentA = GAAdn(that, parents[0]);
+  GenAlgAdn* parentB = GAAdn(that, parents[1]);
+  GenAlgAdn* child = GAAdn(that, iChild);
+  // For each gene of the adn for floating point value of convolution
+  // base functions
+  for (int iGene = 0; 
+    iGene < that->_NNdata._nbBaseConv * 3; 
+    iGene += that->_NNdata._nbBaseCellConv * 3) {
+    // Get the gene from one parent or the other with equal probabililty
+    if (rnd() < 0.5) {
+      for (int jGene = that->_NNdata._nbBaseCellConv * 3;
+        jGene--;) {
+        VecSet(child->_adnF, iGene + jGene, 
+          VecGet(parentA->_adnF, iGene + jGene));
+        VecSet(child->_deltaAdnF, iGene + jGene, 
+          VecGet(parentA->_deltaAdnF, iGene + jGene));
+      }
+    } else {
+      for (int jGene = that->_NNdata._nbBaseCellConv * 3;
+        jGene--;) {
+        VecSet(child->_adnF, iGene + jGene, 
+          VecGet(parentB->_adnF, iGene + jGene));
+        VecSet(child->_deltaAdnF, iGene + jGene, 
+          VecGet(parentB->_deltaAdnF, iGene + jGene));
+      }
+    }
+  }
+  // For each gene of the adn for floating point value of convolution
+  // base functions
+  for (int iGene = that->_NNdata._nbBaseConv * 3; 
+    iGene < GAGetLengthAdnFloat(that); iGene += 3) {
+    // Get the gene from one parent or the other with equal probabililty
+    if (rnd() < 0.5) {
+      for (int jGene = 3; --jGene;) {
+        VecSet(child->_adnF, iGene + jGene, 
+          VecGet(parentA->_adnF, iGene + jGene));
+        VecSet(child->_deltaAdnF, iGene + jGene, 
+          VecGet(parentA->_deltaAdnF, iGene + jGene));
+      }
+    } else {
+      for (int jGene = 3; --jGene;) {
+        VecSet(child->_adnF, iGene + jGene, 
+          VecGet(parentB->_adnF, iGene + jGene));
+        VecSet(child->_deltaAdnF, iGene + jGene, 
+          VecGet(parentB->_deltaAdnF, iGene + jGene));
+      }
     }
   }
   // Reset the age of the child
@@ -665,6 +791,9 @@ void GAMute(GenAlg* const that, const int* const parents,
   switch (GAGetType(that)) {
     case genAlgTypeNeuraNet:
       GAMuteNeuraNet(that, parents, iChild);
+      break;
+    case genAlgTypeNeuraNetConv:
+      GAMuteNeuraNetConv(that, parents, iChild);
       break;
     case genAlgTypeDefault:
     default:
@@ -913,6 +1042,72 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
   } while (hasMuted == false);
 }
 
+// Mute the genes of the entity at rank 'iChild'
+// This version is optimised to calculate the parameters of a NeuraNet
+// with convolution by muting bases function per cell
+void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents, 
+  const int iChild) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (parents == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'parents' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
+      iChild, GAGetNbAdns(that));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Get the first parent and child
+  GenAlgAdn* parentA = GAAdn(that, parents[0]);
+  GenAlgAdn* child = GAAdn(that, iChild);
+  // Get the proba amplitude of mutation
+  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
+  float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age));
+  probMute /= (float)(GAGetLengthAdnInt(that));
+  probMute += (float)(parentA->_age) / 10000.0;
+  if (probMute < PBMATH_EPSILON)
+    probMute = PBMATH_EPSILON;
+  bool hasMuted = false;
+  do {
+    // For each gene of the adn for floating point value
+    for (int iGene = GAGetLengthAdnFloat(that); iGene--;) {
+      // If this gene mutes
+      if (rnd() < probMute) {
+        hasMuted = true;
+        // Get the bounds
+        const VecFloat2D* const bounds = GABoundsAdnFloat(that, iGene);
+        // Declare a variable to memorize the previous value of the gene
+        float prevVal = GAAdnGetGeneF(child, iGene);
+        // Apply the mutation
+        GAAdnSetGeneF(child, iGene, GAAdnGetGeneF(child, iGene) + 
+          (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
+          (rnd() - 0.5 + GAAdnGetDeltaGeneF(child, iGene)));
+        // Keep the gene value in bounds
+        while (GAAdnGetGeneF(child, iGene) < VecGet(bounds, 0) ||
+          GAAdnGetGeneF(child, iGene) > VecGet(bounds, 1)) {
+          if (GAAdnGetGeneF(child, iGene) > VecGet(bounds, 1))
+            GAAdnSetGeneF(child, iGene, 
+              2.0 * VecGet(bounds, 1) - GAAdnGetGeneF(child, iGene));
+          else if (GAAdnGetGeneF(child, iGene) < VecGet(bounds, 0))
+            GAAdnSetGeneF(child, iGene, 
+              2.0 * VecGet(bounds, 0) - GAAdnGetGeneF(child, iGene));
+        }
+        // Update the deltaAdn
+        GAAdnSetDeltaGeneF(child, iGene, 
+          GAAdnGetGeneF(child, iGene) - prevVal);
+      }
+    }
+  } while (hasMuted == false);
+}
+
 // Print the information about the GenAlg 'that' on the stream 'stream'
 void GAPrintln(const GenAlg* const that, FILE* const stream) {
 #if BUILDMODE == 0
@@ -1117,12 +1312,18 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
   JSONAddProp(json, "_type", val);
   switch (GAGetType(that)) {
     case genAlgTypeNeuraNet:
+    case genAlgTypeNeuraNetConv:
       sprintf(val, "%d", that->_NNdata._nbIn);
       JSONAddProp(json, "NN_nbIn", val);
       sprintf(val, "%d", that->_NNdata._nbHid);
       JSONAddProp(json, "NN_nbHid", val);
       sprintf(val, "%d", that->_NNdata._nbOut);
       JSONAddProp(json, "NN_nbOut", val);
+      sprintf(val, "%d", that->_NNdata._nbBaseConv);
+      JSONAddProp(json, "NN_nbBaseConv", val);
+      sprintf(val, "%d", that->_NNdata._nbBaseCellConv);
+      JSONAddProp(json, "NN_nbBaseCellConv", val);
+      break;
     default:
       break;
   }
@@ -1306,6 +1507,7 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   int type = atoi(JSONLabel(JSONValue(prop, 0)));
   switch (type) {
     case genAlgTypeNeuraNet:
+    case genAlgTypeNeuraNetConv:
       prop = JSONProperty(json, "NN_nbIn");
       if (prop == NULL) {
         return false;
@@ -1321,7 +1523,19 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
         return false;
       }
       int nbHid = atoi(JSONLabel(JSONValue(prop, 0)));
-      GASetTypeNeuraNet(*that, nbIn, nbHid, nbOut);
+      prop = JSONProperty(json, "NN_nbBaseConv");
+      if (prop == NULL) {
+        return false;
+      }
+      int nbBaseConv = atoi(JSONLabel(JSONValue(prop, 0)));
+      prop = JSONProperty(json, "NN_nbBaseCellConv");
+      if (prop == NULL) {
+        return false;
+      }
+      int nbBaseCellConv = atoi(JSONLabel(JSONValue(prop, 0)));
+      GASetTypeNeuraNetConv(*that, nbIn, nbHid, nbOut, nbBaseConv, 
+        nbBaseCellConv);
+      break;
     default:
       break;
   }
