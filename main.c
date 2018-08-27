@@ -125,7 +125,7 @@ void UnitTestGenAlgAdnInit() {
   GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES, 
     lengthAdnF, lengthAdnI);
   VecFloat2D boundsF = VecFloatCreateStatic2D();
-  VecShort2D boundsI = VecShortCreateStatic2D();
+  VecLong2D boundsI = VecLongCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
   GASetBoundsAdnFloat(ga, 0, &boundsF);
@@ -253,7 +253,7 @@ void UnitTestGenAlgGetSet() {
     sprintf(GenAlgErr->_msg, "GASetBoundsAdnFloat failed");
     PBErrCatch(GenAlgErr);
   }
-  VecShort2D boundsS = VecShortCreateStatic2D();
+  VecLong2D boundsS = VecLongCreateStatic2D();
   VecSet(&boundsS, 0, -1); VecSet(&boundsS, 1, 1);
   GASetBoundsAdnInt(ga, 1, &boundsS);
   if (VecIsEqual(GABoundsAdnInt(ga, 1), &boundsS) == false) {
@@ -295,7 +295,7 @@ void UnitTestGenAlgInit() {
   GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES,
     lengthAdnF, lengthAdnI);
   VecFloat2D boundsF = VecFloatCreateStatic2D();
-  VecShort2D boundsI = VecShortCreateStatic2D();
+  VecLong2D boundsI = VecLongCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
   GASetBoundsAdnFloat(ga, 0, &boundsF);
@@ -322,7 +322,7 @@ void UnitTestGenAlgPrint() {
   int lengthAdnI = 2;
   GenAlg* ga = GenAlgCreate(3, 2, lengthAdnF, lengthAdnI);
   VecFloat2D boundsF = VecFloatCreateStatic2D();
-  VecShort2D boundsI = VecShortCreateStatic2D();
+  VecLong2D boundsI = VecLongCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
   GASetBoundsAdnFloat(ga, 0, &boundsF);
@@ -343,7 +343,7 @@ void UnitTestGenAlgGetDiversity() {
   GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES,
     lengthAdnF, lengthAdnI);
   VecFloat2D boundsF = VecFloatCreateStatic2D();
-  VecShort2D boundsI = VecShortCreateStatic2D();
+  VecLong2D boundsI = VecLongCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
   GASetBoundsAdnFloat(ga, 0, &boundsF);
@@ -375,7 +375,7 @@ void UnitTestGenAlgStep() {
   int lengthAdnI = 2;
   GenAlg* ga = GenAlgCreate(3, 2, lengthAdnF, lengthAdnI);
   VecFloat2D boundsF = VecFloatCreateStatic2D();
-  VecShort2D boundsI = VecShortCreateStatic2D();
+  VecLong2D boundsI = VecLongCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
   GASetBoundsAdnFloat(ga, 0, &boundsF);
@@ -418,7 +418,7 @@ void UnitTestGenAlgLoadSave() {
   int lengthAdnI = 2;
   GenAlg* ga = GenAlgCreate(3, 2, lengthAdnF, lengthAdnI);
   VecFloat2D boundsF = VecFloatCreateStatic2D();
-  VecShort2D boundsI = VecShortCreateStatic2D();
+  VecLong2D boundsI = VecLongCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 1); VecSet(&boundsI, 1, 10);
   GASetBoundsAdnFloat(ga, 0, &boundsF);
@@ -493,7 +493,7 @@ float ftarget(float x) {
   return -0.5 * fastpow(x, 3) + 0.314 * fastpow(x, 2) - 0.7777 * x + 0.1;
 }
 
-float evaluate(const VecFloat* adnF, const VecShort* adnI) {
+float evaluate(const VecFloat* adnF, const VecLong* adnI) {
   float delta = 0.02;
   int nb = (int)round(4.0 / delta);
   float res = 0.0;
@@ -514,7 +514,7 @@ void UnitTestGenAlgTest() {
   GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES, 
     lengthAdnF, lengthAdnI);
   VecFloat2D boundsF = VecFloatCreateStatic2D();
-  VecShort2D boundsI = VecShortCreateStatic2D();
+  VecLong2D boundsI = VecLongCreateStatic2D();
   VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
   VecSet(&boundsI, 0, 0); VecSet(&boundsI, 1, 4);
   for (int i = lengthAdnF; i--;) {
@@ -571,7 +571,7 @@ void UnitTestGenAlgPerf() {
     GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES, 
       lengthAdnF, lengthAdnI);
     VecFloat2D boundsF = VecFloatCreateStatic2D();
-    VecShort2D boundsI = VecShortCreateStatic2D();
+    VecLong2D boundsI = VecLongCreateStatic2D();
     VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
     VecSet(&boundsI, 0, 0); VecSet(&boundsI, 1, 4);
     for (int i = lengthAdnF; i--;) {

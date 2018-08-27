@@ -34,18 +34,18 @@ void GAAdnInitNeuraNetConv(const GenAlgAdn* const that,
 
 // Create a new GenAlgAdn with ID 'id', 'lengthAdnF' and 'lengthAdnI'
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
-GenAlgAdn* GenAlgAdnCreate(const int id, const int lengthAdnF, 
-  const int lengthAdnI) {
+GenAlgAdn* GenAlgAdnCreate(const unsigned long id, 
+  const long lengthAdnF, const long lengthAdnI) {
 #if BUILDMODE == 0
   if (lengthAdnF < 0) {
     GenAlgErr->_type = PBErrTypeInvalidArg;
-    sprintf(GenAlgErr->_msg, "'lengthAdnF' is invalid (%d>=0)", 
+    sprintf(GenAlgErr->_msg, "'lengthAdnF' is invalid (%ld>=0)", 
       lengthAdnF);
     PBErrCatch(GenAlgErr);
   }
   if (lengthAdnI < 0) {
     GenAlgErr->_type = PBErrTypeInvalidArg;
-    sprintf(GenAlgErr->_msg, "'lengthAdnI' is invalid (%d>=0)", 
+    sprintf(GenAlgErr->_msg, "'lengthAdnI' is invalid (%ld>=0)", 
       lengthAdnI);
     PBErrCatch(GenAlgErr);
   }
@@ -55,6 +55,7 @@ GenAlgAdn* GenAlgAdnCreate(const int id, const int lengthAdnF,
   // Set the properties
   that->_age = 1;
   that->_id = id;
+  that->_val = 0.0;
   if (lengthAdnF > 0) {
     that->_adnF = VecFloatCreate(lengthAdnF);
     that->_deltaAdnF = VecFloatCreate(lengthAdnF);
@@ -63,7 +64,7 @@ GenAlgAdn* GenAlgAdnCreate(const int id, const int lengthAdnF,
     that->_deltaAdnF = NULL;
   }
   if (lengthAdnI > 0)
-    that->_adnI = VecShortCreate(lengthAdnI);
+    that->_adnI = VecLongCreate(lengthAdnI);
   else
     that->_adnI = NULL;
   // Return the new GenAlgAdn
@@ -121,17 +122,17 @@ void GAAdnInitDefault(const GenAlgAdn* const that,
   }
 #endif
   // For each floating point value gene
-  for (int iGene = GAGetLengthAdnFloat(ga); iGene--;) {
+  for (long iGene = GAGetLengthAdnFloat(ga); iGene--;) {
     float min = VecGet(GABoundsAdnFloat(ga, iGene), 0);
     float max = VecGet(GABoundsAdnFloat(ga, iGene), 1);
     float val = min + (max - min) * rnd();
     VecSet(that->_adnF, iGene, val);
   }
   // For each integer value gene
-  for (int iGene = GAGetLengthAdnInt(ga); iGene--;) {
-    short min = VecGet(GABoundsAdnInt(ga, iGene), 0);
-    short max = VecGet(GABoundsAdnInt(ga, iGene), 1);
-    short val = (short)round((float)min + (float)(max - min) * rnd());
+  for (long iGene = GAGetLengthAdnInt(ga); iGene--;) {
+    long min = VecGet(GABoundsAdnInt(ga, iGene), 0);
+    long max = VecGet(GABoundsAdnInt(ga, iGene), 1);
+    long val = (long)round((float)min + (float)(max - min) * rnd());
     VecSet(that->_adnI, iGene, val);
   }
 }
@@ -149,7 +150,7 @@ void GAAdnInitNeuraNetConv(const GenAlgAdn* const that,
   }
 #endif
   // For each floating point value gene
-  for (int iGene = GAGetLengthAdnFloat(ga); iGene--;) {
+  for (long iGene = GAGetLengthAdnFloat(ga); iGene--;) {
     float min = VecGet(GABoundsAdnFloat(ga, iGene), 0);
     float max = VecGet(GABoundsAdnFloat(ga, iGene), 1);
     float val = min + (max - min) * rnd();
@@ -169,7 +170,7 @@ void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga) {
 #endif
   // Init the base functions randomly
   // For each floating point value gene
-  for (int iGene = GAGetLengthAdnFloat(ga); iGene--;) {
+  for (long iGene = GAGetLengthAdnFloat(ga); iGene--;) {
     float min = VecGet(GABoundsAdnFloat(ga, iGene), 0);
     float max = VecGet(GABoundsAdnFloat(ga, iGene), 1);
     float val = min + (max - min) * rnd();
@@ -179,20 +180,20 @@ void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga) {
   // each output and use inputs as start of the initial links
   // For each integer value gene
   int shiftOut = ga->_NNdata._nbIn + ga->_NNdata._nbHid;
-  for (int iGene = 0; iGene < GAGetLengthAdnInt(ga); iGene += 3) {
+  for (long iGene = 0; iGene < GAGetLengthAdnInt(ga); iGene += 3) {
     VecSet(that->_adnI, iGene, -1);
   }
   for (int iOut = 0; iOut < ga->_NNdata._nbOut; ++iOut) {
     // The base function is randomly choosen but can't be an 
     // inactive link
-    short min = 0;
-    short max = VecGet(GABoundsAdnInt(ga, iOut * 3), 1);
-    short val = (short)round((float)min + (float)(max - min) * rnd());
+    long min = 0;
+    long max = VecGet(GABoundsAdnInt(ga, iOut * 3), 1);
+    long val = (long)round((float)min + (float)(max - min) * rnd());
     VecSet(that->_adnI, iOut * 3, val);
     // The start of the link is randomly choosen amongst inputs
     min = 0;
     max = ga->_NNdata._nbIn - 1;
-    val = (short)round((float)min + (float)(max - min) * rnd());
+    val = (long)round((float)min + (float)(max - min) * rnd());
     VecSet(that->_adnI, iOut * 3 + 1, val);
     // The end of the link is choosen sequencially amongst outputs
     VecSet(that->_adnI, iOut * 3 + 2, iOut + shiftOut);
@@ -289,7 +290,7 @@ void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents,
 // 'nbElites' must greater than 1
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
 GenAlg* GenAlgCreate(const int nbEntities, const int nbElites, 
-  const int lengthAdnF, const int lengthAdnI) {
+  const long lengthAdnF, const long lengthAdnI) {
   // Allocate memory
   GenAlg* that = PBErrMalloc(GenAlgErr, sizeof(GenAlg));
   // Set the properties
@@ -298,20 +299,20 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   that->_curEpoch = 0;
   that->_nbKTEvent = 0;
   that->_bestAdn = GenAlgAdnCreate(0, lengthAdnF, lengthAdnI);
-  *(int*)&(that->_lengthAdnF) = lengthAdnF;
-  *(int*)&(that->_lengthAdnI) = lengthAdnI;
+  *(long*)&(that->_lengthAdnF) = lengthAdnF;
+  *(long*)&(that->_lengthAdnI) = lengthAdnI;
   if (lengthAdnF > 0) {
     that->_boundsF = 
       PBErrMalloc(GenAlgErr, sizeof(VecFloat2D) * lengthAdnF);
-    for (int iGene = lengthAdnF; iGene--;)
+    for (long iGene = lengthAdnF; iGene--;)
       that->_boundsF[iGene] = VecFloatCreateStatic2D();
   } else
     that->_boundsF = NULL;
   if (lengthAdnI > 0) {
     that->_boundsI = 
-      PBErrMalloc(GenAlgErr, sizeof(VecShort2D) * lengthAdnI);
-    for (int iGene = lengthAdnI; iGene--;)
-      that->_boundsI[iGene] = VecShortCreateStatic2D();
+      PBErrMalloc(GenAlgErr, sizeof(VecLong2D) * lengthAdnI);
+    for (long iGene = lengthAdnI; iGene--;)
+      that->_boundsI[iGene] = VecLongCreateStatic2D();
   } else
     that->_boundsI = NULL;
   that->_normRangeFloat = 1.0;
@@ -596,18 +597,18 @@ void GAReproductionNeuraNet(GenAlg* const that,
   GenAlgAdn* parentB = GAAdn(that, parents[1]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // For each gene of the adn for floating point value
-  for (int iGene = 0; iGene < GAGetLengthAdnFloat(that); iGene += 3) {
+  for (long iGene = 0; iGene < GAGetLengthAdnFloat(that); iGene += 3) {
     // Get the gene from one parent or the other with equal 
     // probabililty
     if (rnd() < 0.5) {
-      for (int jGene = 3; jGene--;) {
+      for (long jGene = 3; jGene--;) {
         VecSet(child->_adnF, iGene + jGene, 
           VecGet(parentA->_adnF, iGene + jGene));
         VecSet(child->_deltaAdnF, iGene + jGene, 
           VecGet(parentA->_deltaAdnF, iGene + jGene));
       }
     } else {
-      for (int jGene = 3; jGene--;) {
+      for (long jGene = 3; jGene--;) {
         VecSet(child->_adnF, iGene + jGene, 
           VecGet(parentB->_adnF, iGene + jGene));
         VecSet(child->_deltaAdnF, iGene + jGene, 
@@ -616,14 +617,14 @@ void GAReproductionNeuraNet(GenAlg* const that,
     }
   }
   // For each gene of the adn for int value
-  for (int iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
+  for (long iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
     // Get the gene from one parent or the other with equal probabililty
     if (rnd() < 0.5) {
-      for (int jGene = 3; jGene--;)
+      for (long jGene = 3; jGene--;)
         VecSet(child->_adnI, iGene + jGene, 
           VecGet(parentA->_adnI, iGene + jGene));
     } else { 
-      for (int jGene = 3; jGene--;)
+      for (long jGene = 3; jGene--;)
         VecSet(child->_adnI, iGene + jGene, 
           VecGet(parentB->_adnI, iGene + jGene));
     }
@@ -664,12 +665,12 @@ void GAReproductionNeuraNetConv(GenAlg* const that,
   GenAlgAdn* child = GAAdn(that, iChild);
   // For each gene of the adn for floating point value of convolution
   // base functions
-  for (int iGene = 0; 
+  for (long iGene = 0; 
     iGene < that->_NNdata._nbBaseConv * 3; 
     iGene += that->_NNdata._nbBaseCellConv * 3) {
     // Get the gene from one parent or the other with equal probabililty
     if (rnd() < 0.5) {
-      for (int jGene = that->_NNdata._nbBaseCellConv * 3;
+      for (long jGene = that->_NNdata._nbBaseCellConv * 3;
         jGene--;) {
         VecSet(child->_adnF, iGene + jGene, 
           VecGet(parentA->_adnF, iGene + jGene));
@@ -677,7 +678,7 @@ void GAReproductionNeuraNetConv(GenAlg* const that,
           VecGet(parentA->_deltaAdnF, iGene + jGene));
       }
     } else {
-      for (int jGene = that->_NNdata._nbBaseCellConv * 3;
+      for (long jGene = that->_NNdata._nbBaseCellConv * 3;
         jGene--;) {
         VecSet(child->_adnF, iGene + jGene, 
           VecGet(parentB->_adnF, iGene + jGene));
@@ -688,18 +689,18 @@ void GAReproductionNeuraNetConv(GenAlg* const that,
   }
   // For each gene of the adn for floating point value of convolution
   // base functions
-  for (int iGene = that->_NNdata._nbBaseConv * 3; 
+  for (long iGene = that->_NNdata._nbBaseConv * 3; 
     iGene < GAGetLengthAdnFloat(that); iGene += 3) {
     // Get the gene from one parent or the other with equal probabililty
     if (rnd() < 0.5) {
-      for (int jGene = 3; --jGene;) {
+      for (long jGene = 3; --jGene;) {
         VecSet(child->_adnF, iGene + jGene, 
           VecGet(parentA->_adnF, iGene + jGene));
         VecSet(child->_deltaAdnF, iGene + jGene, 
           VecGet(parentA->_deltaAdnF, iGene + jGene));
       }
     } else {
-      for (int jGene = 3; --jGene;) {
+      for (long jGene = 3; --jGene;) {
         VecSet(child->_adnF, iGene + jGene, 
           VecGet(parentB->_adnF, iGene + jGene));
         VecSet(child->_deltaAdnF, iGene + jGene, 
@@ -740,7 +741,7 @@ void GAReproductionDefault(GenAlg* const that,
   GenAlgAdn* parentB = GAAdn(that, parents[1]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // For each gene of the adn for floating point value
-  for (int iGene = GAGetLengthAdnFloat(that); iGene--;) {
+  for (long iGene = GAGetLengthAdnFloat(that); iGene--;) {
     // Get the gene from one parent or the other with equal probabililty
     if (rnd() < 0.5) {
       VecSet(child->_adnF, iGene, VecGet(parentA->_adnF, iGene));
@@ -753,7 +754,7 @@ void GAReproductionDefault(GenAlg* const that,
     }
   }
   // For each gene of the adn for int value
-  for (int iGene = GAGetLengthAdnInt(that); iGene--;) {
+  for (long iGene = GAGetLengthAdnInt(that); iGene--;) {
     // Get the gene from one parent or the other with equal probabililty
     if (rnd() < 0.5)
       VecSet(child->_adnI, iGene, VecGet(parentA->_adnI, iGene));
@@ -840,7 +841,7 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
   bool hasMuted = false;
   // Declare a variable to memorize the used values amongst input and 
   // hidden
-  int nbMaxUsedVal = that->_NNdata._nbIn + that->_NNdata._nbHid;
+  long nbMaxUsedVal = that->_NNdata._nbIn + that->_NNdata._nbHid;
   char* isUsed = PBErrMalloc(GenAlgErr, sizeof(char) * nbMaxUsedVal);
   // Loop until there has been at least one mutation
   do {
@@ -848,31 +849,31 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
     memset(isUsed, 0, sizeof(char) * nbMaxUsedVal);
     memset(isUsed, 1, sizeof(char) * that->_NNdata._nbIn);
     // For each gene of the adn for int value (links definitions)
-    for (int iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
+    for (long iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
       // If the link mutes
       if (rnd() < probMute) {
         hasMuted= true;
         // If this link is currently inactivated
         if (GAAdnGetGeneI(child, iGene) == -1) {
           // Base function
-          int iBase = (int)round((float)iGene / 3.0);
+          long iBase = (int)round((float)iGene / 3.0);
           GAAdnSetGeneI(child, iGene, iBase);
           // Input
-          short min = 
+          long min = 
             VecGet(GABoundsAdnInt(that, iGene + 1), 0);
-          short max = 
+          long max = 
             VecGet(GABoundsAdnInt(that, iGene + 1), 1);
-          short val = min;
+          long val = min;
           // Ensure the input is a used value
           do {
-            val = (short)round((float)min + 
+            val = (long)round((float)min + 
               (float)(max - min) * rnd());
           } while (isUsed[val] == 0);
           GAAdnSetGeneI(child, iGene + 1, val);
           // Output
           min = MAX(val, VecGet(GABoundsAdnInt(that, iGene + 2), 0));
           max = VecGet(GABoundsAdnInt(that, iGene + 2), 1);
-          val = (short)round((float)min + (float)(max - min) * rnd());
+          val = (long)round((float)min + (float)(max - min) * rnd());
           GAAdnSetGeneI(child, iGene + 2, val);
           if (val < nbMaxUsedVal)
             isUsed[val] = 1;
@@ -884,21 +885,21 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
             GAAdnSetGeneI(child, iGene, -1);
           } else {
             // Input
-            short min = 
+            long min = 
               VecGet(GABoundsAdnInt(that, iGene + 1), 0);
-            short max = 
+            long max = 
               VecGet(GABoundsAdnInt(that, iGene + 1), 1);
-            short val = min;
+            long val = min;
             // Ensure the input is a used value
             do {
-              val = (short)round((float)min + 
+              val = (long)round((float)min + 
                 (float)(max - min) * rnd());
             } while (isUsed[val] == 0);
             GAAdnSetGeneI(child, iGene + 1, val);
             // Output
             min = MAX(val, VecGet(GABoundsAdnInt(that, iGene + 2), 0));
             max = VecGet(GABoundsAdnInt(that, iGene + 2), 1);
-            val = (short)round((float)min + (float)(max - min) * rnd());
+            val = (long)round((float)min + (float)(max - min) * rnd());
             GAAdnSetGeneI(child, iGene + 2, val);
             if (val < nbMaxUsedVal)
               isUsed[val] = 1;
@@ -906,13 +907,13 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
         }
       }
       // Get the index of the base function
-      int baseFun = GAAdnGetGeneI(child, iGene);
+      long baseFun = GAAdnGetGeneI(child, iGene);
       // If the link is active
       if (baseFun != -1) {
         // If the associated base function mutes
         if (rnd() < probMute) {
-          int baseFunGene = baseFun * 3;
-          for (int jGene = 3; jGene--;) {
+          long baseFunGene = baseFun * 3;
+          for (long jGene = 3; jGene--;) {
             // Get the bounds
             const VecFloat2D* const bounds = 
               GABoundsAdnFloat(that, baseFunGene + jGene);
@@ -986,7 +987,7 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
   bool hasMuted = false;
   do {
     // For each gene of the adn for floating point value
-    for (int iGene = GAGetLengthAdnFloat(that); iGene--;) {
+    for (long iGene = GAGetLengthAdnFloat(that); iGene--;) {
       // If this gene mutes
       if (rnd() < probMute) {
         hasMuted = true;
@@ -1014,19 +1015,19 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
       }
     }
     // For each gene of the adn for int value
-    for (int iGene = GAGetLengthAdnInt(that); iGene--;) {
+    for (long iGene = GAGetLengthAdnInt(that); iGene--;) {
       // If this gene mutes
       if (rnd() < probMute) {
         hasMuted = true;
         // Get the bounds
-        const VecShort2D* const boundsI = GABoundsAdnInt(that, iGene);
-        VecFloat2D bounds = VecShortToFloat2D(boundsI);
+        const VecLong2D* const boundsI = GABoundsAdnInt(that, iGene);
+        VecFloat2D bounds = VecLongToFloat2D(boundsI);
         // Apply the mutation (as it is int value, ensure the amplitude
         // is big enough to have an effect
         float ampI = MIN(2.0, 
           (float)(VecGet(&bounds, 1) - VecGet(&bounds, 0)) * amp);
         GAAdnSetGeneI(child, iGene, GAAdnGetGeneI(child, iGene) +
-          (short)round(ampI * (rnd() - 0.5)));
+          (long)round(ampI * (rnd() - 0.5)));
         // Keep the gene value in bounds
         while (GAAdnGetGeneI(child, iGene) < VecGet(&bounds, 0) ||
           GAAdnGetGeneI(child, iGene) > VecGet(&bounds, 1)) {
@@ -1078,7 +1079,7 @@ void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents,
   bool hasMuted = false;
   do {
     // For each gene of the adn for floating point value
-    for (int iGene = GAGetLengthAdnFloat(that); iGene--;) {
+    for (long iGene = GAGetLengthAdnFloat(that); iGene--;) {
       // If this gene mutes
       if (rnd() < probMute) {
         hasMuted = true;
@@ -1182,7 +1183,7 @@ void GAUpdateNormRange(GenAlg* const that) {
     // Declare a vector to memorize the ranges in float gene values
     VecFloat* range = VecFloatCreate(GAGetLengthAdnFloat(that)); 
     // Calculate the ranges in gene values
-    for (int iGene = GAGetLengthAdnFloat(that); iGene--;)
+    for (long iGene = GAGetLengthAdnFloat(that); iGene--;)
       VecSet(range, iGene, 
         VecGet(GABoundsAdnFloat(that, iGene), 1) - 
         VecGet(GABoundsAdnFloat(that, iGene), 0));
@@ -1197,7 +1198,7 @@ void GAUpdateNormRange(GenAlg* const that) {
     // Declare a vector to memorize the ranges in int gene values
     VecFloat* range = VecFloatCreate(GAGetLengthAdnInt(that)); 
     // Calculate the ranges in gene values
-    for (int iGene = GAGetLengthAdnInt(that); iGene--;)
+    for (long iGene = GAGetLengthAdnInt(that); iGene--;)
       VecSet(range, iGene, 
         VecGet(GABoundsAdnInt(that, iGene), 1) - 
         VecGet(GABoundsAdnInt(that, iGene), 0));
@@ -1240,9 +1241,9 @@ float GAAdnGetDiversity(const GenAlgAdn* const adnA,
   // If there are adn for int values
   if (GAAdnAdnI(adnA) != NULL && GAAdnAdnI(adnB) != NULL) {
     // Get the difference in adn with the first entity
-    VecShort* diffI = 
+    VecLong* diffI = 
       VecGetOp(GAAdnAdnI(adnA), 1, GAAdnAdnI(adnB), -1);
-    VecFloat* diff = VecShortToFloat(diffI);
+    VecFloat* diff = VecLongToFloat(diffI);
     // Calculate the diversity
     diversity += VecNorm(diff) / ga->_normRangeInt;
     // Free memory
@@ -1319,9 +1320,9 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
       JSONAddProp(json, "NN_nbHid", val);
       sprintf(val, "%d", that->_NNdata._nbOut);
       JSONAddProp(json, "NN_nbOut", val);
-      sprintf(val, "%d", that->_NNdata._nbBaseConv);
+      sprintf(val, "%ld", that->_NNdata._nbBaseConv);
       JSONAddProp(json, "NN_nbBaseConv", val);
-      sprintf(val, "%d", that->_NNdata._nbBaseCellConv);
+      sprintf(val, "%ld", that->_NNdata._nbBaseCellConv);
       JSONAddProp(json, "NN_nbBaseCellConv", val);
       break;
     default:
@@ -1334,10 +1335,10 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
   sprintf(val, "%d", GAGetNbElites(that));
   JSONAddProp(json, "_nbElites", val);
   // Encode the length adn float
-  sprintf(val, "%d", GAGetLengthAdnFloat(that));
+  sprintf(val, "%ld", GAGetLengthAdnFloat(that));
   JSONAddProp(json, "_lengthAdnF", val);
   // Encode the length adn int
-  sprintf(val, "%d", GAGetLengthAdnInt(that));
+  sprintf(val, "%ld", GAGetLengthAdnInt(that));
   JSONAddProp(json, "_lengthAdnI", val);
   // Encode the epoch
   sprintf(val, "%lu", GAGetCurEpoch(that));
@@ -1348,16 +1349,16 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
   // Encode the bounds
   JSONArrayStruct setBoundFloat = JSONArrayStructCreateStatic();
   if (GAGetLengthAdnFloat(that) > 0) {
-    for (int iBound = 0; iBound < GAGetLengthAdnFloat(that); ++iBound)
+    for (long iBound = 0; iBound < GAGetLengthAdnFloat(that); ++iBound)
       JSONArrayStructAdd(&setBoundFloat, 
         VecEncodeAsJSON((VecFloat*)GABoundsAdnFloat(that, iBound)));
     JSONAddProp(json, "_boundFloat", &setBoundFloat);
   }
   JSONArrayStruct setBoundInt = JSONArrayStructCreateStatic();
   if (GAGetLengthAdnInt(that) > 0) {
-    for (int iBound = 0; iBound < GAGetLengthAdnInt(that); ++iBound)
+    for (long iBound = 0; iBound < GAGetLengthAdnInt(that); ++iBound)
       JSONArrayStructAdd(&setBoundInt, 
-        VecEncodeAsJSON((VecShort*)GABoundsAdnInt(that, iBound)));
+        VecEncodeAsJSON((VecLong*)GABoundsAdnInt(that, iBound)));
     JSONAddProp(json, "_boundInt", &setBoundInt);
   }
   // Save the adns
@@ -1402,20 +1403,20 @@ bool GAAdnDecodeAsJSON(GenAlgAdn** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  int id = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+  unsigned long id = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
   // Get the lengthAdnF from the JSON
-  int lengthAdnF = 0;
+  long lengthAdnF = 0;
   prop = JSONProperty(json, "_adnF");
   if (prop != NULL) {
     JSONNode* subprop = JSONProperty(prop, "_dim");
-    lengthAdnF = atoi(JSONLabel(JSONValue(subprop, 0)));
+    lengthAdnF = atol(JSONLabel(JSONValue(subprop, 0)));
   }
   // Get the lengthAdnI from the JSON
-  int lengthAdnI = 0;
+  long lengthAdnI = 0;
   prop = JSONProperty(json, "_adnI");
   if (prop != NULL) {
     JSONNode* subprop = JSONProperty(prop, "_dim");
-    lengthAdnI = atoi(JSONLabel(JSONValue(subprop, 0)));
+    lengthAdnI = atol(JSONLabel(JSONValue(subprop, 0)));
   }
   // Allocate memory
   *that = GenAlgAdnCreate(id, lengthAdnF, lengthAdnI);
@@ -1490,13 +1491,13 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  int lengthAdnF = atoi(JSONLabel(JSONValue(prop, 0)));
+  long lengthAdnF = atol(JSONLabel(JSONValue(prop, 0)));
   // Decode the length adn int
   prop = JSONProperty(json, "_lengthAdnI");
   if (prop == NULL) {
     return false;
   }
-  int lengthAdnI = atoi(JSONLabel(JSONValue(prop, 0)));
+  long lengthAdnI = atol(JSONLabel(JSONValue(prop, 0)));
   // Allocate memory
   *that = GenAlgCreate(nbAdns, nbElites, lengthAdnF, lengthAdnI);
   // Decode the type
@@ -1557,7 +1558,7 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   if (prop != NULL) {
     if (JSONGetNbValue(prop) != GAGetLengthAdnFloat(*that))
       return false;
-    for (int iBound = 0; iBound < GAGetLengthAdnFloat(*that); ++iBound) {
+    for (long iBound = 0; iBound < GAGetLengthAdnFloat(*that); ++iBound) {
       JSONNode* val = JSONValue(prop, iBound);
       VecFloat2D* b = NULL;
       if (!VecDecodeAsJSON((VecFloat**)&b, val)) {
@@ -1571,14 +1572,14 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   if (prop != NULL) {
     if (JSONGetNbValue(prop) != GAGetLengthAdnInt(*that))
       return false;
-    for (int iBound = 0; iBound < GAGetLengthAdnInt(*that); ++iBound) {
+    for (long iBound = 0; iBound < GAGetLengthAdnInt(*that); ++iBound) {
       JSONNode* val = JSONValue(prop, iBound);
-      VecShort2D* b = NULL;
-      if (!VecDecodeAsJSON((VecShort**)&b, val)) {
+      VecLong2D* b = NULL;
+      if (!VecDecodeAsJSON((VecLong**)&b, val)) {
         return false;
       }
       GASetBoundsAdnInt(*that, iBound, b);
-      VecFree((VecShort**)&b);
+      VecFree((VecLong**)&b);
     }
   }
   // Upadte the norm of the range values

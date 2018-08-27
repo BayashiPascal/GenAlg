@@ -27,15 +27,15 @@ typedef struct GenAlg GenAlg;
 
 typedef struct GenAlgAdn {
   // ID
-  unsigned long int _id;
+  unsigned long _id;
   // Age
-  unsigned long int _age;
+  unsigned long _age;
   // Adn for floating point value
   VecFloat* _adnF;
   // Delta Adn during mutation for floating point value
   VecFloat* _deltaAdnF;
   // Adn for integer point value
-  VecShort* _adnI;
+  VecLong* _adnI;
   // Value
   float _val;
 } GenAlgAdn;
@@ -44,8 +44,8 @@ typedef struct GenAlgAdn {
 
 // Create a new GenAlgAdn with ID 'id', 'lengthAdnF' and 'lengthAdnI'
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
-GenAlgAdn* GenAlgAdnCreate(const int id, const int lengthAdnF, 
-  const int lengthAdnI);
+GenAlgAdn* GenAlgAdnCreate(const unsigned long id, const long lengthAdnF, 
+  const long lengthAdnI);
 
 // Free memory used by the GenAlgAdn 'that'
 void GenAlgAdnFree(GenAlgAdn** that);
@@ -67,7 +67,7 @@ const VecFloat* GAAdnDeltaAdnF(const GenAlgAdn* const that);
 #if BUILDMODE != 0
 inline
 #endif
-VecShort* GAAdnAdnI(const GenAlgAdn* const that);
+VecLong* GAAdnAdnI(const GenAlgAdn* const that);
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga' according to the type of the GenAlg
@@ -82,28 +82,28 @@ void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga);
 #if BUILDMODE != 0
 inline
 #endif
-float GAAdnGetGeneF(const GenAlgAdn* const that, const int iGene);
+float GAAdnGetGeneF(const GenAlgAdn* const that, const long iGene);
 
 // Get the delta of the 'iGene'-th gene of the adn for floating point 
 // values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-float GAAdnGetDeltaGeneF(const GenAlgAdn* const that, const int iGene);
+float GAAdnGetDeltaGeneF(const GenAlgAdn* const that, const long iGene);
 
 // Get the 'iGene'-th gene of the adn for int values of the
 // GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-int GAAdnGetGeneI(const GenAlgAdn* const that, const int iGene);
+int GAAdnGetGeneI(const GenAlgAdn* const that, const long iGene);
 
 // Set the 'iGene'-th gene of the adn for floating point values of the
 // GenAlgAdn 'that' to 'gene'
 #if BUILDMODE != 0
 inline
 #endif
-void GAAdnSetGeneF(GenAlgAdn* const that, const int iGene, 
+void GAAdnSetGeneF(GenAlgAdn* const that, const long iGene, 
   const float gene);
 
 // Set the delta of the 'iGene'-th gene of the adn for floating point 
@@ -111,7 +111,7 @@ void GAAdnSetGeneF(GenAlgAdn* const that, const int iGene,
 #if BUILDMODE != 0
 inline
 #endif
-void GAAdnSetDeltaGeneF(GenAlgAdn* const that, const int iGene, 
+void GAAdnSetDeltaGeneF(GenAlgAdn* const that, const long iGene, 
   const float delta);
 
 // Set the 'iGene'-th gene of the adn for int values of the
@@ -119,20 +119,20 @@ void GAAdnSetDeltaGeneF(GenAlgAdn* const that, const int iGene,
 #if BUILDMODE != 0
 inline
 #endif
-void GAAdnSetGeneI(GenAlgAdn* const that, const int iGene, 
-  const short gene);
+void GAAdnSetGeneI(GenAlgAdn* const that, const long iGene, 
+  const long gene);
 
 // Get the id of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAAdnGetId(const GenAlgAdn* const that);
+unsigned long GAAdnGetId(const GenAlgAdn* const that);
 
 // Get the age of the GenAlgAdn 'that'
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAAdnGetAge(const GenAlgAdn* const that);
+unsigned long GAAdnGetAge(const GenAlgAdn* const that);
 
 // Get the value of the GenAlgAdn 'that'
 #if BUILDMODE != 0
@@ -178,8 +178,8 @@ typedef struct GANeuraNet {
   int _nbIn;
   int _nbHid;
   int _nbOut;
-  int _nbBaseConv;
-  int _nbBaseCellConv;
+  long _nbBaseConv;
+  long _nbBaseCellConv;
 } GANeuraNet;
 
 typedef struct GenAlg {
@@ -191,19 +191,19 @@ typedef struct GenAlg {
   // Type of the GenAlg
   GenAlgType _type;
   // Current epoch
-  unsigned long int _curEpoch;
+  unsigned long _curEpoch;
   // Nb elite entities in population
   int _nbElites;
   // Id of the next new GenAlgAdn
-  unsigned long int _nextId;
+  unsigned long _nextId;
   // Length of adn for floating point value
-  const int _lengthAdnF;
+  const long _lengthAdnF;
   // Length of adn for integer value
-  const int _lengthAdnI;
+  const long _lengthAdnI;
   // Bounds (min, max) for floating point values adn
   VecFloat2D* _boundsF;
   // Bounds (min, max) for integer values adn
-  VecShort2D* _boundsI;
+  VecLong2D* _boundsI;
   // Norm of the range value for adns (optimization for diversity
   // calculation)
   float _normRangeFloat;
@@ -211,7 +211,7 @@ typedef struct GenAlg {
   // Data used if the GenAlg is applied to a NeuraNet
   GANeuraNet _NNdata;
   // Number of ktevent
-  unsigned long int _nbKTEvent;
+  unsigned long _nbKTEvent;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -222,7 +222,7 @@ typedef struct GenAlg {
 // 'nbElites' must greater than 1
 // 'lengthAdnF' and 'lengthAdnI' must be greater than or equal to 0
 GenAlg* GenAlgCreate(const int nbEntities, const int nbElites, 
-  const int lengthAdnF, const int lengthAdnI);
+  const long lengthAdnF, const long lengthAdnI);
 
 // Free memory used by the GenAlg 'that'
 void GenAlgFree(GenAlg** that);
@@ -250,8 +250,8 @@ void GASetTypeNeuraNet(GenAlg* const that, const int nbIn,
 inline
 #endif
 void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn, 
-  const int nbHid, const int nbOut, const int nbBaseConv,
-  const int nbBaseCellConv);
+  const int nbHid, const int nbOut, const long nbBaseConv,
+  const long nbBaseCellConv);
 
 // Return the GSet of the GenAlg 'that'
 #if BUILDMODE != 0
@@ -275,13 +275,13 @@ int GAGetNbElites(const GenAlg* const that);
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAGetCurEpoch(const GenAlg* const that);
+unsigned long GAGetCurEpoch(const GenAlg* const that);
 
 // Return the number of KTEvent of the GenAlg 'that'
 #if BUILDMODE != 0
 inline
 #endif
-unsigned long int GAGetNbKTEvent(const GenAlg* const that);
+unsigned long GAGetNbKTEvent(const GenAlg* const that);
 
 // Set the nb of entities of the GenAlg 'that' to 'nb'
 // 'nb' must be greater than 1, if 'nb' is lower than the current nb 
@@ -297,13 +297,13 @@ void GASetNbElites(GenAlg* const that, const int nb);
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetLengthAdnFloat(const GenAlg* const that);
+long GAGetLengthAdnFloat(const GenAlg* const that);
 
 // Get the length of adn for integer value
 #if BUILDMODE != 0
 inline
 #endif
-int GAGetLengthAdnInt(const GenAlg* const that);
+long GAGetLengthAdnInt(const GenAlg* const that);
 
 // Get the bounds for the 'iGene'-th gene of adn for floating point 
 // values
@@ -311,21 +311,21 @@ int GAGetLengthAdnInt(const GenAlg* const that);
 inline
 #endif
 const VecFloat2D* GABoundsAdnFloat(const GenAlg* const that, 
-  const int iGene);
+  const long iGene);
 
 // Get the bounds for the 'iGene'-th gene of adn for integer values
 #if BUILDMODE != 0
 inline
 #endif
-const VecShort2D* GABoundsAdnInt(const GenAlg* const that, 
-  const int iGene);
+const VecLong2D* GABoundsAdnInt(const GenAlg* const that, 
+  const long iGene);
 
 // Set the bounds for the 'iGene'-th gene of adn for floating point 
 // values to a copy of 'bounds'
 #if BUILDMODE != 0
 inline
 #endif
-void GASetBoundsAdnFloat(GenAlg* const that, const int iGene, 
+void GASetBoundsAdnFloat(GenAlg* const that, const long iGene, 
   const VecFloat2D* const bounds);
 
 // Set the bounds for the 'iGene'-th gene of adn for integer values
@@ -333,8 +333,8 @@ void GASetBoundsAdnFloat(GenAlg* const that, const int iGene,
 #if BUILDMODE != 0
 inline
 #endif
-void GASetBoundsAdnInt(GenAlg* const that, const int iGene, 
-  const VecShort2D* bounds);
+void GASetBoundsAdnInt(GenAlg* const that, const long iGene, 
+  const VecLong2D* bounds);
 
 // Get the GenAlgAdn of the GenAlg 'that' currently at rank 'iRank'
 #if BUILDMODE != 0
