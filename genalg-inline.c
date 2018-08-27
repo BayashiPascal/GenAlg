@@ -298,7 +298,7 @@ void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn,
     PBErrCatch(GenAlgErr);
   }
 #endif
-  that->_type = genAlgTypeNeuraNet;
+  that->_type = genAlgTypeNeuraNetConv;
   that->_NNdata._nbIn = nbIn;
   that->_NNdata._nbHid = nbHid;
   that->_NNdata._nbOut = nbOut;
