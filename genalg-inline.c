@@ -230,9 +230,18 @@ void GAAdnCopy(GenAlgAdn* const that, const GenAlgAdn* const tho) {
   that->_id = tho->_id;
   that->_age = tho->_age;
   that->_val = tho->_val;
-  VecCopy(that->_adnF, tho->_adnF);
-  VecCopy(that->_deltaAdnF, tho->_deltaAdnF);
-  VecCopy(that->_adnI, tho->_adnI);
+  if (tho->_adnF != NULL)
+    VecCopy(that->_adnF, tho->_adnF);
+  else
+    VecFree(&(that->_adnF));
+  if (tho->_deltaAdnF != NULL)
+    VecCopy(that->_deltaAdnF, tho->_deltaAdnF);
+  else
+    VecFree(&(that->_deltaAdnF));
+  if (tho->_adnI != NULL)
+    VecCopy(that->_adnI, tho->_adnI);
+  else
+    VecFree(&(that->_adnI));
 }
 
 // ------------- GenAlg
