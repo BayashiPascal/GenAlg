@@ -1313,6 +1313,13 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
   JSONAddProp(json, "_type", val);
   switch (GAGetType(that)) {
     case genAlgTypeNeuraNet:
+      sprintf(val, "%d", that->_NNdata._nbIn);
+      JSONAddProp(json, "NN_nbIn", val);
+      sprintf(val, "%d", that->_NNdata._nbHid);
+      JSONAddProp(json, "NN_nbHid", val);
+      sprintf(val, "%d", that->_NNdata._nbOut);
+      JSONAddProp(json, "NN_nbOut", val);
+      break;
     case genAlgTypeNeuraNetConv:
       sprintf(val, "%d", that->_NNdata._nbIn);
       JSONAddProp(json, "NN_nbIn", val);
@@ -1506,24 +1513,48 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
     return false;
   }
   int type = atoi(JSONLabel(JSONValue(prop, 0)));
+  int nbIn = 0;
+  int nbOut = 0;
+  int nbHid = 0;
   switch (type) {
     case genAlgTypeNeuraNet:
+      prop = JSONProperty(json, "NN_nbIn");
+      if (prop == NULL) {
+        return false;
+      }
+      nbIn = atoi(JSONLabel(JSONValue(prop, 0)));
+      prop = JSONProperty(json, "NN_nbOut");
+      if (prop == NULL) {
+        return false;
+      }
+      nbOut = atoi(JSONLabel(JSONValue(prop, 0)));
+      prop = JSONProperty(json, "NN_nbHid");
+      if (prop == NULL) {
+        return false;
+      }
+      nbHid = atoi(JSONLabel(JSONValue(prop, 0)));
+      prop = JSONProperty(json, "NN_nbBaseConv");
+      if (prop == NULL) {
+        return false;
+      }
+      GASetTypeNeuraNet(*that, nbIn, nbHid, nbOut);
+      break;
     case genAlgTypeNeuraNetConv:
       prop = JSONProperty(json, "NN_nbIn");
       if (prop == NULL) {
         return false;
       }
-      int nbIn = atoi(JSONLabel(JSONValue(prop, 0)));
+      nbIn = atoi(JSONLabel(JSONValue(prop, 0)));
       prop = JSONProperty(json, "NN_nbOut");
       if (prop == NULL) {
         return false;
       }
-      int nbOut = atoi(JSONLabel(JSONValue(prop, 0)));
+      nbOut = atoi(JSONLabel(JSONValue(prop, 0)));
       prop = JSONProperty(json, "NN_nbHid");
       if (prop == NULL) {
         return false;
       }
-      int nbHid = atoi(JSONLabel(JSONValue(prop, 0)));
+      nbHid = atoi(JSONLabel(JSONValue(prop, 0)));
       prop = JSONProperty(json, "NN_nbBaseConv");
       if (prop == NULL) {
         return false;
