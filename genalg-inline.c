@@ -244,6 +244,69 @@ void GAAdnCopy(GenAlgAdn* const that, const GenAlgAdn* const tho) {
     VecFree(&(that->_adnI));
 }
 
+// Set the mutability vectors for the GenAlgAdn 'that' to 'mutability'
+#if BUILDMODE != 0
+inline
+#endif
+void GAAdnSetMutabilityInt(GenAlgAdn* const that, 
+  const VecFloat* const mutability) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (that->_mutabilityI == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that->_mutabilityI' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (mutability == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'mutability' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (VecGetDim(mutability) != VecGetDim(GAAdnAdnF(that))) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'mutability''s dim is invalid (%ld==%ld)",
+      VecGetDim(mutability), VecGetDim(GAAdnAdnI(that)));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  VecCopy(that->_mutabilityI, mutability);  
+}
+
+#if BUILDMODE != 0
+inline
+#endif
+void GAAdnSetMutabilityFloat(GenAlgAdn* const that, 
+  const VecFloat* const mutability) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (that->_mutabilityF == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that->_mutabilityF' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (mutability == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'mutability' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (VecGetDim(mutability) != VecGetDim(GAAdnAdnF(that))) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'mutability''s dim is invalid (%ld==%ld)",
+      VecGetDim(mutability), VecGetDim(GAAdnAdnF(that)));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  VecCopy(that->_mutabilityF, mutability);  
+}
+
 // ------------- GenAlg
 
 // ================ Functions implementation ====================
@@ -292,14 +355,14 @@ void GASetTypeNeuraNet(GenAlg* const that, const int nbIn,
 
 // Set the type of the GenAlg 'that' to genAlgTypeNeuraNetConv, 
 // the GenAlg will be used with a NeuraNet having 'nbIn' inputs, 
-// 'nbHid' hidden values, 'nbOut' outputs, 'nbBaseConv' bases function
-// dedicated to the convolution and 'nbBaseCellConv' bases function per cell of convolution
+// 'nbHid' hidden values, 'nbOut' outputs, 'nbBaseConv' bases function,
+// 'nbLink' links dedicated to the convolution and 'nbBaseCellConv' bases function per cell of convolution
 #if BUILDMODE != 0
 inline
 #endif
 void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn, 
   const int nbHid, const int nbOut, const long nbBaseConv,
-  const long nbBaseCellConv) {
+  const long nbBaseCellConv, const long nbLink) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -313,6 +376,7 @@ void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn,
   that->_NNdata._nbOut = nbOut;
   that->_NNdata._nbBaseConv = nbBaseConv;
   that->_NNdata._nbBaseCellConv = nbBaseCellConv;
+  that->_NNdata._nbLink = nbLink;
 }
 
 // Return the GSet of the GenAlg 'that'

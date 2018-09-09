@@ -34,10 +34,14 @@ typedef struct GenAlgAdn {
   VecFloat* _adnF;
   // Delta Adn during mutation for floating point value
   VecFloat* _deltaAdnF;
-  // Adn for integer point value
+  // Adn for integer value
   VecLong* _adnI;
   // Value
   float _val;
+  // Mutability of adn for floating point value
+  VecFloat* _mutabilityF;
+  // Mutability of adn for integer value
+  VecFloat* _mutabilityI;
 } GenAlgAdn;
 
 // ================ Functions declaration ====================
@@ -157,6 +161,18 @@ inline
 #endif
 void GAAdnCopy(GenAlgAdn* const that, const GenAlgAdn* const tho);
 
+// Set the mutability vectors for the GenAlgAdn 'that' to 'mutability'
+#if BUILDMODE != 0
+inline
+#endif
+void GAAdnSetMutabilityInt(GenAlgAdn* const that, 
+  const VecFloat* const mutability);
+#if BUILDMODE != 0
+inline
+#endif
+void GAAdnSetMutabilityFloat(GenAlgAdn* const that, 
+  const VecFloat* const mutability);
+
 // ------------- GenAlg
 
 // ================= Define ===================
@@ -180,6 +196,7 @@ typedef struct GANeuraNet {
   int _nbOut;
   long _nbBaseConv;
   long _nbBaseCellConv;
+  long _nbLink;
 } GANeuraNet;
 
 typedef struct GenAlg {
@@ -244,14 +261,14 @@ void GASetTypeNeuraNet(GenAlg* const that, const int nbIn,
 
 // Set the type of the GenAlg 'that' to genAlgTypeNeuraNetConv, 
 // the GenAlg will be used with a NeuraNet having 'nbIn' inputs, 
-// 'nbHid' hidden values, 'nbOut' outputs, 'nbBaseConv' bases function
-// dedicated to the convolution and 'nbBaseCellConv' bases function per cell of convolution
+// 'nbHid' hidden values, 'nbOut' outputs, 'nbBaseConv' bases function,
+// 'nbLink' links dedicated to the convolution and 'nbBaseCellConv' bases function per cell of convolution
 #if BUILDMODE != 0
 inline
 #endif
 void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn, 
   const int nbHid, const int nbOut, const long nbBaseConv,
-  const long nbBaseCellConv);
+  const long nbBaseCellConv, const long nbLink);
 
 // Return the GSet of the GenAlg 'that'
 #if BUILDMODE != 0

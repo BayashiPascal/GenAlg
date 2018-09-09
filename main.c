@@ -625,7 +625,6 @@ void UnitTestAll() {
 
 int main() {
   UnitTestAll();
-  //UnitTestGenAlgPerf();
   // Return success code
   return 0;
 }

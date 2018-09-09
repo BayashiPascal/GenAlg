@@ -59,14 +59,19 @@ GenAlgAdn* GenAlgAdnCreate(const unsigned long id,
   if (lengthAdnF > 0) {
     that->_adnF = VecFloatCreate(lengthAdnF);
     that->_deltaAdnF = VecFloatCreate(lengthAdnF);
+    that->_mutabilityF = VecFloatCreate(lengthAdnF);
   } else {
     that->_adnF = NULL;
     that->_deltaAdnF = NULL;
+    that->_mutabilityF = NULL;
   }
-  if (lengthAdnI > 0)
+  if (lengthAdnI > 0) {
     that->_adnI = VecLongCreate(lengthAdnI);
-  else
+    that->_mutabilityI = VecFloatCreate(lengthAdnI);
+  } else {
     that->_adnI = NULL;
+    that->_mutabilityI = NULL;
+  }
   // Return the new GenAlgAdn
   return that;
 }
@@ -82,6 +87,10 @@ void GenAlgAdnFree(GenAlgAdn** that) {
     VecFree(&((*that)->_deltaAdnF));
   if ((*that)->_adnI != NULL)
     VecFree(&((*that)->_adnI));
+  if ((*that)->_mutabilityF != NULL)
+    VecFree(&((*that)->_mutabilityF));
+  if ((*that)->_mutabilityI != NULL)
+    VecFree(&((*that)->_mutabilityI));
   free(*that);
   // Set the pointer to null
   *that = NULL;
@@ -127,6 +136,7 @@ void GAAdnInitDefault(const GenAlgAdn* const that,
     float max = VecGet(GABoundsAdnFloat(ga, iGene), 1);
     float val = min + (max - min) * rnd();
     VecSet(that->_adnF, iGene, val);
+    VecSet(that->_mutabilityF, iGene, 1.0);
   }
   // For each integer value gene
   for (long iGene = GAGetLengthAdnInt(ga); iGene--;) {
@@ -134,6 +144,7 @@ void GAAdnInitDefault(const GenAlgAdn* const that,
     long max = VecGet(GABoundsAdnInt(ga, iGene), 1);
     long val = (long)round((float)min + (float)(max - min) * rnd());
     VecSet(that->_adnI, iGene, val);
+    VecSet(that->_mutabilityI, iGene, 1.0);
   }
 }
 
@@ -155,6 +166,7 @@ void GAAdnInitNeuraNetConv(const GenAlgAdn* const that,
     float max = VecGet(GABoundsAdnFloat(ga, iGene), 1);
     float val = min + (max - min) * rnd();
     VecSet(that->_adnF, iGene, val);
+    VecSet(that->_mutabilityF, iGene, 1.0);
   }
 }
 
@@ -175,13 +187,15 @@ void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga) {
     float max = VecGet(GABoundsAdnFloat(ga, iGene), 1);
     float val = min + (max - min) * rnd();
     VecSet(that->_adnF, iGene, val);
+    VecSet(that->_mutabilityF, iGene, 1.0);
   }
   // Init the links by ensuring there is at least one link reaching 
   // each output and use inputs as start of the initial links
   // For each integer value gene
   int shiftOut = ga->_NNdata._nbIn + ga->_NNdata._nbHid;
-  for (long iGene = 0; iGene < GAGetLengthAdnInt(ga); iGene += 3) {
+  for (long iGene = GAGetLengthAdnInt(ga); iGene--;) {
     VecSet(that->_adnI, iGene, -1);
+    VecSet(that->_mutabilityI, iGene, 1.0);
   }
   for (int iOut = 0; iOut < ga->_NNdata._nbOut; ++iOut) {
     // The base function is randomly choosen but can't be an 
@@ -924,8 +938,9 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
             GAAdnSetGeneF(child, baseFunGene + jGene, 
               GAAdnGetGeneF(child, baseFunGene + jGene) + 
               (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
-              (rnd() - 0.5 + 
-              GAAdnGetDeltaGeneF(child, baseFunGene + jGene)));
+              //VecGet(parentA->_mutabilityF, baseFun * 3) * 
+              (rnd() - 0.5) + 
+              GAAdnGetDeltaGeneF(child, baseFunGene + jGene));
             // Keep the gene value in bounds
             while (GAAdnGetGeneF(child, baseFunGene + jGene) < 
               VecGet(bounds, 0) ||
@@ -998,7 +1013,7 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
         // Apply the mutation
         GAAdnSetGeneF(child, iGene, GAAdnGetGeneF(child, iGene) + 
           (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
-          (rnd() - 0.5 + GAAdnGetDeltaGeneF(child, iGene)));
+          (rnd() - 0.5) + GAAdnGetDeltaGeneF(child, iGene));
         // Keep the gene value in bounds
         while (GAAdnGetGeneF(child, iGene) < VecGet(bounds, 0) ||
           GAAdnGetGeneF(child, iGene) > VecGet(bounds, 1)) {
@@ -1072,16 +1087,17 @@ void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents,
   // Get the proba amplitude of mutation
   float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
   float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age));
-  probMute /= (float)(GAGetLengthAdnInt(that));
+  probMute /= (float)(that->_NNdata._nbLink);
   probMute += (float)(parentA->_age) / 10000.0;
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
   bool hasMuted = false;
+  int nbTry = 0;
   do {
     // For each gene of the adn for floating point value
     for (long iGene = GAGetLengthAdnFloat(that); iGene--;) {
       // If this gene mutes
-      if (rnd() < probMute) {
+      if (rnd() < probMute * VecGet(parentA->_mutabilityF, iGene)) {
         hasMuted = true;
         // Get the bounds
         const VecFloat2D* const bounds = GABoundsAdnFloat(that, iGene);
@@ -1090,7 +1106,7 @@ void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents,
         // Apply the mutation
         GAAdnSetGeneF(child, iGene, GAAdnGetGeneF(child, iGene) + 
           (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
-          (rnd() - 0.5 + GAAdnGetDeltaGeneF(child, iGene)));
+          (rnd() - 0.5) + GAAdnGetDeltaGeneF(child, iGene));
         // Keep the gene value in bounds
         while (GAAdnGetGeneF(child, iGene) < VecGet(bounds, 0) ||
           GAAdnGetGeneF(child, iGene) > VecGet(bounds, 1)) {
@@ -1106,7 +1122,8 @@ void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents,
           GAAdnGetGeneF(child, iGene) - prevVal);
       }
     }
-  } while (hasMuted == false);
+    ++nbTry;
+  } while (hasMuted == false && nbTry < 10);
 }
 
 // Print the information about the GenAlg 'that' on the stream 'stream'
@@ -1331,6 +1348,8 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
       JSONAddProp(json, "NN_nbBaseConv", val);
       sprintf(val, "%ld", that->_NNdata._nbBaseCellConv);
       JSONAddProp(json, "NN_nbBaseCellConv", val);
+      sprintf(val, "%ld", that->_NNdata._nbLink);
+      JSONAddProp(json, "NN_nbLink", val);
       break;
     default:
       break;
@@ -1559,14 +1578,19 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
       if (prop == NULL) {
         return false;
       }
-      int nbBaseConv = atoi(JSONLabel(JSONValue(prop, 0)));
+      long nbBaseConv = atol(JSONLabel(JSONValue(prop, 0)));
       prop = JSONProperty(json, "NN_nbBaseCellConv");
       if (prop == NULL) {
         return false;
       }
-      int nbBaseCellConv = atoi(JSONLabel(JSONValue(prop, 0)));
+      long nbBaseCellConv = atol(JSONLabel(JSONValue(prop, 0)));
+      prop = JSONProperty(json, "NN_nbLink");
+      if (prop == NULL) {
+        return false;
+      }
+      long nbLink = atol(JSONLabel(JSONValue(prop, 0)));
       GASetTypeNeuraNetConv(*that, nbIn, nbHid, nbOut, nbBaseConv, 
-        nbBaseCellConv);
+        nbBaseCellConv, nbLink);
       break;
     default:
       break;
