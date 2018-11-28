@@ -503,6 +503,12 @@ void GASetBoundsAdnFloat(GenAlg* const that, const long iGene,
     sprintf(GenAlgErr->_msg, "'bounds' is null");
     PBErrCatch(GenAlgErr);
   }
+  if (VecGet(bounds, 0) >= VecGet(bounds, 1)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'bounds' is invalid (%f<%f)", 
+      VecGet(bounds, 0), VecGet(bounds, 1));
+    PBErrCatch(GenAlgErr);
+  }
   if (iGene < 0 || iGene >= that->_lengthAdnF) {
     GenAlgErr->_type = PBErrTypeInvalidArg;
     sprintf(GenAlgErr->_msg, "'iGene' is invalid (0<=%ld<%ld)",
@@ -530,6 +536,12 @@ void GASetBoundsAdnInt(GenAlg* const that, const long iGene,
   if (bounds == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
     sprintf(GenAlgErr->_msg, "'bounds' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (VecGet(bounds, 0) >= VecGet(bounds, 1)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'bounds' is invalid (%ld<%ld)", 
+      VecGet(bounds, 0), VecGet(bounds, 1));
     PBErrCatch(GenAlgErr);
   }
   if (iGene < 0 || iGene >= that->_lengthAdnI) {

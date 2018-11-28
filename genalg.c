@@ -995,7 +995,8 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
   // Get the proba amplitude of mutation
   float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
   float amp = 1.0 - sqrt(1.0 / (float)(parentA->_age));
-  probMute /= (float)(GAGetLengthAdnInt(that));
+  probMute /= (float)(MAX(GAGetLengthAdnInt(that), 
+    GAGetLengthAdnFloat(that)));
   probMute += (float)(parentA->_age) / 10000.0;
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
