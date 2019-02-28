@@ -8,4 +8,4 @@
 \contentsline {subsection}{\numberline {3.2}genalg-inline.c}{39}
 \contentsline {section}{\numberline {4}Makefile}{50}
 \contentsline {section}{\numberline {5}Unit tests}{50}
-\contentsline {section}{\numberline {6}Unit tests output}{60}
+\contentsline {section}{\numberline {6}Unit tests output}{61}

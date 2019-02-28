@@ -232,13 +232,22 @@ void GAAdnPrintln(const GenAlgAdn* const that, FILE* const stream) {
   fprintf(stream, "id:%lu age:%lu", GAAdnGetId(that), GAAdnGetAge(that));
   fprintf(stream, "\n");
   fprintf(stream, "  adnF:");
-  VecFloatPrint(GAAdnAdnF(that), stream,6);
+  if (GAAdnAdnF(that) != NULL)
+    VecFloatPrint(GAAdnAdnF(that), stream, 6);
+  else
+    fprintf(stream, "<null>");
   fprintf(stream, "\n");
   fprintf(stream, "  deltaAdnF:");
-  VecFloatPrint(GAAdnDeltaAdnF(that), stream,6);
+  if (GAAdnAdnF(that) != NULL)
+    VecFloatPrint(GAAdnDeltaAdnF(that), stream, 6);
+  else
+    fprintf(stream, "<null>");
   fprintf(stream, "\n");
   fprintf(stream, "  adnI:");
-  VecPrint(GAAdnAdnI(that), stream);
+  if (GAAdnAdnI(that) != NULL)
+    VecPrint(GAAdnAdnI(that), stream);
+  else
+    fprintf(stream, "<null>");
   fprintf(stream, "\n");
 }
 
