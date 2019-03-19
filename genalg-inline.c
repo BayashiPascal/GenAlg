@@ -678,3 +678,19 @@ const GenAlgAdn* GABestAdn(const GenAlg* const that) {
   return that->_bestAdn;
 }
 
+// Return the flag memorizing if the TextOMeter is displayed for
+// the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+bool GAIsTextOMeterActive(const GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_flagTextOMeter;
+}
+

@@ -304,6 +304,9 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
 // with convolution by muting bases function per cell
 void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents, 
   const int iChild);
+
+// Refresh the content of the TextOMeter attached to the GenAlg 'that'
+void GAUpdateTextOMeter(const GenAlg* const that);
   
 // ================ Functions implementation ====================
 
@@ -321,6 +324,8 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   that->_adns = GSetCreate();
   that->_curEpoch = 0;
   that->_nbKTEvent = 0;
+  that->_flagTextOMeter = false;
+  that->_textOMeter = NULL;
   that->_bestAdn = GenAlgAdnCreate(0, lengthAdnF, lengthAdnI);
   *(long*)&(that->_lengthAdnF) = lengthAdnF;
   *(long*)&(that->_lengthAdnI) = lengthAdnI;
@@ -364,6 +369,9 @@ void GenAlgFree(GenAlg** that) {
   if ((*that)->_boundsI != NULL)
     free((*that)->_boundsI);
   GenAlgAdnFree(&((*that)->_bestAdn));
+  if ((*that)->_textOMeter != NULL) {
+    TextOMeterFree(&((*that)->_textOMeter));
+  }
   free(*that);
   // Set the pointer to null
   *that = NULL;
@@ -486,6 +494,7 @@ void GAStep(GenAlg* const that) {
   if (that->_curEpoch == 1 || 
     GAAdnGetVal(GAAdn(that, 0)) > GAAdnGetVal(GABestAdn(that))) {
     GAAdnCopy(that->_bestAdn, GAAdn(that, 0));
+    that->_bestAdn->_age = that->_curEpoch + 1;
   }
   // Declare a variable to memorize the parents
   int parents[2];
@@ -519,6 +528,10 @@ void GAStep(GenAlg* const that) {
   }
   // Increment the number of epochs
   ++(that->_curEpoch);
+  // Refresh the TextOMEter if necessary
+  if (that->_flagTextOMeter) {
+    GAUpdateTextOMeter(that);
+  }
 }
 
 // Select the rank of two parents for the SRM algorithm
@@ -1738,3 +1751,92 @@ bool GASave(const GenAlg* const that, FILE* const stream,
   return true;
 }
 
+// Set the flag memorizing if the TextOMeter is displayed for
+// the GenAlg 'that' to 'flag'
+void GASetTextOMeterFlag(GenAlg* const that, bool flag) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // If the requested flag is different from the current flag;
+  if (that->_flagTextOMeter != flag) {
+    if (flag && that->_textOMeter == NULL) {
+      char title[] = "GenAlg";
+      int width = strlen(GA_TXTOMETER_LINE1) + 1;
+      int height = 
+        9 + MIN(GA_TXTOMETER_NBADNDISPLAYED, GAGetNbAdns(that));
+      that->_textOMeter = TextOMeterCreate(title, width, height);
+    }
+    if (!flag && that->_textOMeter != NULL) {
+      TextOMeterFree(&(that->_textOMeter));
+    }
+    that->_flagTextOMeter = flag;
+  }
+}
+
+// Refresh the content of the TextOMeter attached to the GenAlg 'that'
+void GAUpdateTextOMeter(const GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (that->_textOMeter == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that->_textOMeter' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Clear the TextOMeter
+  TextOMeterClear(that->_textOMeter);
+  // Declare a variable to print the content of the TextOMeter
+  char str[50];
+  // Print the content of the TextOMeter
+  // Epoch #xxxxxx  KTEvent #xxxxxx
+  sprintf(str, GA_TXTOMETER_FORMAT1, 
+    GAGetCurEpoch(that), GAGetNbKTEvent(that));
+  TextOMeterPrint(that->_textOMeter, str);
+  // Diversity +xxxxxx.xxxxxx        \n"
+  sprintf(str, GA_TXTOMETER_FORMAT5, GAGetDiversity(that));
+  TextOMeterPrint(that->_textOMeter, str);
+  //
+  sprintf(str, "\n");
+  TextOMeterPrint(that->_textOMeter, str);
+  // Id      Age     Val
+  sprintf(str, GA_TXTOMETER_LINE2);
+  TextOMeterPrint(that->_textOMeter, str);
+  // xxxxxx  xxxxxx  +xxxxxx.xxxx
+  sprintf(str, GA_TXTOMETER_FORMAT3, 
+    GAAdnGetId(GABestAdn(that)), GAAdnGetAge(GABestAdn(that)),
+    GAAdnGetVal(GABestAdn(that)));
+  TextOMeterPrint(that->_textOMeter, str);
+  // .........................
+  sprintf(str, GA_TXTOMETER_LINE4);
+  TextOMeterPrint(that->_textOMeter, str);
+  // xxxxxx  xxxxxx  +xxxxxx.xxxx
+  for (int iRank = 0; iRank < GAGetNbElites(that); ++iRank) {
+    sprintf(str, GA_TXTOMETER_FORMAT3, 
+      GAAdnGetId(GAAdn(that, iRank)), GAAdnGetAge(GAAdn(that, iRank)),
+      GAAdnGetVal(GAAdn(that, iRank)));
+    TextOMeterPrint(that->_textOMeter, str);
+  }
+  // .........................
+  sprintf(str, GA_TXTOMETER_LINE4);
+  TextOMeterPrint(that->_textOMeter, str);
+  // xxxxxx  xxxxxx  +xxxxxx.xxxx
+  int maxRank = MIN(GA_TXTOMETER_NBADNDISPLAYED, GAGetNbAdns(that));
+  for (int iRank = GAGetNbElites(that); iRank < maxRank; ++iRank) {
+    sprintf(str, GA_TXTOMETER_FORMAT3, 
+      GAAdnGetId(GAAdn(that, iRank)), GAAdnGetAge(GAAdn(that, iRank)),
+      GAAdnGetVal(GAAdn(that, iRank)));
+    TextOMeterPrint(that->_textOMeter, str);
+  }
+  // Sleep to synchronize the TextOMeter
+  unsigned int microseconds = 10000;
+  usleep(microseconds);
+}
+  

@@ -165,6 +165,8 @@ void UnitTestGenAlgCreateFree() {
     ga->_nbElites != GENALG_NBELITES ||
     ga->_lengthAdnF != lengthAdnF ||
     ga->_lengthAdnI != lengthAdnI ||
+    ga->_flagTextOMeter != false ||
+    ga->_textOMeter != NULL ||
     GSetNbElem(GAAdns(ga)) != GENALG_NBENTITIES) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GenAlgCreate failed");
@@ -522,6 +524,7 @@ void UnitTestGenAlgTest() {
     GASetBoundsAdnInt(ga, i, &boundsI);
   }
   GAInit(ga);
+  GASetTextOMeterFlag(ga, true);
   //GASetDiversityThreshold(ga, 0.0);
 float best = 1.0;
 //int step = 0;
