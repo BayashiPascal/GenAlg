@@ -537,19 +537,20 @@ float best = 1.0;
           -1.0 * evaluate(GAAdnAdnF(GAAdn(ga, iEnt)), 
           GAAdnAdnI(GAAdn(ga, iEnt))));
     GAStep(ga);
-float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
-//if (step == 10){
-//  printf("%d %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));
-//  step = 0;
-//} else step++;
-if (best - ev > PBMATH_EPSILON) {
-  best = ev;
-  printf("%lu %f ", GAGetCurEpoch(ga), best);
-  VecFloatPrint(GABestAdnF(ga), stdout, 6);
-  printf(" ");
-  VecPrint(GABestAdnI(ga), stdout);
-  printf("\n");
-}
+    // Slow down the process to have time to read the TextOMeter
+    //unsigned int microseconds = 10000;
+    //usleep(microseconds);
+    sleep(1);
+    // Display info if there is improvment
+    float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
+    if (best - ev > PBMATH_EPSILON) {
+      best = ev;
+      printf("%lu %f ", GAGetCurEpoch(ga), best);
+      VecFloatPrint(GABestAdnF(ga), stdout, 6);
+      printf(" ");
+      VecPrint(GABestAdnI(ga), stdout);
+      printf("\n");
+    }
   } while (GAGetCurEpoch(ga) < 20000 || 
     evaluate(GABestAdnF(ga), GABestAdnI(ga)) < PBMATH_EPSILON);
   printf("target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1\n");

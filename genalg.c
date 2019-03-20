@@ -1835,8 +1835,7 @@ void GAUpdateTextOMeter(const GenAlg* const that) {
       GAAdnGetVal(GAAdn(that, iRank)));
     TextOMeterPrint(that->_textOMeter, str);
   }
-  // Sleep to synchronize the TextOMeter
-  unsigned int microseconds = 10000;
-  usleep(microseconds);
+  // Flush the content of the TextOMeter
+  TextOMeterFlush(that->_textOMeter);
 }
   
