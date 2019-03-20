@@ -13,11 +13,22 @@
 #include "pberr.h"
 #include "pbmath.h"
 #include "gset.h"
+#include "respublish.h"
 
 // ================= Define ==================
 
 #define GENALG_NBENTITIES 100
 #define GENALG_NBELITES 20
+
+#define GA_TXTOMETER_NBADNDISPLAYED 40
+#define GA_TXTOMETER_LINE1 "Epoch #xxxxxx  KTEvent #xxxxxx  \n"
+#define GA_TXTOMETER_FORMAT1 "Epoch #%06lu  KTEvent #%06lu\n"
+#define GA_TXTOMETER_LINE2 "Id        Age      Val\n"
+#define GA_TXTOMETER_LINE3 "xxxxxxxx  xxxxxx  +xxxxxx.xxxxxx\n"
+#define GA_TXTOMETER_FORMAT3 "%08lu  %06lu  %+06.6f\n"
+#define GA_TXTOMETER_LINE4 "................................\n"
+#define GA_TXTOMETER_LINE5 "Diversity +xxxxxx.xxxxxx        \n"
+#define GA_TXTOMETER_FORMAT5 "Diversity %+06.6f  \n"
 
 // ------------- GenAlgAdn
 
@@ -229,6 +240,13 @@ typedef struct GenAlg {
   GANeuraNet _NNdata;
   // Number of ktevent
   unsigned long _nbKTEvent;
+  // Flag to remember if we display info via a TextOMeter 
+  // about the population
+  bool _flagTextOMeter;
+  // TextOMeter to display information about the population
+  // If the TextOMEter is used, its ocntent is refreshed at each call 
+  // of the function GAStep();
+  TextOMeter* _textOMeter;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -420,6 +438,17 @@ void GAKTEvent(GenAlg* const that);
 inline
 #endif
 const GenAlgAdn* GABestAdn(const GenAlg* const that);
+
+// Return the flag memorizing if the TextOMeter is displayed for
+// the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+bool GAIsTextOMeterActive(const GenAlg* const that);
+
+// Set the flag memorizing if the TextOMeter is displayed for
+// the GenAlg 'that' to 'flag'
+void GASetTextOMeterFlag(GenAlg* const that, bool flag);
 
 // ================= Polymorphism ==================
 
