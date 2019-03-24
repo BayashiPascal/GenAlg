@@ -325,6 +325,7 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   that->_curEpoch = 0;
   that->_nbKTEvent = 0;
   that->_flagTextOMeter = false;
+  that->_diversityThreshold = 0.01;
   that->_textOMeter = NULL;
   that->_bestAdn = GenAlgAdnCreate(0, lengthAdnF, lengthAdnI);
   *(long*)&(that->_lengthAdnF) = lengthAdnF;
@@ -460,7 +461,47 @@ void GAKTEvent(GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  ++(that->_nbKTEvent);
+  // No KTEvent on the first epoch
+  if (GAGetCurEpoch(that) == 0)
+    return;
+  // Get the diversity level
+  float diversity = GAGetDiversity(that);
+  // Loop until the diversity of the elites is sufficient
+  int nbKTEvent = 0;
+  int nbMaxLoop = 
+    (int)round((float)GAGetNbAdns(that) / (float)GAGetNbElites(that));
+  do {
+    nbKTEvent = 0;
+    // For each pair of adn
+    for (int iAdn = GAGetNbElites(that) - 1; iAdn >= 1 ; --iAdn) {
+      for (int jAdn = iAdn - 1; jAdn >= 0 ; --jAdn) {
+        // Get the diversity of this pair
+        float div = fabs(GAAdnGetVal(GAAdn(that, iAdn)) - 
+          GAAdnGetVal(GAAdn(that, jAdn)));
+        // If its the lowest one
+        if (div <= diversity) {
+          GenAlgAdn* adn = GAAdn(that, iAdn);
+          GAAdnInit(adn, that);
+          adn->_age = 1;
+          adn->_id = (that->_nextId)++;
+          GASetAdnValue(that, adn, 
+            GAAdnGetVal(GAAdn(that, GAGetNbAdns(that) - 1)));
+          jAdn = 0;
+          ++nbKTEvent;
+        }
+      }
+    }
+    // If their has been KTEvent
+    if (nbKTEvent > 0) {
+      // We need to sort the adns
+      GSetSort(GAAdns(that));
+      // Memorize the total number of KTEvent
+      that->_nbKTEvent += nbKTEvent;
+    }
+    --nbMaxLoop;
+  } while (nbKTEvent > 0 && nbMaxLoop > 0);
+
+  /*++(that->_nbKTEvent);
   GenAlgAdn* adn = GAAdn(that, 0);
   unsigned long int age = adn->_age;
   GAAdnCopy(adn, GABestAdn(that));
@@ -474,7 +515,7 @@ void GAKTEvent(GenAlg* const that) {
     GAAdnInit(adn, that);
     adn->_age = 1;
     adn->_id = (that->_nextId)++;
-  }
+  }*/
 }
 
 // Step an epoch for the GenAlg 'that' with the current ranking of
@@ -496,20 +537,29 @@ void GAStep(GenAlg* const that) {
     GAAdnCopy(that->_bestAdn, GAAdn(that, 0));
     that->_bestAdn->_age = that->_curEpoch + 1;
   }
+  // Refresh the TextOMeter if necessary
+  if (that->_flagTextOMeter) {
+    GAUpdateTextOMeter(that);
+  }
   // Declare a variable to memorize the parents
   int parents[2];
-  // Get the diversity level
+  // Ensure diversity level
+  GAKTEvent(that);
+  
+  /*// Get the diversity level
   float diversity = GAGetDiversity(that);
   // Correct the diversity level with the age of the best adn
   //diversity *= 
     //1.0 - fsquare((float)(GAAdnGetAge(GAAdn(that, 0))) / 1000.0);
   // If the diversity level is too low
-  if (diversity < PBMATH_EPSILON || GAAdnGetAge(GAAdn(that, 0)) > 200) {
+  if (that->_curEpoch > 1 && 
+    (diversity < GAGetDiversityThreshold(that) || 
+    GAAdnGetAge(GAAdn(that, 0)) > 200)) {
     // Renew diversity by applying a KT event (in memory of 
     // chickens' grand pa and grand ma)
     GAKTEvent(that);
   // Else, the diversity level is ok
-  } else {
+  } else { */
     // For each adn which is an elite
     for (int iAdn = 0; iAdn < GAGetNbElites(that); ++iAdn) {
       // Increment age
@@ -525,13 +575,9 @@ void GAStep(GenAlg* const that) {
       // Mute the genes of the adn
       GAMute(that, parents, iAdn);
     }
-  }
+  //}
   // Increment the number of epochs
   ++(that->_curEpoch);
-  // Refresh the TextOMEter if necessary
-  if (that->_flagTextOMeter) {
-    GAUpdateTextOMeter(that);
-  }
 }
 
 // Select the rank of two parents for the SRM algorithm

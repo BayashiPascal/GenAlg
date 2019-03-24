@@ -243,6 +243,8 @@ typedef struct GenAlg {
   // Flag to remember if we display info via a TextOMeter 
   // about the population
   bool _flagTextOMeter;
+  // DiversityThreshold
+  float _diversityThreshold;
   // TextOMeter to display information about the population
   // If the TextOMEter is used, its ocntent is refreshed at each call 
   // of the function GAStep();
@@ -299,6 +301,18 @@ GSet* GAAdns(const GenAlg* const that);
 inline
 #endif
 int GAGetNbAdns(const GenAlg* const that);
+
+// Get the diversity threshold of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+float GAGetDiversityThreshold(const GenAlg* const that);
+
+// Set the diversity threshold of the GenAlg 'that' to 'threshold'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetDiversityThreshold(GenAlg* const that, const float threshold);
 
 // Return the nb of elites of the GenAlg 'that'
 #if BUILDMODE != 0

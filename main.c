@@ -166,6 +166,7 @@ void UnitTestGenAlgCreateFree() {
     ga->_lengthAdnF != lengthAdnF ||
     ga->_lengthAdnI != lengthAdnI ||
     ga->_flagTextOMeter != false ||
+    ISEQUALF(ga->_diversityThreshold, 0.01) != true ||
     ga->_textOMeter != NULL ||
     GSetNbElem(GAAdns(ga)) != GENALG_NBENTITIES) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
@@ -214,6 +215,18 @@ void UnitTestGenAlgGetSet() {
   if (GAGetNbKTEvent(ga) != 0) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAGetNbKTEvent failed");
+    PBErrCatch(GenAlgErr);
+  }
+  if (ISEQUALF(GAGetDiversityThreshold(ga), 
+    ga->_diversityThreshold) != true) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAGetDiversityThreshold failed");
+    PBErrCatch(GenAlgErr);
+  }
+  GASetDiversityThreshold(ga, 2.0);
+  if (ISEQUALF(GAGetDiversityThreshold(ga), 2.0) != true) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetDiversityThrehsold failed");
     PBErrCatch(GenAlgErr);
   }
   GASetNbEntities(ga, 10);
@@ -525,6 +538,7 @@ void UnitTestGenAlgTest() {
   }
   GAInit(ga);
   GASetTextOMeterFlag(ga, true);
+  GASetDiversityThreshold(ga, 0.0001);
   //GASetDiversityThreshold(ga, 0.0);
 float best = 1.0;
 //int step = 0;
@@ -538,9 +552,9 @@ float best = 1.0;
           GAAdnAdnI(GAAdn(ga, iEnt))));
     GAStep(ga);
     // Slow down the process to have time to read the TextOMeter
-    //unsigned int microseconds = 10000;
-    //usleep(microseconds);
-    sleep(1);
+    unsigned int microseconds = 10000;
+    usleep(microseconds);
+    //sleep(1);
     // Display info if there is improvment
     float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
     if (best - ev > PBMATH_EPSILON) {
@@ -583,6 +597,7 @@ void UnitTestGenAlgPerf() {
       GASetBoundsAdnInt(ga, i, &boundsI);
     }
     GAInit(ga);
+    GASetDiversityThreshold(ga, 0.0001);
     float ev = 0.0;
     do {
       for (int iEnt = GAGetNbAdns(ga); iEnt--;)
@@ -598,8 +613,9 @@ void UnitTestGenAlgPerf() {
       bestEv = ev;
     if (iRun == 0 || maxEv < ev)
       maxEv = ev;
-//avgEv = sumEv / (float)iRun;
-//printf("best: %f, worst: %f, avg: %f, %lu\n", bestEv, maxEv, avgEv, ga->_nbKTEvent);
+    //avgEv = sumEv / (float)iRun;
+    //printf("best: %f, worst: %f, avg: %f, ktevent: %lu\n", 
+    //  bestEv, maxEv, avgEv, ga->_nbKTEvent);
     GenAlgFree(&ga);
   }
   avgEv = sumEv / (float)nbRun;

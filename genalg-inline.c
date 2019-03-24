@@ -658,9 +658,44 @@ float GAGetDiversity(const GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif 
-  float diversity = 
-    GAAdn(that, 0)->_val - GAAdn(that, GAGetNbElites(that) - 1)->_val;
+  float diversity = GAGetDiversityThreshold(that) + 1.0;
+  for (int iAdn = 0; iAdn < GAGetNbElites(that) - 1; ++iAdn) {
+    for (int jAdn = iAdn + 1; jAdn < GAGetNbElites(that); ++jAdn) {
+      diversity = fabs(MIN(diversity, 
+        GAAdn(that, iAdn)->_val - GAAdn(that, jAdn)->_val));
+    }
+  }
   return diversity;
+}
+
+// Get the diversity threshold of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+float GAGetDiversityThreshold(const GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif 
+  return that->_diversityThreshold;
+}
+
+// Set the diversity threshold of the GenAlg 'that' to 'threshold'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetDiversityThreshold(GenAlg* const that, const float threshold) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif 
+  that->_diversityThreshold = threshold;
 }
 
 // Return the best adn of the GenAlg 'that'

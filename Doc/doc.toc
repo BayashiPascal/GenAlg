@@ -5,7 +5,7 @@
 \contentsline {section}{\numberline {2}Interface}{3}
 \contentsline {section}{\numberline {3}Code}{11}
 \contentsline {subsection}{\numberline {3.1}genalg.c}{11}
-\contentsline {subsection}{\numberline {3.2}genalg-inline.c}{41}
-\contentsline {section}{\numberline {4}Makefile}{52}
-\contentsline {section}{\numberline {5}Unit tests}{53}
-\contentsline {section}{\numberline {6}Unit tests output}{63}
+\contentsline {subsection}{\numberline {3.2}genalg-inline.c}{42}
+\contentsline {section}{\numberline {4}Makefile}{54}
+\contentsline {section}{\numberline {5}Unit tests}{54}
+\contentsline {section}{\numberline {6}Unit tests output}{65}
