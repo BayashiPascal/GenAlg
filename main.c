@@ -166,6 +166,8 @@ void UnitTestGenAlgCreateFree() {
     ga->_lengthAdnF != lengthAdnF ||
     ga->_lengthAdnI != lengthAdnI ||
     ga->_flagTextOMeter != false ||
+    ga->_nbMinAdn != GENALG_NBENTITIES ||
+    ga->_nbMaxAdn != GENALG_NBENTITIES ||
     ISEQUALF(ga->_diversityThreshold, 0.01) != true ||
     ga->_textOMeter != NULL ||
     GSetNbElem(GAAdns(ga)) != GENALG_NBENTITIES) {
@@ -286,6 +288,28 @@ void UnitTestGenAlgGetSet() {
     ISEQUALF(ga->_adns->_tail->_sortVal, 1.0) == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GASetAdnValue failed");
+    PBErrCatch(GenAlgErr);
+  }
+  if (GAGetNbMaxAdn(ga) != ga->_nbMaxAdn) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAGetNbMaxAdn failed");
+    PBErrCatch(GenAlgErr);
+  }
+  if (GAGetNbMinAdn(ga) != ga->_nbMinAdn) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAGetNbMinAdn failed");
+    PBErrCatch(GenAlgErr);
+  }
+  GASetNbMaxAdn(ga, 100);
+  if (GAGetNbMaxAdn(ga) != 100) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetNbMaxAdn failed");
+    PBErrCatch(GenAlgErr);
+  }
+  GASetNbMinAdn(ga, 100);
+  if (GAGetNbMinAdn(ga) != 100) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetNbMinAdn failed");
     PBErrCatch(GenAlgErr);
   }
   GenAlgFree(&ga);
@@ -523,7 +547,7 @@ float evaluate(const VecFloat* adnF, const VecLong* adnI) {
 }
 
 void UnitTestGenAlgTest() {
-  srandom(5);
+  srandom(0);
   int lengthAdnF = 4;
   int lengthAdnI = lengthAdnF;
   GenAlg* ga = GenAlgCreate(GENALG_NBENTITIES, GENALG_NBELITES, 
@@ -597,7 +621,7 @@ void UnitTestGenAlgPerf() {
       GASetBoundsAdnInt(ga, i, &boundsI);
     }
     GAInit(ga);
-    GASetDiversityThreshold(ga, 0.0001);
+    GASetDiversityThreshold(ga, 0.001);
     float ev = 0.0;
     do {
       for (int iEnt = GAGetNbAdns(ga); iEnt--;)
@@ -613,9 +637,9 @@ void UnitTestGenAlgPerf() {
       bestEv = ev;
     if (iRun == 0 || maxEv < ev)
       maxEv = ev;
-    //avgEv = sumEv / (float)iRun;
-    //printf("best: %f, worst: %f, avg: %f, ktevent: %lu\n", 
-    //  bestEv, maxEv, avgEv, ga->_nbKTEvent);
+    avgEv = sumEv / (float)iRun;
+    printf("best: %f, worst: %f, avg: %f, ktevent: %lu\n", 
+      bestEv, maxEv, avgEv, ga->_nbKTEvent);
     GenAlgFree(&ga);
   }
   avgEv = sumEv / (float)nbRun;

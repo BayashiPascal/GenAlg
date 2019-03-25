@@ -327,6 +327,8 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   that->_flagTextOMeter = false;
   that->_diversityThreshold = 0.01;
   that->_textOMeter = NULL;
+  that->_nbMinAdn = nbEntities;
+  that->_nbMaxAdn = nbEntities;
   that->_bestAdn = GenAlgAdnCreate(0, lengthAdnF, lengthAdnI);
   *(long*)&(that->_lengthAdnF) = lengthAdnF;
   *(long*)&(that->_lengthAdnI) = lengthAdnI;
@@ -465,7 +467,7 @@ void GAKTEvent(GenAlg* const that) {
   if (GAGetCurEpoch(that) == 0)
     return;
   // Get the diversity level
-  float diversity = GAGetDiversity(that);
+  //float diversity = GAGetDiversity(that);
   // Loop until the diversity of the elites is sufficient
   int nbKTEvent = 0;
   int nbMaxLoop = 
@@ -478,8 +480,8 @@ void GAKTEvent(GenAlg* const that) {
         // Get the diversity of this pair
         float div = fabs(GAAdnGetVal(GAAdn(that, iAdn)) - 
           GAAdnGetVal(GAAdn(that, jAdn)));
-        // If its the lowest one
-        if (div <= diversity) {
+        // If it's below the diversity threshold
+        if (div <= GAGetDiversityThreshold(that)) {
           GenAlgAdn* adn = GAAdn(that, iAdn);
           GAAdnInit(adn, that);
           adn->_age = 1;
@@ -500,6 +502,27 @@ void GAKTEvent(GenAlg* const that) {
     }
     --nbMaxLoop;
   } while (nbKTEvent > 0 && nbMaxLoop > 0);
+  // If the best adn is older than (nb elite) epochs
+  if (GAAdnGetAge(GAAdn(that, 0)) >= (unsigned int)GAGetNbElites(that)) {
+    // Get the diversity relatively to the best of all
+    float div = fabs(GAAdnGetVal(GAAdn(that, 0)) - 
+      GAAdnGetVal(GABestAdn(that)));
+    // If it's below the diversity threshold or the it's older than 
+    // (pool size) epochs
+    if (div <= GAGetDiversityThreshold(that) || 
+      GAAdnGetAge(GAAdn(that, 0)) >= (unsigned int)GAGetNbAdns(that)) {
+      GenAlgAdn* adn = GAAdn(that, 0);
+      GAAdnInit(adn, that);
+      adn->_age = 1;
+      adn->_id = (that->_nextId)++;
+      GASetAdnValue(that, adn, 
+        GAAdnGetVal(GAAdn(that, GAGetNbAdns(that) - 1)));
+      // We need to sort the adns
+      GSetSort(GAAdns(that));
+      // Memorize the total number of KTEvent
+      that->_nbKTEvent += 1;
+    }
+  }
 
   /*++(that->_nbKTEvent);
   GenAlgAdn* adn = GAAdn(that, 0);
@@ -531,20 +554,35 @@ void GAStep(GenAlg* const that) {
   // Selection, Reproduction, Mutation
   // Ensure the set of adns is sorted
   GSetSort(GAAdns(that));
+  // Variable to memorize if there has been improvement
+  bool flagImprov = false;
   // Update the best adn if necessary
-  if (that->_curEpoch == 1 || 
-    GAAdnGetVal(GAAdn(that, 0)) > GAAdnGetVal(GABestAdn(that))) {
+  if (that->_curEpoch == 1) {
     GAAdnCopy(that->_bestAdn, GAAdn(that, 0));
     that->_bestAdn->_age = that->_curEpoch + 1;
+  } else {
+    if (GAAdnGetVal(GAAdn(that, 0)) > GAAdnGetVal(GABestAdn(that))) {
+      GAAdnCopy(that->_bestAdn, GAAdn(that, 0));
+      that->_bestAdn->_age = that->_curEpoch + 1;
+      flagImprov = true;
+    }
   }
+  // Ensure diversity level
+  GAKTEvent(that);
   // Refresh the TextOMeter if necessary
   if (that->_flagTextOMeter) {
     GAUpdateTextOMeter(that);
   }
-  // Declare a variable to memorize the parents
-  int parents[2];
-  // Ensure diversity level
-  GAKTEvent(that);
+  // Resize the population according to the improvement
+  if (that->_curEpoch > 1) {
+    if (flagImprov) {
+      GASetNbEntities(that, 
+        MAX(GAGetNbMinAdn(that), GAGetNbAdns(that) / 2));
+    } else {
+      GASetNbEntities(that, 
+        MIN(GAGetNbMaxAdn(that), 2 * GAGetNbAdns(that)));
+    }
+  }
   
   /*// Get the diversity level
   float diversity = GAGetDiversity(that);
@@ -568,6 +606,8 @@ void GAStep(GenAlg* const that) {
     // For each adn which is not an elite
     for (int iAdn = GAGetNbElites(that); iAdn < GAGetNbAdns(that); 
       ++iAdn) {
+      // Declare a variable to memorize the parents
+      int parents[2];
       // Select two parents for this adn
       GASelectParents(that, parents);
       // Set the genes of the adn as a 50/50 mix of parents' genes
@@ -1811,9 +1851,9 @@ void GASetTextOMeterFlag(GenAlg* const that, bool flag) {
   if (that->_flagTextOMeter != flag) {
     if (flag && that->_textOMeter == NULL) {
       char title[] = "GenAlg";
-      int width = strlen(GA_TXTOMETER_LINE1) + 1;
-      int height = 
-        9 + MIN(GA_TXTOMETER_NBADNDISPLAYED, GAGetNbAdns(that));
+      int width = strlen(GENALG_TXTOMETER_LINE1) + 1;
+      int height = 10 + 
+        MIN(GENALG_TXTOMETER_NBADNDISPLAYED, GAGetNbMaxAdn(that));
       that->_textOMeter = TextOMeterCreate(title, width, height);
     }
     if (!flag && that->_textOMeter != NULL) {
@@ -1843,42 +1883,56 @@ void GAUpdateTextOMeter(const GenAlg* const that) {
   char str[50];
   // Print the content of the TextOMeter
   // Epoch #xxxxxx  KTEvent #xxxxxx
-  sprintf(str, GA_TXTOMETER_FORMAT1, 
+  sprintf(str, GENALG_TXTOMETER_FORMAT1, 
     GAGetCurEpoch(that), GAGetNbKTEvent(that));
   TextOMeterPrint(that->_textOMeter, str);
-  // Diversity +xxxxxx.xxxxxx        \n"
-  sprintf(str, GA_TXTOMETER_FORMAT5, GAGetDiversity(that));
+  // Diversity +xxxxxx.xxxxxx
+  sprintf(str, GENALG_TXTOMETER_FORMAT5, GAGetDiversity(that));
+  TextOMeterPrint(that->_textOMeter, str);
+  // Nb adns xxxxxx
+  sprintf(str, GENALG_TXTOMETER_FORMAT6, GAGetNbAdns(that));
   TextOMeterPrint(that->_textOMeter, str);
   //
   sprintf(str, "\n");
   TextOMeterPrint(that->_textOMeter, str);
   // Id      Age     Val
-  sprintf(str, GA_TXTOMETER_LINE2);
+  sprintf(str, GENALG_TXTOMETER_LINE2);
   TextOMeterPrint(that->_textOMeter, str);
   // xxxxxx  xxxxxx  +xxxxxx.xxxx
-  sprintf(str, GA_TXTOMETER_FORMAT3, 
+  sprintf(str, GENALG_TXTOMETER_FORMAT3, 
     GAAdnGetId(GABestAdn(that)), GAAdnGetAge(GABestAdn(that)),
     GAAdnGetVal(GABestAdn(that)));
   TextOMeterPrint(that->_textOMeter, str);
   // .........................
-  sprintf(str, GA_TXTOMETER_LINE4);
+  sprintf(str, GENALG_TXTOMETER_LINE4);
   TextOMeterPrint(that->_textOMeter, str);
   // xxxxxx  xxxxxx  +xxxxxx.xxxx
   for (int iRank = 0; iRank < GAGetNbElites(that); ++iRank) {
-    sprintf(str, GA_TXTOMETER_FORMAT3, 
+    sprintf(str, GENALG_TXTOMETER_FORMAT3, 
       GAAdnGetId(GAAdn(that, iRank)), GAAdnGetAge(GAAdn(that, iRank)),
       GAAdnGetVal(GAAdn(that, iRank)));
     TextOMeterPrint(that->_textOMeter, str);
   }
   // .........................
-  sprintf(str, GA_TXTOMETER_LINE4);
+  sprintf(str, GENALG_TXTOMETER_LINE4);
   TextOMeterPrint(that->_textOMeter, str);
   // xxxxxx  xxxxxx  +xxxxxx.xxxx
-  int maxRank = MIN(GA_TXTOMETER_NBADNDISPLAYED, GAGetNbAdns(that));
+  int maxRank = MIN(GENALG_TXTOMETER_NBADNDISPLAYED, GAGetNbAdns(that));
   for (int iRank = GAGetNbElites(that); iRank < maxRank; ++iRank) {
-    sprintf(str, GA_TXTOMETER_FORMAT3, 
+    sprintf(str, GENALG_TXTOMETER_FORMAT3, 
       GAAdnGetId(GAAdn(that, iRank)), GAAdnGetAge(GAAdn(that, iRank)),
       GAAdnGetVal(GAAdn(that, iRank)));
+    TextOMeterPrint(that->_textOMeter, str);
+  }
+  // Fill in with blank lines if necessary
+  sprintf(str, "\n");
+  for (int iBlank = GAGetNbAdns(that); 
+    iBlank < GENALG_TXTOMETER_NBADNDISPLAYED; ++iBlank) {
+    TextOMeterPrint(that->_textOMeter, str);
+  }
+  // If there are more adns than availalbe space in the TextOMeter
+  if (GAGetNbAdns(that)> GENALG_TXTOMETER_NBADNDISPLAYED) {
+    sprintf(str, "...");
     TextOMeterPrint(that->_textOMeter, str);
   }
   // Flush the content of the TextOMeter

@@ -17,18 +17,23 @@
 
 // ================= Define ==================
 
+#define GABestAdnF(that) GAAdnAdnF(GABestAdn(that))
+#define GABestAdnI(that) GAAdnAdnI(GABestAdn(that))
+
 #define GENALG_NBENTITIES 100
 #define GENALG_NBELITES 20
 
-#define GA_TXTOMETER_NBADNDISPLAYED 40
-#define GA_TXTOMETER_LINE1 "Epoch #xxxxxx  KTEvent #xxxxxx  \n"
-#define GA_TXTOMETER_FORMAT1 "Epoch #%06lu  KTEvent #%06lu\n"
-#define GA_TXTOMETER_LINE2 "Id        Age      Val\n"
-#define GA_TXTOMETER_LINE3 "xxxxxxxx  xxxxxx  +xxxxxx.xxxxxx\n"
-#define GA_TXTOMETER_FORMAT3 "%08lu  %06lu  %+06.6f\n"
-#define GA_TXTOMETER_LINE4 "................................\n"
-#define GA_TXTOMETER_LINE5 "Diversity +xxxxxx.xxxxxx        \n"
-#define GA_TXTOMETER_FORMAT5 "Diversity %+06.6f  \n"
+#define GENALG_TXTOMETER_NBADNDISPLAYED 40
+#define GENALG_TXTOMETER_LINE1 "Epoch #xxxxxx  KTEvent #xxxxxx  \n"
+#define GENALG_TXTOMETER_FORMAT1 "Epoch #%06lu  KTEvent #%06lu\n"
+#define GENALG_TXTOMETER_LINE2 "Id        Age      Val\n"
+#define GENALG_TXTOMETER_LINE3 "xxxxxxxx  xxxxxx  +xxxxxx.xxxxxx\n"
+#define GENALG_TXTOMETER_FORMAT3 "%08lu  %06lu  %+06.6f\n"
+#define GENALG_TXTOMETER_LINE4 "--------------------------------\n"
+#define GENALG_TXTOMETER_LINE5 "Diversity +xxxxxx.xxxxxx        \n"
+#define GENALG_TXTOMETER_FORMAT5 "Diversity %+06.6f  \n"
+#define GENALG_TXTOMETER_LINE6 "Size pool xxxxxx                \n"
+#define GENALG_TXTOMETER_FORMAT6 "Size pool %06d  \n"
 
 // ------------- GenAlgAdn
 
@@ -186,11 +191,6 @@ void GAAdnSetMutabilityFloat(GenAlgAdn* const that,
 
 // ------------- GenAlg
 
-// ================= Define ===================
-
-#define GABestAdnF(that) GAAdnAdnF(GABestAdn(that))
-#define GABestAdnI(that) GAAdnAdnI(GABestAdn(that))
-
 // ================= Data structure ===================
 
 typedef enum GenAlgType {
@@ -249,6 +249,10 @@ typedef struct GenAlg {
   // If the TextOMEter is used, its ocntent is refreshed at each call 
   // of the function GAStep();
   TextOMeter* _textOMeter;
+  // Nb min of adns
+  int _nbMinAdn;
+  // Nb max of adns
+  int _nbMaxAdn;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -295,6 +299,30 @@ void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn,
 inline
 #endif
 GSet* GAAdns(const GenAlg* const that);
+
+// Return the max nb of adns of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+int GAGetNbMaxAdn(const GenAlg* const that);
+
+// Return the min nb of adns of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+int GAGetNbMinAdn(const GenAlg* const that);
+
+// Set the min nb of adns of the GenAlg 'that' to 'nb'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetNbMaxAdn(GenAlg* const that, const int nb);
+
+// Set the min nb of adns of the GenAlg 'that' to 'nb'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetNbMinAdn(GenAlg* const that, const int nb);
 
 // Return the nb of entities of the GenAlg 'that'
 #if BUILDMODE != 0

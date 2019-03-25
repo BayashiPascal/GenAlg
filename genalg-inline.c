@@ -454,6 +454,69 @@ unsigned long int GAGetNbKTEvent(const GenAlg* const that) {
   return that->_nbKTEvent;
 }
 
+// Return the min nb of adns of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+int GAGetNbMinAdn(const GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_nbMinAdn;
+}
+
+// Return the max nb of adns of the GenAlg 'that'
+#if BUILDMODE != 0
+inline
+#endif
+int GAGetNbMaxAdn(const GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_nbMaxAdn;
+}
+
+// Set the min nb of adns of the GenAlg 'that' to 'nb'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetNbMaxAdn(GenAlg* const that, const int nb) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  that->_nbMaxAdn = MAX(nb, GAGetNbElites(that) + 1);
+  if (GAGetNbMinAdn(that) > that->_nbMaxAdn)
+    GASetNbMinAdn(that, nb);
+}
+
+// Set the min nb of adns of the GenAlg 'that' to 'nb'
+#if BUILDMODE != 0
+inline
+#endif
+void GASetNbMinAdn(GenAlg* const that, const int nb) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  that->_nbMinAdn = MAX(nb, GAGetNbElites(that) + 1);
+  if (GAGetNbMaxAdn(that) < that->_nbMinAdn)
+    GASetNbMaxAdn(that, nb);
+}
 
 // Get the length of adn for floating point value
 #if BUILDMODE != 0
