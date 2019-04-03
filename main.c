@@ -432,12 +432,12 @@ void UnitTestGenAlgStep() {
   GAPrintln(ga, stdout);
   if (ga->_nextId != 4 || GAAdnGetId(child) != 3 || 
     GAAdnGetAge(child) != 1 ||
-    ISEQUALF(GAAdnGetGeneF(child, 0), -0.156076) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 0), 0.285933) == false ||
     ISEQUALF(GAAdnGetGeneF(child, 1), 0.174965) == false ||
     ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.0) == false ||
     ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.0) == false ||
     GAAdnGetGeneI(child, 0) != 4 ||
-    GAAdnGetGeneI(child, 1) != 7 ||
+    GAAdnGetGeneI(child, 1) != 10 ||
     GAAdn(ga, 2) != child ||
     GAAdnGetAge(GAAdn(ga, 0)) != 2 ||
     GAAdnGetAge(GAAdn(ga, 1)) != 2 ||
@@ -672,7 +672,8 @@ void UnitTestAll() {
 }
 
 int main() {
-  UnitTestAll();
+  //UnitTestAll();
+  UnitTestGenAlgStep();
   // Return success code
   return 0;
 }
