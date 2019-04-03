@@ -502,43 +502,26 @@ void GAKTEvent(GenAlg* const that) {
     }
     --nbMaxLoop;
   } while (nbKTEvent > 0 && nbMaxLoop > 0);
-  // If the best adn is older than (nb elite) epochs
-  if (GAAdnGetAge(GAAdn(that, 0)) >= (unsigned int)GAGetNbElites(that)) {
-    // Get the diversity relatively to the best of all
-    float div = fabs(GAAdnGetVal(GAAdn(that, 0)) - 
-      GAAdnGetVal(GABestAdn(that)));
-    // If it's below the diversity threshold or the it's older than 
-    // (pool size) epochs
-    if (div <= GAGetDiversityThreshold(that) || 
-      GAAdnGetAge(GAAdn(that, 0)) >= (unsigned int)GAGetNbAdns(that)) {
-      GenAlgAdn* adn = GAAdn(that, 0);
-      GAAdnInit(adn, that);
-      adn->_age = 1;
-      adn->_id = (that->_nextId)++;
-      GASetAdnValue(that, adn, 
-        GAAdnGetVal(GAAdn(that, GAGetNbAdns(that) - 1)));
-      // We need to sort the adns
-      GSetSort(GAAdns(that));
-      // Memorize the total number of KTEvent
-      that->_nbKTEvent += 1;
-    }
-  }
-
-  /*++(that->_nbKTEvent);
-  GenAlgAdn* adn = GAAdn(that, 0);
-  unsigned long int age = adn->_age;
-  GAAdnCopy(adn, GABestAdn(that));
-  adn->_age = age;
-  int parents[2] = {0};
-  GAMute(that, parents, 0);
-  adn->_age = 1;
-  for (int iEnt = 1; iEnt < GAGetNbAdns(that); 
-    ++iEnt) {
-    GenAlgAdn* adn = GAAdn(that, iEnt);
+  // Calculate a threshold for the age of the best elite
+  unsigned int th = (unsigned int)(GAGetNbMaxAdn(that) - GAGetNbAdns(that) + GAGetNbMinAdn(that));
+  // Get the diversity relatively to the best of all
+  float div = fabs(GAAdnGetVal(GAAdn(that, 0)) - 
+    GAAdnGetVal(GABestAdn(that)));
+  // If it's below the diversity threshold or the it's older than 
+  // the threshold
+  if (div <= GAGetDiversityThreshold(that) || 
+    GAAdnGetAge(GAAdn(that, 0)) >= th) {
+    GenAlgAdn* adn = GAAdn(that, 0);
     GAAdnInit(adn, that);
     adn->_age = 1;
     adn->_id = (that->_nextId)++;
-  }*/
+    GASetAdnValue(that, adn, 
+      GAAdnGetVal(GAAdn(that, GAGetNbAdns(that) - 1)));
+    // We need to sort the adns
+    GSetSort(GAAdns(that));
+    // Memorize the total number of KTEvent
+    that->_nbKTEvent += 1;
+  }
 }
 
 // Step an epoch for the GenAlg 'that' with the current ranking of
@@ -643,7 +626,7 @@ void GASelectParents(const GenAlg* const that, int* const parents) {
       // adn, but it's not a problem so leave it and let's call that 
       // the Hawking radiation of this function in memory of this great 
       // man.
-      p[i] = (int)floor(rnd() * (float)GAGetNbElites(that));
+      p[i] = (int)floor(rnd() * (float)GAGetNbElites(that)) - 1;
   } while (p[0] == p[1]);
   // Memorize the sorted parents' rank
   if (p[0] < p[1]) {

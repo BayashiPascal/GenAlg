@@ -675,15 +675,18 @@ GenAlgAdn* GAAdn(const GenAlg* const that, const int iRank) {
     sprintf(GenAlgErr->_msg, "'that' is null");
     PBErrCatch(GenAlgErr);
   }
-  if (iRank < 0 || iRank >= GAGetNbAdns(that)) {
+  if (iRank < -1 || iRank >= GAGetNbAdns(that)) {
     GenAlgErr->_type = PBErrTypeInvalidArg;
     sprintf(GenAlgErr->_msg, "'iRank' is invalid (0<=%d<%d)",
       iRank, GAGetNbAdns(that));
     PBErrCatch(GenAlgErr);
   }
 #endif
-  return (GenAlgAdn*)GSetGet(that->_adns,
-    GSetNbElem(that->_adns) - iRank - 1);
+  if (iRank == -1)
+    return (GenAlgAdn*)GABestAdn(that);
+  else
+    return (GenAlgAdn*)GSetGet(that->_adns,
+      GSetNbElem(that->_adns) - iRank - 1);
 }
 
 // Set the value of the GenAlgAdn 'adn' of the GenAlg 'that' to 'val'

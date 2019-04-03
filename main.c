@@ -562,13 +562,12 @@ void UnitTestGenAlgTest() {
   }
   GAInit(ga);
   GASetTextOMeterFlag(ga, true);
-  GASetDiversityThreshold(ga, 0.0001);
-  //GASetDiversityThreshold(ga, 0.0);
-float best = 1.0;
-//int step = 0;
+  //GASetDiversityThreshold(ga, 0.0001);
+  GASetDiversityThreshold(ga, 0.01);
+  GASetNbMinAdn(ga, 32);
+  GASetNbMaxAdn(ga, 512);
+  float best = 1.0;
   do {
-//float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
-//printf("%lu %f %f\n",GAGetCurEpoch(ga), ev, GAGetDiversity(ga));
     for (int iEnt = GAGetNbAdns(ga); iEnt--;)
       if (GAAdnIsNew(GAAdn(ga, iEnt)))
         GASetAdnValue(ga, GAAdn(ga, iEnt), 
@@ -621,7 +620,12 @@ void UnitTestGenAlgPerf() {
       GASetBoundsAdnInt(ga, i, &boundsI);
     }
     GAInit(ga);
-    GASetDiversityThreshold(ga, 0.001);
+    //GASetDiversityThreshold(ga, 0.001);
+
+  GASetDiversityThreshold(ga, 0.01);
+  GASetNbMinAdn(ga, 32);
+  GASetNbMaxAdn(ga, 512);
+
     float ev = 0.0;
     do {
       for (int iEnt = GAGetNbAdns(ga); iEnt--;)
