@@ -1,3 +1,27 @@
+UnitTestGenAlgAdnCreateFree OK
+UnitTestGenAlgAdnGetSet OK
+UnitTestGenAlgAdnInit OK
+UnitTestGenAlgAdn OK
+UnitTestGenAlgCreateFree OK
+UnitTestGenAlgGetSet OK
+UnitTestGenAlgInit OK
+epoch:0
+3 entities, 2 elites
+#0 value:0.000000 elite id:0 age:1
+  adnF:<0.788004,-0.003504>
+  deltaAdnF:<0.000000,0.000000>
+  adnI:<3,1>
+#1 value:0.000000 elite id:1 age:1
+  adnF:<-0.840711,-0.704622>
+  deltaAdnF:<0.000000,0.000000>
+  adnI:<5,4>
+#2 value:0.000000 id:2 age:1
+  adnF:<-0.907064,-0.450509>
+  deltaAdnF:<0.000000,0.000000>
+  adnI:<2,10>
+(age,val,div) (1,0.000,0.000) (1,0.000,0.455) 
+UnitTestGenAlgInit OK
+UnitTestGenAlgGetDiversity OK
 Before Step:
 epoch:0
 3 entities, 2 elites
@@ -29,3 +53,571 @@ epoch:1
   deltaAdnF:<0.000000,0.000000>
   adnI:<4,10>
 UnitTestGenAlgStep OK
+UnitTestGenAlgLoadSave OK
+2 0.202594 <-0.556069,-0.411679,-0.262673,0.499542> <3,1,1,2>
+4 0.101712 <-0.524388,-0.198029,0.317662,-0.496964> <1,1,2,3>
+6 0.094902 <-0.710292,0.018952,0.372442,-0.556692> <1,2,2,3>
+9 0.083031 <-0.556069,-0.646450,0.372442,-0.016666> <3,1,2,0>
+10 0.079733 <-0.836658,0.018952,0.372442,-0.468830> <1,2,2,3>
+11 0.068616 <-0.505736,-0.785797,0.372442,0.085225> <3,1,2,0>
+15 0.063889 <-0.836658,0.089179,0.274934,-0.468830> <1,2,2,3>
+19 0.063198 <-0.855053,0.089179,0.274934,-0.468830> <1,2,2,3>
+23 0.061650 <-0.848098,0.089179,0.274934,-0.468830> <1,2,2,3>
+24 0.061242 <-0.848098,0.084148,0.274934,-0.468830> <1,2,2,3>
+27 0.060846 <-0.851505,0.084148,0.274934,-0.468830> <1,2,2,3>
+31 0.060517 <-0.718301,0.008625,0.351759,-0.514215> <1,0,2,3>
+33 0.055760 <-0.718301,0.077882,0.351759,-0.544232> <1,0,2,3>
+34 0.055732 <-0.718301,0.008625,0.351759,-0.520389> <1,0,2,3>
+38 0.048148 <-0.718301,0.033906,0.351759,-0.520389> <1,0,2,3>
+39 0.045611 <-0.718301,0.091931,0.289099,-0.520389> <1,0,2,3>
+45 0.035618 <-0.718301,0.140258,0.289099,-0.520389> <1,0,2,3>
+55 0.023134 <-0.743370,0.117274,0.317665,-0.515054> <1,0,2,3>
+56 0.022043 <-0.743370,0.115488,0.298783,-0.519234> <1,0,2,3>
+59 0.019943 <-0.743370,0.115488,0.298783,-0.515054> <1,0,2,3>
+64 0.018260 <-0.761297,0.114413,0.298783,-0.513328> <1,0,2,3>
+66 0.017453 <-0.755398,0.114413,0.298783,-0.513328> <1,0,2,3>
+75 0.016354 <-0.760443,0.114413,0.298783,-0.508511> <1,0,2,3>
+83 0.015222 <-0.776573,0.114413,0.298783,-0.504213> <1,0,2,3>
+84 0.010572 <-0.776573,0.096385,0.309279,-0.504213> <1,0,2,3>
+94 0.010069 <-0.789251,0.096385,0.309279,-0.495285> <1,0,2,3>
+102 0.010007 <-0.786850,0.096385,0.309279,-0.495285> <1,0,2,3>
+110 0.007566 <-0.790270,0.102254,0.309279,-0.495285> <1,0,2,3>
+112 0.006426 <-0.786850,0.102254,0.309279,-0.495285> <1,0,2,3>
+123 0.006338 <-0.783914,0.102254,0.309279,-0.495285> <1,0,2,3>
+185 0.006325 <-0.783914,0.102322,0.309279,-0.495285> <1,0,2,3>
+187 0.006051 <-0.782752,0.101120,0.315162,-0.495285> <1,0,2,3>
+192 0.005528 <-0.788900,0.102254,0.315162,-0.495285> <1,0,2,3>
+196 0.005136 <-0.788427,0.101120,0.315162,-0.495285> <1,0,2,3>
+206 0.005043 <-0.786692,0.101120,0.315162,-0.495285> <1,0,2,3>
+212 0.004795 <-0.786692,0.098350,0.315162,-0.495285> <1,0,2,3>
+291 0.003860 <-0.786692,0.098350,0.315162,-0.496681> <1,0,2,3>
+465 0.003597 <-0.782872,0.098350,0.315162,-0.496681> <1,0,2,3>
+597 0.003515 <-0.782872,0.098350,0.315162,-0.499100> <1,0,2,3>
+635 0.003427 <-0.782872,0.099359,0.315162,-0.499100> <1,0,2,3>
+642 0.002565 <-0.782872,0.099359,0.315162,-0.498289> <1,0,2,3>
+649 0.002467 <-0.782872,0.099359,0.315162,-0.498104> <1,0,2,3>
+674 0.002089 <-0.781099,0.099359,0.315162,-0.498104> <1,0,2,3>
+691 0.002008 <-0.774996,0.099359,0.315162,-0.501728> <1,0,2,3>
+864 0.001865 <-0.774996,0.099359,0.314146,-0.501728> <1,0,2,3>
+874 0.001744 <-0.774996,0.099359,0.314146,-0.501640> <1,0,2,3>
+1308 0.001240 <-0.774996,0.099359,0.314521,-0.501094> <1,0,2,3>
+1646 0.001221 <-0.775075,0.099359,0.314521,-0.501094> <1,0,2,3>
+1649 0.001170 <-0.775432,0.099359,0.314521,-0.501094> <1,0,2,3>
+2268 0.001158 <-0.775524,0.099359,0.314521,-0.501084> <1,0,2,3>
+3890 0.001124 <-0.775524,0.099442,0.314307,-0.501084> <1,0,2,3>
+4136 0.001114 <-0.775524,0.099791,0.314307,-0.501084> <1,0,2,3>
+5250 0.001098 <-0.775524,0.099791,0.314307,-0.500583> <1,0,2,3>
+5858 0.001033 <-0.775524,0.099791,0.314118,-0.500583> <1,0,2,3>
+7729 0.000915 <-0.775524,0.099791,0.314118,-0.500727> <1,0,2,3>
+target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1
+approx: 
+id:5500898 age:7729
+  adnF:<-0.775524,0.099791,0.314118,-0.500727>
+  deltaAdnF:<-0.218328,-0.013918,-0.138814,-0.007539>
+  adnI:<1,0,2,3>
+error: 0.000915
+UnitTestGenAlgTest OK
+best: 0.001139, worst: 0.001139, avg: inf, ktevent: 437941
+best: 0.000366, worst: 0.001139, avg: 0.001505, ktevent: 442756
+best: 0.000366, worst: 0.001246, avg: 0.001375, ktevent: 439416
+best: 0.000366, worst: 0.001246, avg: 0.001293, ktevent: 438333
+best: 0.000366, worst: 0.001246, avg: 0.001230, ktevent: 441636
+best: 0.000350, worst: 0.001246, avg: 0.001054, ktevent: 439725
+best: 0.000350, worst: 0.001246, avg: 0.000962, ktevent: 438441
+best: 0.000350, worst: 0.001246, avg: 0.000924, ktevent: 438800
+best: 0.000350, worst: 0.001246, avg: 0.000915, ktevent: 442410
+best: 0.000350, worst: 0.001246, avg: 0.000917, ktevent: 442881
+best: 0.000350, worst: 0.001246, avg: 0.000943, ktevent: 441871
+best: 0.000350, worst: 0.001246, avg: 0.000938, ktevent: 440597
+best: 0.000350, worst: 0.001246, avg: 0.000923, ktevent: 433294
+best: 0.000350, worst: 0.001246, avg: 0.000882, ktevent: 441164
+best: 0.000350, worst: 0.002092, avg: 0.000968, ktevent: 439625
+best: 0.000350, worst: 0.002092, avg: 0.000992, ktevent: 438065
+best: 0.000350, worst: 0.002092, avg: 0.000964, ktevent: 438098
+best: 0.000350, worst: 0.002092, avg: 0.000955, ktevent: 441497
+best: 0.000350, worst: 0.002092, avg: 0.000998, ktevent: 440108
+best: 0.000350, worst: 0.002092, avg: 0.000972, ktevent: 442243
+best: 0.000143, worst: 0.002092, avg: 0.000931, ktevent: 439819
+best: 0.000143, worst: 0.002092, avg: 0.000905, ktevent: 438779
+best: 0.000143, worst: 0.002092, avg: 0.000898, ktevent: 440382
+best: 0.000143, worst: 0.002092, avg: 0.000887, ktevent: 439790
+best: 0.000143, worst: 0.002092, avg: 0.000879, ktevent: 443273
+best: 0.000143, worst: 0.002092, avg: 0.000857, ktevent: 439070
+best: 0.000143, worst: 0.002092, avg: 0.000837, ktevent: 442204
+best: 0.000143, worst: 0.002092, avg: 0.000825, ktevent: 438290
+best: 0.000143, worst: 0.002092, avg: 0.000818, ktevent: 443657
+best: 0.000143, worst: 0.002092, avg: 0.000817, ktevent: 442966
+best: 0.000143, worst: 0.002092, avg: 0.000827, ktevent: 444890
+best: 0.000143, worst: 0.002092, avg: 0.000834, ktevent: 444375
+best: 0.000143, worst: 0.002092, avg: 0.000829, ktevent: 439432
+best: 0.000143, worst: 0.002092, avg: 0.000823, ktevent: 440238
+best: 0.000143, worst: 0.002092, avg: 0.000832, ktevent: 442338
+best: 0.000143, worst: 0.002092, avg: 0.000825, ktevent: 440603
+best: 0.000143, worst: 0.002092, avg: 0.000826, ktevent: 442803
+best: 0.000143, worst: 0.002092, avg: 0.000823, ktevent: 436893
+best: 0.000143, worst: 0.002092, avg: 0.000848, ktevent: 440124
+best: 0.000143, worst: 0.002092, avg: 0.000835, ktevent: 434704
+best: 0.000143, worst: 0.002092, avg: 0.000824, ktevent: 436028
+best: 0.000143, worst: 0.002092, avg: 0.000818, ktevent: 440100
+best: 0.000143, worst: 0.002092, avg: 0.000821, ktevent: 440420
+best: 0.000143, worst: 0.002092, avg: 0.000833, ktevent: 440627
+best: 0.000143, worst: 0.002092, avg: 0.000853, ktevent: 442387
+best: 0.000114, worst: 0.002092, avg: 0.000836, ktevent: 440545
+best: 0.000114, worst: 0.002571, avg: 0.000874, ktevent: 440148
+best: 0.000114, worst: 0.002571, avg: 0.000885, ktevent: 440131
+best: 0.000114, worst: 0.002571, avg: 0.000890, ktevent: 441830
+best: 0.000114, worst: 0.002571, avg: 0.000894, ktevent: 438493
+best: 0.000114, worst: 0.002571, avg: 0.000899, ktevent: 443494
+best: 0.000114, worst: 0.002571, avg: 0.000890, ktevent: 442616
+best: 0.000114, worst: 0.002571, avg: 0.000891, ktevent: 440626
+best: 0.000114, worst: 0.002571, avg: 0.000890, ktevent: 433764
+best: 0.000114, worst: 0.002571, avg: 0.000883, ktevent: 437589
+best: 0.000114, worst: 0.002571, avg: 0.000890, ktevent: 439944
+best: 0.000114, worst: 0.002571, avg: 0.000890, ktevent: 441088
+best: 0.000114, worst: 0.002571, avg: 0.000879, ktevent: 443107
+best: 0.000114, worst: 0.002571, avg: 0.000884, ktevent: 442255
+best: 0.000114, worst: 0.002571, avg: 0.000873, ktevent: 442044
+best: 0.000114, worst: 0.002571, avg: 0.000871, ktevent: 436747
+best: 0.000114, worst: 0.002571, avg: 0.000861, ktevent: 440131
+best: 0.000114, worst: 0.002571, avg: 0.000851, ktevent: 439880
+best: 0.000114, worst: 0.002571, avg: 0.000853, ktevent: 442178
+best: 0.000114, worst: 0.002571, avg: 0.000858, ktevent: 438272
+best: 0.000114, worst: 0.002571, avg: 0.000852, ktevent: 442290
+best: 0.000114, worst: 0.002571, avg: 0.000860, ktevent: 444937
+best: 0.000114, worst: 0.002571, avg: 0.000856, ktevent: 438130
+best: 0.000114, worst: 0.002571, avg: 0.000851, ktevent: 440617
+best: 0.000114, worst: 0.002571, avg: 0.000841, ktevent: 440705
+best: 0.000114, worst: 0.002571, avg: 0.000849, ktevent: 439393
+best: 0.000114, worst: 0.002571, avg: 0.000850, ktevent: 436922
+best: 0.000114, worst: 0.002571, avg: 0.000843, ktevent: 439223
+best: 0.000114, worst: 0.002571, avg: 0.000840, ktevent: 440808
+best: 0.000114, worst: 0.002571, avg: 0.000836, ktevent: 446770
+best: 0.000114, worst: 0.002571, avg: 0.000841, ktevent: 438190
+best: 0.000114, worst: 0.002571, avg: 0.000856, ktevent: 439630
+best: 0.000114, worst: 0.002571, avg: 0.000861, ktevent: 439639
+best: 0.000114, worst: 0.002571, avg: 0.000859, ktevent: 439802
+best: 0.000114, worst: 0.002571, avg: 0.000850, ktevent: 441432
+best: 0.000114, worst: 0.002571, avg: 0.000855, ktevent: 437091
+best: 0.000114, worst: 0.002571, avg: 0.000872, ktevent: 438972
+best: 0.000114, worst: 0.002571, avg: 0.000873, ktevent: 441247
+best: 0.000114, worst: 0.002571, avg: 0.000875, ktevent: 438896
+best: 0.000114, worst: 0.002571, avg: 0.000869, ktevent: 442940
+best: 0.000114, worst: 0.002571, avg: 0.000874, ktevent: 437802
+best: 0.000114, worst: 0.002571, avg: 0.000874, ktevent: 440017
+best: 0.000114, worst: 0.002571, avg: 0.000873, ktevent: 441841
+best: 0.000114, worst: 0.002571, avg: 0.000879, ktevent: 439068
+best: 0.000114, worst: 0.002571, avg: 0.000874, ktevent: 441243
+best: 0.000114, worst: 0.002571, avg: 0.000886, ktevent: 440718
+best: 0.000114, worst: 0.002571, avg: 0.000883, ktevent: 439244
+best: 0.000114, worst: 0.002571, avg: 0.000878, ktevent: 440757
+best: 0.000114, worst: 0.002571, avg: 0.000874, ktevent: 440819
+best: 0.000114, worst: 0.002571, avg: 0.000878, ktevent: 435278
+best: 0.000114, worst: 0.002571, avg: 0.000878, ktevent: 438802
+best: 0.000114, worst: 0.002571, avg: 0.000873, ktevent: 441768
+best: 0.000114, worst: 0.002571, avg: 0.000875, ktevent: 439600
+best: 0.000114, worst: 0.002571, avg: 0.000873, ktevent: 442285
+best: 0.000114, worst: 0.002571, avg: 0.000879, ktevent: 440260
+best: 0.000114, worst: 0.002571, avg: 0.000880, ktevent: 439717
+best: 0.000114, worst: 0.002571, avg: 0.000875, ktevent: 441894
+best: 0.000114, worst: 0.002571, avg: 0.000876, ktevent: 440824
+best: 0.000114, worst: 0.002571, avg: 0.000879, ktevent: 438331
+best: 0.000114, worst: 0.002571, avg: 0.000884, ktevent: 438750
+best: 0.000114, worst: 0.002571, avg: 0.000879, ktevent: 440870
+best: 0.000114, worst: 0.002571, avg: 0.000879, ktevent: 437107
+best: 0.000114, worst: 0.002571, avg: 0.000884, ktevent: 440013
+best: 0.000114, worst: 0.002571, avg: 0.000878, ktevent: 442129
+best: 0.000114, worst: 0.002571, avg: 0.000875, ktevent: 438058
+best: 0.000114, worst: 0.002571, avg: 0.000876, ktevent: 439610
+best: 0.000114, worst: 0.002571, avg: 0.000870, ktevent: 440731
+best: 0.000114, worst: 0.002571, avg: 0.000867, ktevent: 441731
+best: 0.000114, worst: 0.002571, avg: 0.000874, ktevent: 442405
+best: 0.000114, worst: 0.002571, avg: 0.000878, ktevent: 438038
+best: 0.000114, worst: 0.002571, avg: 0.000875, ktevent: 440130
+best: 0.000114, worst: 0.002571, avg: 0.000874, ktevent: 438462
+best: 0.000114, worst: 0.002571, avg: 0.000873, ktevent: 443145
+best: 0.000114, worst: 0.002571, avg: 0.000873, ktevent: 441815
+best: 0.000114, worst: 0.002571, avg: 0.000871, ktevent: 440006
+best: 0.000114, worst: 0.002571, avg: 0.000872, ktevent: 438702
+best: 0.000114, worst: 0.002571, avg: 0.000876, ktevent: 438381
+best: 0.000114, worst: 0.002571, avg: 0.000874, ktevent: 441722
+best: 0.000114, worst: 0.002571, avg: 0.000872, ktevent: 440307
+best: 0.000114, worst: 0.002571, avg: 0.000869, ktevent: 439732
+best: 0.000114, worst: 0.002571, avg: 0.000864, ktevent: 440887
+best: 0.000114, worst: 0.002571, avg: 0.000862, ktevent: 441223
+best: 0.000114, worst: 0.002571, avg: 0.000860, ktevent: 437473
+best: 0.000114, worst: 0.002571, avg: 0.000860, ktevent: 445019
+best: 0.000114, worst: 0.002571, avg: 0.000862, ktevent: 438678
+best: 0.000114, worst: 0.002571, avg: 0.000862, ktevent: 442808
+best: 0.000114, worst: 0.002571, avg: 0.000865, ktevent: 441622
+best: 0.000114, worst: 0.002571, avg: 0.000865, ktevent: 442788
+best: 0.000114, worst: 0.002571, avg: 0.000866, ktevent: 438082
+best: 0.000114, worst: 0.002571, avg: 0.000862, ktevent: 434795
+best: 0.000114, worst: 0.002571, avg: 0.000859, ktevent: 438128
+best: 0.000114, worst: 0.002571, avg: 0.000855, ktevent: 441032
+best: 0.000114, worst: 0.002571, avg: 0.000850, ktevent: 441117
+best: 0.000114, worst: 0.002571, avg: 0.000846, ktevent: 441550
+best: 0.000114, worst: 0.002571, avg: 0.000846, ktevent: 441279
+best: 0.000114, worst: 0.002571, avg: 0.000844, ktevent: 441238
+best: 0.000114, worst: 0.002571, avg: 0.000842, ktevent: 437568
+best: 0.000114, worst: 0.002571, avg: 0.000845, ktevent: 438443
+best: 0.000114, worst: 0.002571, avg: 0.000846, ktevent: 440958
+best: 0.000114, worst: 0.002571, avg: 0.000850, ktevent: 440643
+best: 0.000114, worst: 0.002571, avg: 0.000853, ktevent: 437443
+best: 0.000114, worst: 0.002571, avg: 0.000853, ktevent: 441132
+best: 0.000114, worst: 0.002571, avg: 0.000852, ktevent: 439313
+best: 0.000114, worst: 0.002571, avg: 0.000856, ktevent: 439296
+best: 0.000114, worst: 0.002571, avg: 0.000855, ktevent: 440542
+best: 0.000114, worst: 0.002571, avg: 0.000859, ktevent: 439993
+best: 0.000114, worst: 0.002571, avg: 0.000863, ktevent: 438598
+best: 0.000114, worst: 0.002571, avg: 0.000863, ktevent: 441566
+best: 0.000114, worst: 0.002571, avg: 0.000862, ktevent: 442267
+best: 0.000114, worst: 0.002571, avg: 0.000862, ktevent: 438901
+best: 0.000114, worst: 0.002571, avg: 0.000860, ktevent: 439563
+best: 0.000114, worst: 0.002571, avg: 0.000858, ktevent: 442840
+best: 0.000114, worst: 0.002571, avg: 0.000856, ktevent: 438849
+best: 0.000114, worst: 0.002571, avg: 0.000855, ktevent: 440540
+best: 0.000114, worst: 0.002571, avg: 0.000856, ktevent: 440312
+best: 0.000114, worst: 0.002571, avg: 0.000861, ktevent: 443918
+best: 0.000114, worst: 0.002571, avg: 0.000861, ktevent: 442645
+best: 0.000114, worst: 0.002571, avg: 0.000863, ktevent: 438825
+best: 0.000104, worst: 0.002571, avg: 0.000858, ktevent: 438785
+best: 0.000104, worst: 0.002571, avg: 0.000862, ktevent: 437864
+best: 0.000104, worst: 0.002571, avg: 0.000859, ktevent: 442747
+best: 0.000104, worst: 0.002571, avg: 0.000862, ktevent: 440690
+best: 0.000104, worst: 0.002571, avg: 0.000862, ktevent: 441680
+best: 0.000104, worst: 0.002571, avg: 0.000865, ktevent: 445894
+best: 0.000104, worst: 0.002571, avg: 0.000866, ktevent: 439207
+best: 0.000104, worst: 0.002571, avg: 0.000861, ktevent: 437867
+best: 0.000104, worst: 0.002571, avg: 0.000858, ktevent: 439077
+best: 0.000104, worst: 0.002571, avg: 0.000859, ktevent: 439736
+best: 0.000104, worst: 0.002571, avg: 0.000857, ktevent: 440049
+best: 0.000104, worst: 0.002571, avg: 0.000860, ktevent: 438037
+best: 0.000104, worst: 0.002571, avg: 0.000860, ktevent: 440096
+best: 0.000104, worst: 0.002571, avg: 0.000859, ktevent: 441152
+best: 0.000104, worst: 0.002571, avg: 0.000856, ktevent: 438233
+best: 0.000104, worst: 0.002571, avg: 0.000858, ktevent: 438115
+best: 0.000104, worst: 0.002571, avg: 0.000856, ktevent: 439512
+best: 0.000104, worst: 0.002571, avg: 0.000855, ktevent: 438697
+best: 0.000104, worst: 0.002571, avg: 0.000856, ktevent: 439240
+best: 0.000104, worst: 0.002571, avg: 0.000856, ktevent: 439667
+best: 0.000104, worst: 0.002571, avg: 0.000855, ktevent: 439572
+best: 0.000104, worst: 0.002571, avg: 0.000857, ktevent: 436472
+best: 0.000104, worst: 0.002571, avg: 0.000857, ktevent: 434467
+best: 0.000104, worst: 0.002571, avg: 0.000854, ktevent: 438339
+best: 0.000104, worst: 0.002571, avg: 0.000857, ktevent: 442343
+best: 0.000104, worst: 0.002571, avg: 0.000860, ktevent: 441798
+best: 0.000104, worst: 0.002571, avg: 0.000860, ktevent: 440378
+best: 0.000104, worst: 0.002571, avg: 0.000860, ktevent: 443495
+best: 0.000104, worst: 0.002571, avg: 0.000858, ktevent: 439713
+best: 0.000104, worst: 0.002571, avg: 0.000857, ktevent: 442354
+best: 0.000104, worst: 0.002571, avg: 0.000858, ktevent: 435048
+best: 0.000104, worst: 0.002571, avg: 0.000859, ktevent: 441376
+best: 0.000104, worst: 0.002571, avg: 0.000861, ktevent: 438297
+best: 0.000104, worst: 0.002767, avg: 0.000870, ktevent: 442442
+best: 0.000104, worst: 0.002767, avg: 0.000870, ktevent: 440143
+best: 0.000104, worst: 0.002767, avg: 0.000869, ktevent: 442941
+best: 0.000104, worst: 0.002767, avg: 0.000869, ktevent: 439934
+best: 0.000104, worst: 0.002767, avg: 0.000869, ktevent: 443037
+best: 0.000104, worst: 0.002767, avg: 0.000870, ktevent: 442280
+best: 0.000104, worst: 0.002767, avg: 0.000872, ktevent: 439061
+best: 0.000104, worst: 0.002767, avg: 0.000870, ktevent: 436451
+best: 0.000104, worst: 0.002767, avg: 0.000871, ktevent: 441953
+best: 0.000104, worst: 0.002767, avg: 0.000876, ktevent: 440997
+best: 0.000104, worst: 0.002767, avg: 0.000879, ktevent: 440189
+best: 0.000104, worst: 0.002767, avg: 0.000886, ktevent: 434734
+best: 0.000104, worst: 0.002767, avg: 0.000885, ktevent: 438309
+best: 0.000104, worst: 0.002767, avg: 0.000888, ktevent: 440754
+best: 0.000104, worst: 0.002767, avg: 0.000886, ktevent: 436575
+best: 0.000104, worst: 0.002767, avg: 0.000884, ktevent: 440944
+best: 0.000104, worst: 0.002767, avg: 0.000886, ktevent: 440517
+best: 0.000104, worst: 0.002767, avg: 0.000883, ktevent: 440730
+best: 0.000104, worst: 0.002767, avg: 0.000891, ktevent: 440536
+best: 0.000104, worst: 0.002767, avg: 0.000889, ktevent: 443916
+best: 0.000104, worst: 0.002767, avg: 0.000891, ktevent: 440213
+best: 0.000104, worst: 0.002767, avg: 0.000890, ktevent: 438852
+best: 0.000066, worst: 0.002767, avg: 0.000886, ktevent: 441375
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 440058
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 441469
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 440785
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 439270
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 439939
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 442702
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 443098
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 439393
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 438302
+best: 0.000066, worst: 0.002767, avg: 0.000898, ktevent: 435480
+best: 0.000066, worst: 0.002767, avg: 0.000898, ktevent: 440722
+best: 0.000066, worst: 0.002767, avg: 0.000897, ktevent: 442299
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 436612
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 443337
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 436136
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 435815
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 438202
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 443718
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 439502
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 442425
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 443631
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 441322
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 441233
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 434957
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 439400
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 442883
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 441039
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 440974
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 437787
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 442104
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 441035
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 439621
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 441259
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 437694
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 442341
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 441226
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 442146
+best: 0.000066, worst: 0.002767, avg: 0.000898, ktevent: 441109
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 442585
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 436087
+best: 0.000066, worst: 0.002767, avg: 0.000901, ktevent: 439747
+best: 0.000066, worst: 0.002767, avg: 0.000900, ktevent: 440868
+best: 0.000066, worst: 0.002767, avg: 0.000901, ktevent: 438437
+best: 0.000066, worst: 0.002767, avg: 0.000897, ktevent: 443411
+best: 0.000066, worst: 0.002767, avg: 0.000897, ktevent: 440158
+best: 0.000066, worst: 0.002767, avg: 0.000898, ktevent: 442291
+best: 0.000066, worst: 0.002767, avg: 0.000898, ktevent: 439234
+best: 0.000066, worst: 0.002767, avg: 0.000897, ktevent: 437413
+best: 0.000066, worst: 0.002767, avg: 0.000897, ktevent: 440306
+best: 0.000066, worst: 0.002767, avg: 0.000897, ktevent: 441763
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 440061
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 437636
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 438267
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 435976
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 444031
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 441541
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 440811
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 440903
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 439478
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 440991
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 438674
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 439341
+best: 0.000066, worst: 0.002767, avg: 0.000902, ktevent: 440363
+best: 0.000066, worst: 0.002767, avg: 0.000903, ktevent: 438651
+best: 0.000066, worst: 0.002767, avg: 0.000903, ktevent: 442060
+best: 0.000066, worst: 0.002767, avg: 0.000905, ktevent: 444983
+best: 0.000066, worst: 0.002767, avg: 0.000906, ktevent: 437424
+best: 0.000066, worst: 0.002767, avg: 0.000908, ktevent: 441891
+best: 0.000066, worst: 0.002767, avg: 0.000906, ktevent: 440963
+best: 0.000066, worst: 0.002767, avg: 0.000904, ktevent: 439642
+best: 0.000066, worst: 0.002767, avg: 0.000905, ktevent: 441546
+best: 0.000066, worst: 0.002767, avg: 0.000904, ktevent: 438529
+best: 0.000066, worst: 0.002767, avg: 0.000902, ktevent: 442362
+best: 0.000066, worst: 0.002767, avg: 0.000903, ktevent: 438796
+best: 0.000066, worst: 0.002767, avg: 0.000904, ktevent: 443045
+best: 0.000066, worst: 0.002767, avg: 0.000905, ktevent: 443177
+best: 0.000066, worst: 0.002767, avg: 0.000907, ktevent: 440894
+best: 0.000066, worst: 0.002767, avg: 0.000905, ktevent: 440279
+best: 0.000066, worst: 0.002767, avg: 0.000907, ktevent: 437627
+best: 0.000066, worst: 0.002767, avg: 0.000907, ktevent: 439900
+best: 0.000066, worst: 0.002767, avg: 0.000908, ktevent: 437457
+best: 0.000066, worst: 0.002767, avg: 0.000908, ktevent: 439946
+best: 0.000066, worst: 0.002767, avg: 0.000908, ktevent: 439420
+best: 0.000066, worst: 0.002767, avg: 0.000907, ktevent: 438153
+best: 0.000066, worst: 0.002767, avg: 0.000905, ktevent: 440636
+best: 0.000066, worst: 0.002767, avg: 0.000903, ktevent: 438997
+best: 0.000066, worst: 0.002767, avg: 0.000904, ktevent: 442593
+best: 0.000066, worst: 0.002767, avg: 0.000904, ktevent: 440789
+best: 0.000066, worst: 0.002767, avg: 0.000903, ktevent: 438938
+best: 0.000066, worst: 0.002767, avg: 0.000901, ktevent: 440431
+best: 0.000066, worst: 0.002767, avg: 0.000900, ktevent: 442224
+best: 0.000066, worst: 0.002767, avg: 0.000897, ktevent: 437459
+best: 0.000066, worst: 0.002767, avg: 0.000897, ktevent: 438238
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 439548
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 441250
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 441690
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 441419
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 441496
+best: 0.000066, worst: 0.002767, avg: 0.000896, ktevent: 441899
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 441527
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 439172
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 439955
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 441165
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 435457
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 441489
+best: 0.000066, worst: 0.002767, avg: 0.000888, ktevent: 442321
+best: 0.000066, worst: 0.002767, avg: 0.000888, ktevent: 444006
+best: 0.000066, worst: 0.002767, avg: 0.000889, ktevent: 442896
+best: 0.000066, worst: 0.002767, avg: 0.000888, ktevent: 436561
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 443577
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 438986
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 440632
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 441359
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 441460
+best: 0.000066, worst: 0.002767, avg: 0.000889, ktevent: 442645
+best: 0.000066, worst: 0.002767, avg: 0.000889, ktevent: 440428
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 442219
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 438424
+best: 0.000066, worst: 0.002767, avg: 0.000889, ktevent: 443027
+best: 0.000066, worst: 0.002767, avg: 0.000888, ktevent: 446966
+best: 0.000066, worst: 0.002767, avg: 0.000887, ktevent: 440814
+best: 0.000066, worst: 0.002767, avg: 0.000889, ktevent: 439718
+best: 0.000066, worst: 0.002767, avg: 0.000889, ktevent: 437097
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 440791
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 442705
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 436945
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 440791
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 443943
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 439456
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 436807
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 437492
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 439537
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 441915
+best: 0.000066, worst: 0.002767, avg: 0.000895, ktevent: 439951
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 439878
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 440984
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 442931
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 441253
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 438126
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 435710
+best: 0.000066, worst: 0.002767, avg: 0.000889, ktevent: 438338
+best: 0.000066, worst: 0.002767, avg: 0.000888, ktevent: 440615
+best: 0.000066, worst: 0.002767, avg: 0.000886, ktevent: 442595
+best: 0.000066, worst: 0.002767, avg: 0.000885, ktevent: 438369
+best: 0.000066, worst: 0.002767, avg: 0.000885, ktevent: 438225
+best: 0.000066, worst: 0.002767, avg: 0.000883, ktevent: 442787
+best: 0.000066, worst: 0.002767, avg: 0.000882, ktevent: 442426
+best: 0.000066, worst: 0.002767, avg: 0.000881, ktevent: 435266
+best: 0.000066, worst: 0.002767, avg: 0.000880, ktevent: 441715
+best: 0.000066, worst: 0.002767, avg: 0.000880, ktevent: 439269
+best: 0.000066, worst: 0.002767, avg: 0.000878, ktevent: 442219
+best: 0.000066, worst: 0.002767, avg: 0.000877, ktevent: 437737
+best: 0.000066, worst: 0.002767, avg: 0.000879, ktevent: 440434
+best: 0.000066, worst: 0.002767, avg: 0.000879, ktevent: 441217
+best: 0.000066, worst: 0.002767, avg: 0.000879, ktevent: 442493
+best: 0.000066, worst: 0.002767, avg: 0.000880, ktevent: 441442
+best: 0.000066, worst: 0.002767, avg: 0.000879, ktevent: 439569
+best: 0.000066, worst: 0.002767, avg: 0.000878, ktevent: 443354
+best: 0.000066, worst: 0.002767, avg: 0.000877, ktevent: 437638
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 437649
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 441944
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 440945
+best: 0.000066, worst: 0.002767, avg: 0.000875, ktevent: 442756
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 442350
+best: 0.000066, worst: 0.002767, avg: 0.000875, ktevent: 444126
+best: 0.000066, worst: 0.002767, avg: 0.000875, ktevent: 438838
+best: 0.000066, worst: 0.002767, avg: 0.000874, ktevent: 438946
+best: 0.000066, worst: 0.002767, avg: 0.000874, ktevent: 434124
+best: 0.000066, worst: 0.002767, avg: 0.000872, ktevent: 444374
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 437961
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 440187
+best: 0.000066, worst: 0.002767, avg: 0.000870, ktevent: 437864
+best: 0.000066, worst: 0.002767, avg: 0.000869, ktevent: 444819
+best: 0.000066, worst: 0.002767, avg: 0.000870, ktevent: 441694
+best: 0.000066, worst: 0.002767, avg: 0.000868, ktevent: 439039
+best: 0.000066, worst: 0.002767, avg: 0.000869, ktevent: 442512
+best: 0.000066, worst: 0.002767, avg: 0.000868, ktevent: 439212
+best: 0.000066, worst: 0.002767, avg: 0.000870, ktevent: 438959
+best: 0.000066, worst: 0.002767, avg: 0.000869, ktevent: 438083
+best: 0.000066, worst: 0.002767, avg: 0.000869, ktevent: 443309
+best: 0.000066, worst: 0.002767, avg: 0.000870, ktevent: 440415
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 438810
+best: 0.000066, worst: 0.002767, avg: 0.000873, ktevent: 442421
+best: 0.000066, worst: 0.002767, avg: 0.000873, ktevent: 438454
+best: 0.000066, worst: 0.002767, avg: 0.000872, ktevent: 438681
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 442068
+best: 0.000066, worst: 0.002767, avg: 0.000870, ktevent: 440669
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 439160
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 440809
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 443346
+best: 0.000066, worst: 0.002767, avg: 0.000870, ktevent: 442558
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 443426
+best: 0.000066, worst: 0.002767, avg: 0.000869, ktevent: 440023
+best: 0.000066, worst: 0.002767, avg: 0.000870, ktevent: 439324
+best: 0.000066, worst: 0.002767, avg: 0.000869, ktevent: 443873
+best: 0.000066, worst: 0.002767, avg: 0.000867, ktevent: 442456
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 442515
+best: 0.000066, worst: 0.002767, avg: 0.000870, ktevent: 439278
+best: 0.000066, worst: 0.002767, avg: 0.000871, ktevent: 440929
+best: 0.000066, worst: 0.002767, avg: 0.000873, ktevent: 443445
+best: 0.000066, worst: 0.002767, avg: 0.000874, ktevent: 442574
+best: 0.000066, worst: 0.002767, avg: 0.000873, ktevent: 440142
+best: 0.000066, worst: 0.002767, avg: 0.000873, ktevent: 442380
+best: 0.000066, worst: 0.002767, avg: 0.000873, ktevent: 440164
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 440812
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 438196
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 443102
+best: 0.000066, worst: 0.002767, avg: 0.000877, ktevent: 438489
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 437382
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 440537
+best: 0.000066, worst: 0.002767, avg: 0.000876, ktevent: 436418
+best: 0.000066, worst: 0.002767, avg: 0.000879, ktevent: 440858
+best: 0.000066, worst: 0.002767, avg: 0.000881, ktevent: 440091
+best: 0.000066, worst: 0.002767, avg: 0.000881, ktevent: 439606
+best: 0.000066, worst: 0.002767, avg: 0.000883, ktevent: 437453
+best: 0.000066, worst: 0.002767, avg: 0.000884, ktevent: 443519
+best: 0.000066, worst: 0.002767, avg: 0.000884, ktevent: 438366
+best: 0.000066, worst: 0.002767, avg: 0.000885, ktevent: 439416
+best: 0.000066, worst: 0.002767, avg: 0.000886, ktevent: 442649
+best: 0.000066, worst: 0.002767, avg: 0.000885, ktevent: 438363
+best: 0.000066, worst: 0.002767, avg: 0.000885, ktevent: 440492
+best: 0.000066, worst: 0.002767, avg: 0.000884, ktevent: 438126
+best: 0.000066, worst: 0.002767, avg: 0.000884, ktevent: 439624
+best: 0.000066, worst: 0.002767, avg: 0.000883, ktevent: 440944
+best: 0.000066, worst: 0.002767, avg: 0.000883, ktevent: 440032
+best: 0.000066, worst: 0.002767, avg: 0.000883, ktevent: 437638
+best: 0.000066, worst: 0.002767, avg: 0.000882, ktevent: 445241
+best: 0.000066, worst: 0.002767, avg: 0.000881, ktevent: 442306
+best: 0.000066, worst: 0.002767, avg: 0.000880, ktevent: 438969
+best: 0.000066, worst: 0.002767, avg: 0.000880, ktevent: 437032
+best: 0.000066, worst: 0.002767, avg: 0.000879, ktevent: 442859
+best: 0.000066, worst: 0.002767, avg: 0.000880, ktevent: 438724
+best: 0.000066, worst: 0.002767, avg: 0.000881, ktevent: 443544
+best: 0.000066, worst: 0.002767, avg: 0.000882, ktevent: 440595
+best: 0.000066, worst: 0.002767, avg: 0.000882, ktevent: 441589
+best: 0.000066, worst: 0.002767, avg: 0.000882, ktevent: 441675
+best: 0.000066, worst: 0.002767, avg: 0.000881, ktevent: 441641
+best: 0.000066, worst: 0.002767, avg: 0.000880, ktevent: 439743
+best: 0.000066, worst: 0.002767, avg: 0.000881, ktevent: 441498
+best: 0.000066, worst: 0.002767, avg: 0.000882, ktevent: 437789
+best: 0.000066, worst: 0.002767, avg: 0.000883, ktevent: 440061
+best: 0.000066, worst: 0.002767, avg: 0.000884, ktevent: 440339
+best: 0.000066, worst: 0.002767, avg: 0.000884, ktevent: 440344
+best: 0.000066, worst: 0.002767, avg: 0.000883, ktevent: 444698
+best: 0.000066, worst: 0.002767, avg: 0.000885, ktevent: 436936
+best: 0.000066, worst: 0.002767, avg: 0.000884, ktevent: 442867
+best: 0.000066, worst: 0.002767, avg: 0.000885, ktevent: 440735
+best: 0.000066, worst: 0.002767, avg: 0.000885, ktevent: 440146
+best: 0.000066, worst: 0.002767, avg: 0.000886, ktevent: 439761
+best: 0.000066, worst: 0.002767, avg: 0.000885, ktevent: 437368
+best: 0.000066, worst: 0.002767, avg: 0.000888, ktevent: 441216
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 441937
+best: 0.000066, worst: 0.002767, avg: 0.000889, ktevent: 437543
+best: 0.000066, worst: 0.002767, avg: 0.000887, ktevent: 441593
+best: 0.000066, worst: 0.002767, avg: 0.000888, ktevent: 443043
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 439958
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 441513
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 444577
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 445178
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 439463
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 442339
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 438774
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 440173
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 440805
+best: 0.000066, worst: 0.002767, avg: 0.000894, ktevent: 439691
+best: 0.000066, worst: 0.002767, avg: 0.000893, ktevent: 439106
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 442196
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 441274
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 440073
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 442264
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 441124
+best: 0.000066, worst: 0.002767, avg: 0.000892, ktevent: 441874
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 439659
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 439143
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 441004
+best: 0.000066, worst: 0.002767, avg: 0.000891, ktevent: 442090
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 438783
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 442893
+best: 0.000066, worst: 0.002767, avg: 0.000889, ktevent: 439195
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 438797
+best: 0.000066, worst: 0.002767, avg: 0.000890, ktevent: 437336
+in 500 runs, 2000 epochs, best: 0.000066, worst: 0.002767, avg: 0.000888
+UnitTestGenAlgPerf OK
+UnitTestGenAlg OK
+UnitTestAll OK

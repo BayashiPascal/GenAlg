@@ -672,8 +672,7 @@ void UnitTestAll() {
 }
 
 int main() {
-  //UnitTestAll();
-  UnitTestGenAlgStep();
+  UnitTestAll();
   // Return success code
   return 0;
 }
