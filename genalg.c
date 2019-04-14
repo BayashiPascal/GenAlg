@@ -1870,7 +1870,8 @@ void GAUpdateTextOMeter(const GenAlg* const that) {
     GAGetCurEpoch(that), GAGetNbKTEvent(that));
   TextOMeterPrint(that->_textOMeter, str);
   // Diversity +xxxxxx.xxxxxx
-  sprintf(str, GENALG_TXTOMETER_FORMAT5, GAGetDiversity(that));
+  sprintf(str, GENALG_TXTOMETER_FORMAT5, GAGetDiversity(that), 
+    GAGetDiversityThreshold(that));
   TextOMeterPrint(that->_textOMeter, str);
   // Nb adns xxxxxx
   sprintf(str, GENALG_TXTOMETER_FORMAT6, GAGetNbAdns(that));

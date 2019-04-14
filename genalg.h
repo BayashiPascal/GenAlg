@@ -30,8 +30,8 @@
 #define GENALG_TXTOMETER_LINE3 "xxxxxxxx  xxxxxx  +xxxxxx.xxxxxx\n"
 #define GENALG_TXTOMETER_FORMAT3 "%08lu  %06lu  %+06.6f\n"
 #define GENALG_TXTOMETER_LINE4 "--------------------------------\n"
-#define GENALG_TXTOMETER_LINE5 "Diversity +xxxxxx.xxxxxx        \n"
-#define GENALG_TXTOMETER_FORMAT5 "Diversity %+06.6f  \n"
+#define GENALG_TXTOMETER_LINE5 "Diversity +xxx.xxxxx/+xxx.xxxxx \n"
+#define GENALG_TXTOMETER_FORMAT5 "Diversity %+03.5f/%+03.5f \n"
 #define GENALG_TXTOMETER_LINE6 "Size pool xxxxxx                \n"
 #define GENALG_TXTOMETER_FORMAT6 "Size pool %06d  \n"
 
