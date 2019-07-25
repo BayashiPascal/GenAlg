@@ -1521,20 +1521,20 @@ bool GAAdnDecodeAsJSON(GenAlgAdn** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  unsigned long id = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+  unsigned long id = strtoul(JSONLblVal(prop), NULL, 10);
   // Get the lengthAdnF from the JSON
   long lengthAdnF = 0;
   prop = JSONProperty(json, "_adnF");
   if (prop != NULL) {
     JSONNode* subprop = JSONProperty(prop, "_dim");
-    lengthAdnF = atol(JSONLabel(JSONValue(subprop, 0)));
+    lengthAdnF = atol(JSONLblVal(subprop));
   }
   // Get the lengthAdnI from the JSON
   long lengthAdnI = 0;
   prop = JSONProperty(json, "_adnI");
   if (prop != NULL) {
     JSONNode* subprop = JSONProperty(prop, "_dim");
-    lengthAdnI = atol(JSONLabel(JSONValue(subprop, 0)));
+    lengthAdnI = atol(JSONLblVal(subprop));
   }
   // Allocate memory
   *that = GenAlgAdnCreate(id, lengthAdnF, lengthAdnI);
@@ -1543,7 +1543,7 @@ bool GAAdnDecodeAsJSON(GenAlgAdn** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  (*that)->_age = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+  (*that)->_age = strtoul(JSONLblVal(prop), NULL, 10);
   // Get the adnF from the JSON
   prop = JSONProperty(json, "_adnF");
   if (prop != NULL) {
@@ -1569,7 +1569,7 @@ bool GAAdnDecodeAsJSON(GenAlgAdn** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  (*that)->_val = atof(JSONLabel(JSONValue(prop, 0)));
+  (*that)->_val = atof(JSONLblVal(prop));
   // Return the success code
   return true;
 }
@@ -1597,25 +1597,25 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  int nbAdns = atoi(JSONLabel(JSONValue(prop, 0)));
+  int nbAdns = atoi(JSONLblVal(prop));
   // Decode the nb elites
   prop = JSONProperty(json, "_nbElites");
   if (prop == NULL) {
     return false;
   }
-  int nbElites = atoi(JSONLabel(JSONValue(prop, 0)));
+  int nbElites = atoi(JSONLblVal(prop));
   // Decode the length adn float
   prop = JSONProperty(json, "_lengthAdnF");
   if (prop == NULL) {
     return false;
   }
-  long lengthAdnF = atol(JSONLabel(JSONValue(prop, 0)));
+  long lengthAdnF = atol(JSONLblVal(prop));
   // Decode the length adn int
   prop = JSONProperty(json, "_lengthAdnI");
   if (prop == NULL) {
     return false;
   }
-  long lengthAdnI = atol(JSONLabel(JSONValue(prop, 0)));
+  long lengthAdnI = atol(JSONLblVal(prop));
   // Allocate memory
   *that = GenAlgCreate(nbAdns, nbElites, lengthAdnF, lengthAdnI);
   // Decode the type
@@ -1623,7 +1623,7 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   if (prop == NULL) {
     return false;
   }
-  int type = atoi(JSONLabel(JSONValue(prop, 0)));
+  int type = atoi(JSONLblVal(prop));
   int nbIn = 0;
   int nbOut = 0;
   int nbHid = 0;
@@ -1633,17 +1633,17 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
       if (prop == NULL) {
         return false;
       }
-      nbIn = atoi(JSONLabel(JSONValue(prop, 0)));
+      nbIn = atoi(JSONLblVal(prop));
       prop = JSONProperty(json, "NN_nbOut");
       if (prop == NULL) {
         return false;
       }
-      nbOut = atoi(JSONLabel(JSONValue(prop, 0)));
+      nbOut = atoi(JSONLblVal(prop));
       prop = JSONProperty(json, "NN_nbHid");
       if (prop == NULL) {
         return false;
       }
-      nbHid = atoi(JSONLabel(JSONValue(prop, 0)));
+      nbHid = atoi(JSONLblVal(prop));
       prop = JSONProperty(json, "NN_nbBaseConv");
       if (prop == NULL) {
         return false;
@@ -1655,32 +1655,32 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
       if (prop == NULL) {
         return false;
       }
-      nbIn = atoi(JSONLabel(JSONValue(prop, 0)));
+      nbIn = atoi(JSONLblVal(prop));
       prop = JSONProperty(json, "NN_nbOut");
       if (prop == NULL) {
         return false;
       }
-      nbOut = atoi(JSONLabel(JSONValue(prop, 0)));
+      nbOut = atoi(JSONLblVal(prop));
       prop = JSONProperty(json, "NN_nbHid");
       if (prop == NULL) {
         return false;
       }
-      nbHid = atoi(JSONLabel(JSONValue(prop, 0)));
+      nbHid = atoi(JSONLblVal(prop));
       prop = JSONProperty(json, "NN_nbBaseConv");
       if (prop == NULL) {
         return false;
       }
-      long nbBaseConv = atol(JSONLabel(JSONValue(prop, 0)));
+      long nbBaseConv = atol(JSONLblVal(prop));
       prop = JSONProperty(json, "NN_nbBaseCellConv");
       if (prop == NULL) {
         return false;
       }
-      long nbBaseCellConv = atol(JSONLabel(JSONValue(prop, 0)));
+      long nbBaseCellConv = atol(JSONLblVal(prop));
       prop = JSONProperty(json, "NN_nbLink");
       if (prop == NULL) {
         return false;
       }
-      long nbLink = atol(JSONLabel(JSONValue(prop, 0)));
+      long nbLink = atol(JSONLblVal(prop));
       GASetTypeNeuraNetConv(*that, nbIn, nbHid, nbOut, nbBaseConv, 
         nbBaseCellConv, nbLink);
       break;
@@ -1693,13 +1693,13 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
     return false;
   }
   (*that)->_curEpoch = 
-    strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+    strtoul(JSONLblVal(prop), NULL, 10);
   // Decode the next id
   prop = JSONProperty(json, "_nextId");
   if (prop == NULL) {
     return false;
   }
-  (*that)->_nextId = strtoul(JSONLabel(JSONValue(prop, 0)), NULL, 10);
+  (*that)->_nextId = strtoul(JSONLblVal(prop), NULL, 10);
   // Decode the bounds
   prop = JSONProperty(json, "_boundFloat");
   if (prop != NULL) {
