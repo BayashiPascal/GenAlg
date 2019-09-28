@@ -1,4 +1,4 @@
-// ============ GENALG-INLINE.C ================
+// ============ GENALG-static inline.C ================
 
 // ------------- GenAlgAdn
 
@@ -6,7 +6,7 @@
 
 // Return the adn for floating point values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 const VecFloat* GAAdnAdnF(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
@@ -22,7 +22,7 @@ const VecFloat* GAAdnAdnF(const GenAlgAdn* const that) {
 // Return the delta of adn for floating point values of the 
 // GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 const VecFloat* GAAdnDeltaAdnF(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
@@ -37,7 +37,7 @@ const VecFloat* GAAdnDeltaAdnF(const GenAlgAdn* const that) {
 
 // Return the adn for integer values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 VecLong* GAAdnAdnI(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
@@ -53,7 +53,7 @@ VecLong* GAAdnAdnI(const GenAlgAdn* const that) {
 // Get the 'iGene'-th gene of the adn for floating point values of the
 // GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 float GAAdnGetGeneF(const GenAlgAdn* const that, const long iGene) {
 #if BUILDMODE == 0
@@ -69,7 +69,7 @@ float GAAdnGetGeneF(const GenAlgAdn* const that, const long iGene) {
 // Get the delta of the 'iGene'-th gene of the adn for floating point 
 // values of the GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 float GAAdnGetDeltaGeneF(const GenAlgAdn* const that, const long iGene) {
 #if BUILDMODE == 0
@@ -85,7 +85,7 @@ float GAAdnGetDeltaGeneF(const GenAlgAdn* const that, const long iGene) {
 // Get the 'iGene'-th gene of the adn for int values of the
 // GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 int GAAdnGetGeneI(const GenAlgAdn* const that, const long iGene) {
 #if BUILDMODE == 0
@@ -101,7 +101,7 @@ int GAAdnGetGeneI(const GenAlgAdn* const that, const long iGene) {
 // Set the 'iGene'-th gene of the adn for floating point values of the
 // GenAlgAdn 'that' to 'gene'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GAAdnSetGeneF(GenAlgAdn* const that, const long iGene, 
   const float gene) {
@@ -118,7 +118,7 @@ void GAAdnSetGeneF(GenAlgAdn* const that, const long iGene,
 // Set the delta of the 'iGene'-th gene of the adn for floating point 
 // values of the GenAlgAdn 'that' to 'delta'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GAAdnSetDeltaGeneF(GenAlgAdn* const that, const long iGene, 
   const float delta) {
@@ -135,7 +135,7 @@ void GAAdnSetDeltaGeneF(GenAlgAdn* const that, const long iGene,
 // Set the 'iGene'-th gene of the adn for int values of the
 // GenAlgAdn 'that'to 'gene'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GAAdnSetGeneI(GenAlgAdn* const that, const long iGene, 
   const long gene) {
@@ -151,7 +151,7 @@ void GAAdnSetGeneI(GenAlgAdn* const that, const long iGene,
 
 // Get the id of the GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 unsigned long int GAAdnGetId(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
@@ -166,7 +166,7 @@ unsigned long int GAAdnGetId(const GenAlgAdn* const that) {
 
 // Get the age of the GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 unsigned long int GAAdnGetAge(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
@@ -181,7 +181,7 @@ unsigned long int GAAdnGetAge(const GenAlgAdn* const that) {
 
 // Get the value of the GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 float GAAdnGetVal(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
@@ -197,7 +197,7 @@ float GAAdnGetVal(const GenAlgAdn* const that) {
 // Return true if the GenAlgAdn 'that' is new, i.e. is age equals 1
 // Return false
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 bool GAAdnIsNew(const GenAlgAdn* const that) {
 #if BUILDMODE == 0
@@ -212,7 +212,7 @@ bool GAAdnIsNew(const GenAlgAdn* const that) {
 
 // Copy the GenAlgAdn 'tho' into the GenAlgAdn 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GAAdnCopy(GenAlgAdn* const that, const GenAlgAdn* const tho) {
 #if BUILDMODE == 0
@@ -246,7 +246,7 @@ void GAAdnCopy(GenAlgAdn* const that, const GenAlgAdn* const tho) {
 
 // Set the mutability vectors for the GenAlgAdn 'that' to 'mutability'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GAAdnSetMutabilityInt(GenAlgAdn* const that, 
   const VecFloat* const mutability) {
@@ -277,7 +277,7 @@ void GAAdnSetMutabilityInt(GenAlgAdn* const that,
 }
 
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GAAdnSetMutabilityFloat(GenAlgAdn* const that, 
   const VecFloat* const mutability) {
@@ -313,7 +313,7 @@ void GAAdnSetMutabilityFloat(GenAlgAdn* const that,
 
 // Get the type of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 GenAlgType GAGetType(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -330,7 +330,7 @@ GenAlgType GAGetType(const GenAlg* const that) {
 // will be used with a NeuraNet having 'nbIn' inputs, 'nbHid' hidden 
 // values and 'nbOut' outputs
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GASetTypeNeuraNet(GenAlg* const that, const int nbIn, 
   const int nbHid, const int nbOut) {
@@ -358,7 +358,7 @@ void GASetTypeNeuraNet(GenAlg* const that, const int nbIn,
 // 'nbHid' hidden values, 'nbOut' outputs, 'nbBaseConv' bases function,
 // 'nbLink' links dedicated to the convolution and 'nbBaseCellConv' bases function per cell of convolution
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn, 
   const int nbHid, const int nbOut, const long nbBaseConv,
@@ -381,7 +381,7 @@ void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn,
 
 // Return the GSet of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 GSet* GAAdns(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -396,7 +396,7 @@ GSet* GAAdns(const GenAlg* const that) {
 
 // Return the nb of entities of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 int GAGetNbAdns(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -411,7 +411,7 @@ int GAGetNbAdns(const GenAlg* const that) {
 
 // Return the nb of elites of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 int GAGetNbElites(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -426,7 +426,7 @@ int GAGetNbElites(const GenAlg* const that) {
 
 // Return the current epoch of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 unsigned long int GAGetCurEpoch(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -441,7 +441,7 @@ unsigned long int GAGetCurEpoch(const GenAlg* const that) {
 
 // Return the number of KTEvent of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 unsigned long int GAGetNbKTEvent(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -456,7 +456,7 @@ unsigned long int GAGetNbKTEvent(const GenAlg* const that) {
 
 // Return the min nb of adns of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 int GAGetNbMinAdn(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -471,7 +471,7 @@ int GAGetNbMinAdn(const GenAlg* const that) {
 
 // Return the max nb of adns of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 int GAGetNbMaxAdn(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -486,7 +486,7 @@ int GAGetNbMaxAdn(const GenAlg* const that) {
 
 // Set the min nb of adns of the GenAlg 'that' to 'nb'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GASetNbMaxAdn(GenAlg* const that, const int nb) {
 #if BUILDMODE == 0
@@ -503,7 +503,7 @@ void GASetNbMaxAdn(GenAlg* const that, const int nb) {
 
 // Set the min nb of adns of the GenAlg 'that' to 'nb'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GASetNbMinAdn(GenAlg* const that, const int nb) {
 #if BUILDMODE == 0
@@ -520,7 +520,7 @@ void GASetNbMinAdn(GenAlg* const that, const int nb) {
 
 // Get the length of adn for floating point value
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 long GAGetLengthAdnFloat(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -535,7 +535,7 @@ long GAGetLengthAdnFloat(const GenAlg* const that) {
 
 // Get the length of adn for integer value
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 long GAGetLengthAdnInt(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -551,7 +551,7 @@ long GAGetLengthAdnInt(const GenAlg* const that) {
 // Set the bounds for the 'iGene'-th gene of adn for floating point 
 // values to a copy of 'bounds'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GASetBoundsAdnFloat(GenAlg* const that, const long iGene, 
   const VecFloat2D* const bounds) {
@@ -586,7 +586,7 @@ void GASetBoundsAdnFloat(GenAlg* const that, const long iGene,
 // Set the bounds for the 'iGene'-th gene of adn for integer values
 // to a copy of 'bounds'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GASetBoundsAdnInt(GenAlg* const that, const long iGene, 
   const VecLong2D* const bounds) {
@@ -621,7 +621,7 @@ void GASetBoundsAdnInt(GenAlg* const that, const long iGene,
 // Get the bounds for the 'iGene'-th gene of adn for floating point 
 // values
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 const VecFloat2D* GABoundsAdnFloat(const GenAlg* const that, 
   const long iGene) {
@@ -643,7 +643,7 @@ const VecFloat2D* GABoundsAdnFloat(const GenAlg* const that,
 
 // Get the bounds for the 'iGene'-th gene of adn for integer values
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 const VecLong2D* GABoundsAdnInt(const GenAlg* const that, 
   const long iGene) {
@@ -666,7 +666,7 @@ const VecLong2D* GABoundsAdnInt(const GenAlg* const that,
 // Get the GenAlgAdn of the GenAlg 'that' currently at rank 'iRank'
 // (0 is the best adn)
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 GenAlgAdn* GAAdn(const GenAlg* const that, const int iRank) {
 #if BUILDMODE == 0
@@ -691,7 +691,7 @@ GenAlgAdn* GAAdn(const GenAlg* const that, const int iRank) {
 
 // Set the value of the GenAlgAdn 'adn' of the GenAlg 'that' to 'val'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GASetAdnValue(GenAlg* const that, GenAlgAdn* const adn, 
   const float val) {
@@ -714,7 +714,7 @@ void GASetAdnValue(GenAlg* const that, GenAlgAdn* const adn,
 
 // Get the diversity of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 float GAGetDiversity(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -736,7 +736,7 @@ float GAGetDiversity(const GenAlg* const that) {
 
 // Get the diversity threshold of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 float GAGetDiversityThreshold(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -751,7 +751,7 @@ float GAGetDiversityThreshold(const GenAlg* const that) {
 
 // Set the diversity threshold of the GenAlg 'that' to 'threshold'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 void GASetDiversityThreshold(GenAlg* const that, const float threshold) {
 #if BUILDMODE == 0
@@ -766,7 +766,7 @@ void GASetDiversityThreshold(GenAlg* const that, const float threshold) {
 
 // Return the best adn of the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 const GenAlgAdn* GABestAdn(const GenAlg* const that) {
 #if BUILDMODE == 0
@@ -782,7 +782,7 @@ const GenAlgAdn* GABestAdn(const GenAlg* const that) {
 // Return the flag memorizing if the TextOMeter is displayed for
 // the GenAlg 'that'
 #if BUILDMODE != 0
-inline
+static inline
 #endif
 bool GAIsTextOMeterActive(const GenAlg* const that) {
 #if BUILDMODE == 0
