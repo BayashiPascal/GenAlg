@@ -588,8 +588,7 @@ void UnitTestGenAlgTest() {
       VecPrint(GABestAdnI(ga), stdout);
       printf("\n");
     }
-  } while (GAGetCurEpoch(ga) < 20000 || 
-    evaluate(GABestAdnF(ga), GABestAdnI(ga)) < PBMATH_EPSILON);
+  } while (GAGetCurEpoch(ga) < 2000 && best > PBMATH_EPSILON);
   printf("target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1\n");
   printf("approx: \n");
   GAAdnPrintln(GABestAdn(ga), stdout);
@@ -599,7 +598,7 @@ void UnitTestGenAlgTest() {
 }
 
 void UnitTestGenAlgPerf() {
-  int nbRun = 500;
+  int nbRun = 10;
   unsigned long int nbMaxEpoch = 2000;
   float maxEv = 0.0;
   float bestEv = 0.0;
@@ -635,13 +634,13 @@ void UnitTestGenAlgPerf() {
             GAAdnAdnI(GAAdn(ga, iEnt))));
       GAStep(ga);
       ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
-    } while (GAGetCurEpoch(ga) < nbMaxEpoch || ev < PBMATH_EPSILON);
+    } while (GAGetCurEpoch(ga) < nbMaxEpoch && ev > PBMATH_EPSILON);
     sumEv += ev;
     if (iRun == 0 || bestEv > ev)
       bestEv = ev;
     if (iRun == 0 || maxEv < ev)
       maxEv = ev;
-    avgEv = sumEv / (float)iRun;
+    avgEv = sumEv / (float)(iRun + 1);
     printf("best: %f, worst: %f, avg: %f, ktevent: %lu\n", 
       bestEv, maxEv, avgEv, ga->_nbKTEvent);
     GenAlgFree(&ga);
