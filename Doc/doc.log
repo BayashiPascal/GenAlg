@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.10.17)  9 FEB 2020 10:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.10.17)  11 FEB 2020 22:28
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -600,24 +600,30 @@ lConv' bases function per cell of convolution[]
 
 [8] [9] [10]
 File: /home/bayashi/GitHub/GenAlg/genalg.c  (verbatim)
- [11] [12] [13] [14] [15] [16] [17] [18] [19]
+ [11] [12] [13] [14] [15] [16] [17] [18]
+Overfull \hbox (9.50574pt too wide) in paragraph at lines 43--43
+[]    \OT1/cmtt/m/n/8 for (int iAdn = MAX(GAGetNbElites(that) - 1, GAGetNbAdns(
+that) / 2); iAdn >= 1 ; --iAdn) {[] 
+ []
+
+[19]
 Overfull \hbox (26.50598pt too wide) in paragraph at lines 43--43
 []  \OT1/cmtt/m/n/8 unsigned int th = (unsigned int)(GAGetNbMaxAdn(that) - GAGe
 tNbAdns(that) + GAGetNbMinAdn(that));[] 
  []
 
 [20] [21] [22] [23] [24] [25] [26] [27] [28] [29] [30] [31] [32] [33] [34]
-[35] [36] [37] [38] [39] [40] [41] [42]
+[35] [36] [37] [38] [39] [40] [41]
 File: /home/bayashi/GitHub/GenAlg/genalg-inline.c  (verbatim)
- [43] [44] [45] [46] [47]
+ [42] [43] [44] [45] [46] [47]
 Overfull \hbox (60.50647pt too wide) in paragraph at lines 51--51
 []\OT1/cmtt/m/n/8 // 'nbLink' links dedicated to the convolution and 'nbBaseCel
 lConv' bases function per cell of convolution[] 
  []
 
-[48] [49] [50] [51] [52] [53] [54] [55]
+[48] [49] [50] [51] [52] [53] [54]
 File: /home/bayashi/GitHub/GenAlg/Makefile  (verbatim)
-
+ [55]
 Overfull \hbox (787.2669pt too wide) in paragraph at lines 59--59
 []\OT1/cmtt/m/n/8 if [ ! -d ../PBMake ]; then wget https://github.com/BayashiPa
 scal/PBMake/archive/master.zip; unzip master.zip; rm -f master.zip; sed -i '' '
@@ -662,7 +668,7 @@ Package pdftex.def Info: ./eval.png  used on input line 89.
 Here is how much of TeX's memory you used:
  13595 strings out of 493765
  261571 string characters out of 6151500
- 303781 words of memory out of 5000000
+ 302781 words of memory out of 5000000
  16832 multiletter control sequences out of 15000+600000
  12740 words of font info for 50 fonts, out of 8000000 for 9000
  622 hyphenation exceptions out of 8191
@@ -680,7 +686,7 @@ ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
 
 pdfTeX warning: pdflatex: no GlyphToUnicode entry has been inserted yet!
-Output written on doc.pdf (79 pages, 208422 bytes).
+Output written on doc.pdf (79 pages, 207433 bytes).
 PDF statistics:
  309 PDF objects out of 1000 (max. 8388607)
  213 compressed objects within 3 object streams
