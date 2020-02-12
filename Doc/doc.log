@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.12.30)  12 FEB 2020 13:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2018.12.30)  12 FEB 2020 15:08
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -607,9 +607,9 @@ that) / 2); iAdn >= 1 ; --iAdn) {[]
  []
 
 
-Overfull \hbox (26.50598pt too wide) in paragraph at lines 43--43
-[]  \OT1/cmtt/m/n/8 unsigned int th = (unsigned int)(GAGetNbMaxAdn(that) - GAGe
-tNbAdns(that) + GAGetNbMinAdn(that));[] 
+Overfull \hbox (86.00684pt too wide) in paragraph at lines 43--43
+[]  \OT1/cmtt/m/n/8 unsigned int thresholdAgeBest = (unsigned int)(GAGetNbMaxAd
+n(that) - GAGetNbAdns(that) + GAGetNbMinAdn(that));[] 
  []
 
 [20] [21] [22] [23] [24] [25] [26] [27] [28] [29] [30] [31] [32] [33] [34]
@@ -686,7 +686,7 @@ texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texliv
 e/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
 
 pdfTeX warning: pdflatex: no GlyphToUnicode entry has been inserted yet!
-Output written on doc.pdf (81 pages, 210193 bytes).
+Output written on doc.pdf (81 pages, 210316 bytes).
 PDF statistics:
  315 PDF objects out of 1000 (max. 8388607)
  217 compressed objects within 3 object streams

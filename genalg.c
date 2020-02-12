@@ -466,8 +466,6 @@ void GAKTEvent(GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
-  // Get the diversity level
-  //float diversity = GAGetDiversity(that);
   // Loop until the diversity of the elites is sufficient
   int nbKTEvent = 0;
   int nbMaxLoop = 
@@ -505,13 +503,14 @@ void GAKTEvent(GenAlg* const that) {
   } while (nbKTEvent > 0 && nbMaxLoop > 0);
 
   // Calculate a threshold for the age of the best elite
-  unsigned int th = (unsigned int)(GAGetNbMaxAdn(that) - GAGetNbAdns(that) + GAGetNbMinAdn(that));
+  unsigned int thresholdAgeBest = (unsigned int)(GAGetNbMaxAdn(that) - GAGetNbAdns(that) + GAGetNbMinAdn(that));
   // Get the diversity relatively to the best of all
   float div = GAAdnGetVal(GABestAdn(that)) - GAAdnGetVal(GAAdn(that, 0));
-  // If it's below the diversity threshold or the it's older than 
+  // If it's below the diversity threshold or it's older than 
   // the threshold
-  if ((div >= -PBMATH_EPSILON && div <= GAGetDiversityThreshold(that)) || 
-    GAAdnGetAge(GAAdn(that, 0)) >= th) {
+  if ((GAAdnGetId(GABestAdn(that)) != GAAdnGetId(GAAdn(that, 0)) && 
+    div >= -PBMATH_EPSILON && div <= GAGetDiversityThreshold(that)) || 
+    GAAdnGetAge(GAAdn(that, 0)) >= thresholdAgeBest) {
     GenAlgAdn* adn = GAAdn(that, 0);
     GAAdnInit(adn, that);
     adn->_age = 1;
