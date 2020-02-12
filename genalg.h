@@ -208,6 +208,8 @@ typedef struct GANeuraNet {
   long _nbBaseConv;
   long _nbBaseCellConv;
   long _nbLink;
+  // Flag to memorize if the links of the NeuraNet can be modified
+  bool _flagMutableLink;
 } GANeuraNet;
 
 typedef struct GenAlg {
@@ -491,6 +493,20 @@ bool GAIsTextOMeterActive(const GenAlg* const that);
 // Set the flag memorizing if the TextOMeter is displayed for
 // the GenAlg 'that' to 'flag'
 void GASetTextOMeterFlag(GenAlg* const that, bool flag);
+
+// Set the link mutability flag for the NeuraNet data of
+// the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetNeuraNetLinkMutability(GenAlg* const that, const bool flag);
+
+// Get the link mutability flag for the NeuraNet data of
+// the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+bool GAGetNeuraNetLinkMutability(GenAlg* const that);
 
 // ================= Polymorphism ==================
 

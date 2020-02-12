@@ -189,28 +189,31 @@ void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga) {
     VecSet(that->_adnF, iGene, val);
     VecSet(that->_mutabilityF, iGene, 1.0);
   }
-  // Init the links by ensuring there is at least one link reaching 
-  // each output and use inputs as start of the initial links
-  // For each integer value gene
-  int shiftOut = ga->_NNdata._nbIn + ga->_NNdata._nbHid;
-  for (long iGene = GAGetLengthAdnInt(ga); iGene--;) {
-    VecSet(that->_adnI, iGene, -1);
-    VecSet(that->_mutabilityI, iGene, 1.0);
-  }
-  for (int iOut = 0; iOut < ga->_NNdata._nbOut; ++iOut) {
-    // The base function is randomly choosen but can't be an 
-    // inactive link
-    long min = 0;
-    long max = VecGet(GABoundsAdnInt(ga, iOut * 3), 1);
-    long val = (long)round((float)min + (float)(max - min) * rnd());
-    VecSet(that->_adnI, iOut * 3, val);
-    // The start of the link is randomly choosen amongst inputs
-    min = 0;
-    max = ga->_NNdata._nbIn - 1;
-    val = (long)round((float)min + (float)(max - min) * rnd());
-    VecSet(that->_adnI, iOut * 3 + 1, val);
-    // The end of the link is choosen sequencially amongst outputs
-    VecSet(that->_adnI, iOut * 3 + 2, iOut + shiftOut);
+  // If the links are mutable
+  if (ga->_NNdata._flagMutableLink == true) {
+    // Init the links by ensuring there is at least one link reaching 
+    // each output and use inputs as start of the initial links
+    // For each integer value gene
+    int shiftOut = ga->_NNdata._nbIn + ga->_NNdata._nbHid;
+    for (long iGene = GAGetLengthAdnInt(ga); iGene--;) {
+      VecSet(that->_adnI, iGene, -1);
+      VecSet(that->_mutabilityI, iGene, 1.0);
+    }
+    for (int iOut = 0; iOut < ga->_NNdata._nbOut; ++iOut) {
+      // The base function is randomly choosen but can't be an 
+      // inactive link
+      long min = 0;
+      long max = VecGet(GABoundsAdnInt(ga, iOut * 3), 1);
+      long val = (long)round((float)min + (float)(max - min) * rnd());
+      VecSet(that->_adnI, iOut * 3, val);
+      // The start of the link is randomly choosen amongst inputs
+      min = 0;
+      max = ga->_NNdata._nbIn - 1;
+      val = (long)round((float)min + (float)(max - min) * rnd());
+      VecSet(that->_adnI, iOut * 3 + 1, val);
+      // The end of the link is choosen sequencially amongst outputs
+      VecSet(that->_adnI, iOut * 3 + 2, iOut + shiftOut);
+    }
   }
 }
 
@@ -942,7 +945,7 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
     // For each gene of the adn for int value (links definitions)
     for (long iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
       // If the link mutes
-      if (rnd() < probMute) {
+      if (that->_NNdata._flagMutableLink == true && rnd() < probMute) {
         hasMuted = true;
         // If this link is currently inactivated
         if (GAAdnGetGeneI(child, iGene) == -1) {
@@ -1415,6 +1418,8 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
       JSONAddProp(json, "NN_nbHid", val);
       sprintf(val, "%d", that->_NNdata._nbOut);
       JSONAddProp(json, "NN_nbOut", val);
+      sprintf(val, "%d", that->_NNdata._flagMutableLink);
+      JSONAddProp(json, "NN_flagMutablelink", val);
       break;
     case genAlgTypeNeuraNetConv:
       sprintf(val, "%d", that->_NNdata._nbIn);
@@ -1423,6 +1428,8 @@ JSONNode* GAEncodeAsJSON(const GenAlg* const that) {
       JSONAddProp(json, "NN_nbHid", val);
       sprintf(val, "%d", that->_NNdata._nbOut);
       JSONAddProp(json, "NN_nbOut", val);
+      sprintf(val, "%d", that->_NNdata._flagMutableLink);
+      JSONAddProp(json, "NN_flagMutablelink", val);
       sprintf(val, "%ld", that->_NNdata._nbBaseConv);
       JSONAddProp(json, "NN_nbBaseConv", val);
       sprintf(val, "%ld", that->_NNdata._nbBaseCellConv);
@@ -1614,6 +1621,7 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
   int nbIn = 0;
   int nbOut = 0;
   int nbHid = 0;
+  bool flagMutableLink = true;
   switch (type) {
     case genAlgTypeNeuraNet:
       prop = JSONProperty(json, "NN_nbIn");
@@ -1631,11 +1639,13 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
         return false;
       }
       nbHid = atoi(JSONLblVal(prop));
-      prop = JSONProperty(json, "NN_nbBaseConv");
+      GASetTypeNeuraNet(*that, nbIn, nbHid, nbOut);
+      prop = JSONProperty(json, "NN_flagMutableLink");
       if (prop == NULL) {
         return false;
       }
-      GASetTypeNeuraNet(*that, nbIn, nbHid, nbOut);
+      flagMutableLink = atoi(JSONLblVal(prop));
+      GASetNeuraNetLinkMutability(*that, flagMutableLink);
       break;
     case genAlgTypeNeuraNetConv:
       prop = JSONProperty(json, "NN_nbIn");
@@ -1670,6 +1680,12 @@ bool GADecodeAsJSON(GenAlg** that, const JSONNode* const json) {
       long nbLink = atol(JSONLblVal(prop));
       GASetTypeNeuraNetConv(*that, nbIn, nbHid, nbOut, nbBaseConv, 
         nbBaseCellConv, nbLink);
+      prop = JSONProperty(json, "NN_flagMutableLink");
+      if (prop == NULL) {
+        return false;
+      }
+      flagMutableLink = atoi(JSONLblVal(prop));
+      GASetNeuraNetLinkMutability(*that, flagMutableLink);
       break;
     default:
       break;

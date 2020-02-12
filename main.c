@@ -323,6 +323,28 @@ void UnitTestGenAlgGetSet() {
     sprintf(GenAlgErr->_msg, "GASetTypeNeuraNet failed");
     PBErrCatch(GenAlgErr);
   }
+  GASetNeuraNetLinkMutability(ga, true);
+  if (ga->_NNdata._flagMutableLink != true) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetNeuraNetLinkMutability failed");
+    PBErrCatch(GenAlgErr);
+  }
+  if (GAGetNeuraNetLinkMutability(ga) != true) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAGetNeuraNetLinkMutability failed");
+    PBErrCatch(GenAlgErr);
+  }
+  GASetNeuraNetLinkMutability(ga, false);
+  if (ga->_NNdata._flagMutableLink != false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GASetNeuraNetLinkMutability failed");
+    PBErrCatch(GenAlgErr);
+  }
+  if (GAGetNeuraNetLinkMutability(ga) != false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAGetNeuraNetLinkMutability failed");
+    PBErrCatch(GenAlgErr);
+  }
   GenAlgFree(&ga);
   printf("UnitTestGenAlgGetSet OK\n");
 }

@@ -351,6 +351,7 @@ void GASetTypeNeuraNet(GenAlg* const that, const int nbIn,
   that->_NNdata._nbHid = nbHid;
   that->_NNdata._nbOut = nbOut;
   that->_NNdata._nbBaseConv = 0;
+  that->_NNdata._flagMutableLink = true;
 }
 
 // Set the type of the GenAlg 'that' to genAlgTypeNeuraNetConv, 
@@ -377,6 +378,7 @@ void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn,
   that->_NNdata._nbBaseConv = nbBaseConv;
   that->_NNdata._nbBaseCellConv = nbBaseCellConv;
   that->_NNdata._nbLink = nbLink;
+  that->_NNdata._flagMutableLink = true;
 }
 
 // Return the GSet of the GenAlg 'that'
@@ -794,4 +796,37 @@ bool GAIsTextOMeterActive(const GenAlg* const that) {
 #endif
   return that->_flagTextOMeter;
 }
+
+// Set the link mutability flag for the NeuraNet data of
+// the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetNeuraNetLinkMutability(GenAlg* const that, const bool flag) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  that->_NNdata._flagMutableLink = flag;
+}
+
+// Get the link mutability flag for the NeuraNet data of
+// the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+bool GAGetNeuraNetLinkMutability(GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_NNdata._flagMutableLink;
+}
+
 
