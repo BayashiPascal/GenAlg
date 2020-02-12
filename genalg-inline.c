@@ -829,4 +829,21 @@ bool GAGetNeuraNetLinkMutability(GenAlg* const that) {
   return that->_NNdata._flagMutableLink;
 }
 
+// Get the flag about KTEvent at last call of GAStep for
+// the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+bool GAGetFlagKTEvent(GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  return that->_flagKTEvent;
+}
+
+
 

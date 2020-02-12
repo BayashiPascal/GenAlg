@@ -242,6 +242,8 @@ typedef struct GenAlg {
   GANeuraNet _NNdata;
   // Number of ktevent
   unsigned long _nbKTEvent;
+  // Flag to memorize if there has been a KT event during last call to GAStep
+  bool _flagKTEvent;
   // Flag to remember if we display info via a TextOMeter 
   // about the population
   bool _flagTextOMeter;
@@ -507,6 +509,13 @@ void GASetNeuraNetLinkMutability(GenAlg* const that, const bool flag);
 static inline
 #endif
 bool GAGetNeuraNetLinkMutability(GenAlg* const that);
+
+// Get the flag about KTEvent at last call of GAStep for
+// the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+bool GAGetFlagKTEvent(GenAlg* const that);
 
 // ================= Polymorphism ==================
 

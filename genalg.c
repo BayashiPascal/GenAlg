@@ -454,6 +454,7 @@ void GAInit(GenAlg* const that) {
     GAAdnInit(adn, that);
   } while (GSetIterStep(&iter));
   GAAdnCopy(that->_bestAdn, GAAdn(that, 0));
+  that->_flagKTEvent = false;
 }
 
 // Reset the GenAlg 'that'
@@ -466,6 +467,7 @@ void GAKTEvent(GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
+
   // Loop until the diversity of the elites is sufficient
   int nbKTEvent = 0;
   int nbMaxLoop = 
@@ -487,8 +489,7 @@ void GAKTEvent(GenAlg* const that) {
           GAAdnInit(adn, that);
           adn->_age = 1;
           adn->_id = (that->_nextId)++;
-          GASetAdnValue(that, adn, 
-            GAAdnGetVal(GAAdn(that, GAGetNbAdns(that) - 1)));
+          //GASetAdnValue(that, adn, worstValue);
           jAdn = 0;
           ++nbKTEvent;
         }
@@ -497,30 +498,36 @@ void GAKTEvent(GenAlg* const that) {
     // If their has been KTEvent
     if (nbKTEvent > 0) {
       // We need to sort the adns
-      GSetSort(GAAdns(that));
+      //GSetSort(GAAdns(that));
+      // Update the flag about KTEvent
+      that->_flagKTEvent = true;
     }
     --nbMaxLoop;
   } while (nbKTEvent > 0 && nbMaxLoop > 0);
 
   // Calculate a threshold for the age of the best elite
-  unsigned int thresholdAgeBest = (unsigned int)(GAGetNbMaxAdn(that) - GAGetNbAdns(that) + GAGetNbMinAdn(that));
+  //float thresholdAgeBest = GAAdnGetAge(GAAdn(that, 0)) / (float)GAGetNbElites(that);
   // Get the diversity relatively to the best of all
   float div = GAAdnGetVal(GABestAdn(that)) - GAAdnGetVal(GAAdn(that, 0));
   // If it's below the diversity threshold or it's older than 
   // the threshold
-  if ((GAAdnGetId(GABestAdn(that)) != GAAdnGetId(GAAdn(that, 0)) && 
-    div >= -PBMATH_EPSILON && div <= GAGetDiversityThreshold(that)) || 
-    GAAdnGetAge(GAAdn(that, 0)) >= thresholdAgeBest) {
+  if ((div >= -PBMATH_EPSILON && div <= GAGetDiversityThreshold(that)) || 
+    GAAdnGetAge(GAAdn(that, 0)) > (unsigned int)GAGetNbElites(that)) {
     GenAlgAdn* adn = GAAdn(that, 0);
     GAAdnInit(adn, that);
     adn->_age = 1;
     adn->_id = (that->_nextId)++;
-    GASetAdnValue(that, adn, 
-      GAAdnGetVal(GAAdn(that, GAGetNbAdns(that) - 1)));
+    //GASetAdnValue(that, adn, worstValue);
     // We need to sort the adns
     GSetSort(GAAdns(that));
     // Memorize the total number of KTEvent
     that->_nbKTEvent += 1;
+    // Update the flag about KTEvent
+    //that->_flagKTEvent = true;
+  }
+  if (that->_flagKTEvent == true) {
+    // We need to sort the adns
+    GSetSort(GAAdns(that));
   }
 
 }
@@ -535,6 +542,8 @@ void GAStep(GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
+  // Reset the flag about KTEvent
+  that->_flagKTEvent = false;
   // Selection, Reproduction, Mutation
   // Ensure the set of adns is sorted
   GSetSort(GAAdns(that));
