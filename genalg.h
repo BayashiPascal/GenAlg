@@ -212,6 +212,20 @@ typedef struct GANeuraNet {
   bool _flagMutableLink;
 } GANeuraNet;
 
+// Structures to save the history of the GenAlg
+typedef struct GAHistoryBirth {
+  // Epoch
+  unsigned long _epoch;
+  // First parent
+  unsigned long _idFather;
+  // Child
+  unsigned long _idChild;
+} GAHistoryBirth;
+typedef struct GAHistory {
+  // Set of GAHistoryBirth
+  GSet _genealogy;
+} GAHistory;
+
 typedef struct GenAlg {
   // GSet of GenAlgAdn, sortval == score so the head of the set is the 
   // worst adn and the tail of the set is the best
@@ -257,6 +271,8 @@ typedef struct GenAlg {
   int _nbMinAdn;
   // Nb max of adns
   int _nbMaxAdn;
+  // History of the GenAlg
+  GAHistory _history;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -516,6 +532,19 @@ bool GAGetNeuraNetLinkMutability(GenAlg* const that);
 static inline
 #endif
 bool GAGetFlagKTEvent(GenAlg* const that);
+
+// Create a static GAHistory
+GAHistory GAHistoryCreateStatic(void);
+
+// Free the memory used by the GAHistory 'that'
+void GAHistoryFree(GAHistory* that);
+
+// Add a birth to the history of the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GARecordBirth(GenAlg* const that, unsigned int epoch,
+  unsigned long idFather, unsigned long idChild);
 
 // ================= Polymorphism ==================
 

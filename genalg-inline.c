@@ -845,5 +845,27 @@ bool GAGetFlagKTEvent(GenAlg* const that) {
   return that->_flagKTEvent;
 }
 
+// Add a birth to the history of the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GARecordBirth(GenAlg* const that, unsigned int epoch,
+  unsigned long idFather, unsigned long idChild) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Create the GAHistoryBirth
+  GAHistoryBirth* birth = PBErrMalloc(GenAlgErr, sizeof(GAHistory));
+  birth->_epoch = epoch;
+  birth->_idFather = idFather;
+  birth->_idChild = idChild;
+  // Add the birth to the history of 'that'
+  GSetAppend(&(that->_history._genealogy), birth);
+}
+
 
 

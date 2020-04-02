@@ -355,6 +355,7 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   that->_nextId = 0;
   GASetNbEntities(that, nbEntities);
   GASetNbElites(that, nbElites);
+  that->_history = GAHistoryCreateStatic();
   // Return the new GenAlg
   return that;
 }
@@ -378,6 +379,7 @@ void GenAlgFree(GenAlg** that) {
   if ((*that)->_textOMeter != NULL) {
     TextOMeterFree(&((*that)->_textOMeter));
   }
+  GAHistoryFree(&((*that)->_history));
   free(*that);
   // Set the pointer to null
   *that = NULL;
@@ -668,6 +670,10 @@ void GAReproduction(GenAlg* const that,
     default:
       GAReproductionDefault(that, parents, iChild);
   }
+  // Record the birth
+  GARecordBirth(that, GAGetCurEpoch(that),
+    GAAdnGetId(GAAdn(that, parents[0])),
+    GAAdnGetId(GAAdn(that, iChild)));
 }
 
 // Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
@@ -1934,3 +1940,31 @@ void GAUpdateTextOMeter(const GenAlg* const that) {
   TextOMeterFlush(that->_textOMeter);
 }
   
+// Create a static GAHistory
+GAHistory GAHistoryCreateStatic(void) {
+  // Declare the new GAHistory
+  GAHistory that;
+  // Init properties
+  that._genealogy = GSetCreateStatic();
+  // Return the new GAHistory
+  return that;
+}
+
+// Free the memory used by the GAHistory 'that'
+void GAHistoryFree(GAHistory* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Loop on the genealogy
+  while (GSetNbElem(&(that->_genealogy)) > 0) {
+    // Pop the birth
+    GAHistoryBirth* birth = GSetPop(&(that->_genealogy));
+    // Free memory
+    free(birth);
+  }
+}
+
