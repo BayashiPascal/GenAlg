@@ -217,13 +217,15 @@ typedef struct GAHistoryBirth {
   // Epoch
   unsigned long _epoch;
   // First parent
-  unsigned long _idFather;
+  unsigned long _idParents[2];
   // Child
   unsigned long _idChild;
 } GAHistoryBirth;
 typedef struct GAHistory {
   // Set of GAHistoryBirth
   GSet _genealogy;
+  // Path to the history file
+  char* _path;
 } GAHistory;
 
 typedef struct GenAlg {
@@ -273,6 +275,8 @@ typedef struct GenAlg {
   int _nbMaxAdn;
   // History of the GenAlg
   GAHistory _history;
+  // Flag to remember if we are recording the history
+  bool _flagHistory;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -543,8 +547,27 @@ void GAHistoryFree(GAHistory* that);
 #if BUILDMODE != 0
 static inline
 #endif
-void GARecordBirth(GenAlg* const that, unsigned int epoch,
-  unsigned long idFather, unsigned long idChild);
+void GARecordBirth(GenAlg* const that, const unsigned int epoch,
+  const unsigned long idFather, const unsigned long idMother, 
+  const GenAlgAdn* child);
+
+// Set the history recording flag for the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetFlagHistory(GenAlg* const that, const bool flag);
+
+// Get the history recording flag for the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+bool GAGetFlagHistory(const GenAlg* const that);
+
+// Save the history of the GenAlg 'that'
+bool GASaveHistory(const GenAlg* const that);
+
+// Function which return the JSON encoding of the GAHistory 'that' 
+JSONNode* GAHistoryEncodeAsJSON(const GAHistory* const that);
 
 // ================= Polymorphism ==================
 

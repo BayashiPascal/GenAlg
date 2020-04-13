@@ -849,8 +849,9 @@ bool GAGetFlagKTEvent(GenAlg* const that) {
 #if BUILDMODE != 0
 static inline
 #endif
-void GARecordBirth(GenAlg* const that, unsigned int epoch,
-  unsigned long idFather, unsigned long idChild) {
+void GARecordBirth(GenAlg* const that, const unsigned int epoch,
+  const unsigned long idFather, const unsigned long idMother, 
+  const GenAlgAdn* child) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -861,10 +862,43 @@ void GARecordBirth(GenAlg* const that, unsigned int epoch,
   // Create the GAHistoryBirth
   GAHistoryBirth* birth = PBErrMalloc(GenAlgErr, sizeof(GAHistory));
   birth->_epoch = epoch;
-  birth->_idFather = idFather;
-  birth->_idChild = idChild;
+  birth->_idParents[0] = idFather;
+  birth->_idParents[1] = idMother;
+  birth->_idChild = GAAdnGetId(child);
   // Add the birth to the history of 'that'
   GSetAppend(&(that->_history._genealogy), birth);
+}
+
+// Set the history recording flag for the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetFlagHistory(GenAlg* const that, const bool flag) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Set the flag
+  that->_flagHistory = flag;
+}
+
+// Get the history recording flag for the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+bool GAGetFlagHistory(const GenAlg* const that){
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Return the flag
+  return that->_flagHistory;
 }
 
 

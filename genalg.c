@@ -356,6 +356,7 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   GASetNbEntities(that, nbEntities);
   GASetNbElites(that, nbElites);
   that->_history = GAHistoryCreateStatic();
+  that->_flagHistory = false;
   // Return the new GenAlg
   return that;
 }
@@ -584,6 +585,13 @@ void GAStep(GenAlg* const that) {
   for (int iAdn = 0; iAdn < GAGetNbElites(that); ++iAdn) {
     // Increment age
     ++(GAAdn(that, iAdn)->_age);
+    // Add a birth to represent the surviving of this adn
+    if (GAGetFlagHistory(that) == true) {
+      GARecordBirth(that, GAGetCurEpoch(that),
+        GAAdnGetId(GAAdn(that, iAdn)),
+        GAAdnGetId(GAAdn(that, iAdn)),
+        GAAdn(that, iAdn));
+    }
   }
   // For each adn which is not an elite
   for (int iAdn = GAGetNbElites(that); iAdn < GAGetNbAdns(that); 
@@ -597,7 +605,16 @@ void GAStep(GenAlg* const that) {
     // Mute the genes of the adn
     GAMute(that, parents, iAdn);
   }
-
+  // If the user requested to save the history
+  if (GAGetFlagHistory(that) == true) {
+    // Save the history
+    bool ret = GASaveHistory(that);
+    if (ret == false) {
+      GenAlgErr->_type = PBErrTypeNullPointer;
+      sprintf(GenAlgErr->_msg, "Couldn't save the history");
+      PBErrCatch(GenAlgErr);
+    }
+  }
   // Increment the number of epochs
   ++(that->_curEpoch);
 }
@@ -671,9 +688,12 @@ void GAReproduction(GenAlg* const that,
       GAReproductionDefault(that, parents, iChild);
   }
   // Record the birth
-  GARecordBirth(that, GAGetCurEpoch(that),
-    GAAdnGetId(GAAdn(that, parents[0])),
-    GAAdnGetId(GAAdn(that, iChild)));
+  if (GAGetFlagHistory(that) == true) {
+    GARecordBirth(that, GAGetCurEpoch(that),
+      GAAdnGetId(GAAdn(that, parents[0])),
+      GAAdnGetId(GAAdn(that, parents[1])),
+      GAAdn(that, iChild));
+  }
 }
 
 // Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
@@ -1946,6 +1966,7 @@ GAHistory GAHistoryCreateStatic(void) {
   GAHistory that;
   // Init properties
   that._genealogy = GSetCreateStatic();
+  that._path = strdup("./genAlgHistory.json");
   // Return the new GAHistory
   return that;
 }
@@ -1966,5 +1987,75 @@ void GAHistoryFree(GAHistory* that) {
     // Free memory
     free(birth);
   }
+  // Free memory
+  free(that->_path);
 }
 
+// Save the history of the GenAlg 'that'
+bool GASaveHistory(const GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Get the JSON encoding
+  JSONNode* json = GAHistoryEncodeAsJSON(&(that->_history));
+  // Open the stream
+  FILE* stream = fopen(that->_history._path, "w");
+  // Save the JSON
+  bool compact = true;
+  if (!JSONSave(json, stream, compact)) {
+    return false;
+  }
+  // Close the stream
+  fclose(stream);
+  // Free memory
+  JSONFree(&json);
+  // Return the success code
+  return true;
+}
+
+
+// Function which return the JSON encoding of the GAHistory 'that' 
+JSONNode* GAHistoryEncodeAsJSON(const GAHistory* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // Create the JSON structure
+  JSONNode* json = JSONCreate();
+  // Declare a buffer to convert value into string
+  char val[100];
+
+  // Array of birth
+  JSONArrayStruct genealogy = JSONArrayStructCreateStatic();
+  // Loop on the births
+  GSetIterForward iter = 
+    GSetIterForwardCreateStatic(
+      &(that->_genealogy));
+  do {
+    // Get the birth
+    GAHistoryBirth* birth = GSetIterGet(&iter);
+    // Encode the birth
+    JSONNode* birthJson = JSONCreate();
+    sprintf(val, "%ld", birth->_epoch);
+    JSONAddProp(birthJson, "_epoch", val);
+    sprintf(val, "%ld", birth->_idParents[0]);
+    JSONAddProp(birthJson, "_father", val);
+    sprintf(val, "%ld", birth->_idParents[1]);
+    JSONAddProp(birthJson, "_mother", val);
+    sprintf(val, "%ld", birth->_idChild);
+    JSONAddProp(birthJson, "_id", val);
+    // Add the birth to the array
+    JSONArrayStructAdd(&genealogy, birthJson);
+  } while (GSetIterStep(&iter));
+  // Add the genealogy
+  JSONAddProp(json, "_genealogy", &genealogy);
+  // Return the created JSON 
+  return json;
+}
