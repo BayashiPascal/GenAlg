@@ -849,7 +849,7 @@ bool GAGetFlagKTEvent(GenAlg* const that) {
 #if BUILDMODE != 0
 static inline
 #endif
-void GARecordBirth(GenAlg* const that, const unsigned int epoch,
+void GAHistoryRecordBirth(GAHistory* const that, const unsigned int epoch,
   const unsigned long idFather, const unsigned long idMother, 
   const GenAlgAdn* child) {
 #if BUILDMODE == 0
@@ -865,8 +865,8 @@ void GARecordBirth(GenAlg* const that, const unsigned int epoch,
   birth->_idParents[0] = idFather;
   birth->_idParents[1] = idMother;
   birth->_idChild = GAAdnGetId(child);
-  // Add the birth to the history of 'that'
-  GSetAppend(&(that->_history._genealogy), birth);
+  // Add the birth to the genealogy of 'that'
+  GSetAppend(&(that->_genealogy), birth);
 }
 
 // Set the history recording flag for the GenAlg 'that'
@@ -899,6 +899,44 @@ bool GAGetFlagHistory(const GenAlg* const that){
 #endif
   // Return the flag
   return that->_flagHistory;
+}
+
+// Set the path where the history is recorded for the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetHistoryPath(GenAlg* const that, const char* const path) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (path == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'path' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Set the path
+  free(that->_history._path);
+  that->_history._path = strdup(path);
+}
+
+// Get the path where the history is recorded for the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+const char* GAGetHistoryPath(GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Return the path
+  return that->_history._path;
 }
 
 

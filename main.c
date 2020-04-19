@@ -673,6 +673,70 @@ void UnitTestGenAlgPerf() {
   printf("UnitTestGenAlgPerf OK\n");
 }
 
+void UnitTestGenAlgHistory() {
+  srandom(0);
+  int lengthAdnF = 4;
+  int lengthAdnI = lengthAdnF;
+  GenAlg* ga = GenAlgCreate(8, 4, lengthAdnF, lengthAdnI);
+  VecFloat2D boundsF = VecFloatCreateStatic2D();
+  VecLong2D boundsI = VecLongCreateStatic2D();
+  VecSet(&boundsF, 0, -1.0); VecSet(&boundsF, 1, 1.0);
+  VecSet(&boundsI, 0, 0); VecSet(&boundsI, 1, 4);
+  for (int i = lengthAdnF; i--;) {
+    GASetBoundsAdnFloat(ga, i, &boundsF);
+    GASetBoundsAdnInt(ga, i, &boundsI);
+  }
+  GASetFlagHistory(ga, true);
+  GASetHistoryPath(ga, "./UnitTestGenAlgHistory.json");
+  GAInit(ga);
+  GASetNbMinAdn(ga, 8);
+  GASetNbMaxAdn(ga, 16);
+  float best = 1.0;
+  do {
+    for (int iEnt = GAGetNbAdns(ga); iEnt--;)
+      if (GAAdnIsNew(GAAdn(ga, iEnt)))
+        GASetAdnValue(ga, GAAdn(ga, iEnt), 
+          -1.0 * evaluate(GAAdnAdnF(GAAdn(ga, iEnt)), 
+          GAAdnAdnI(GAAdn(ga, iEnt))));
+    GAStep(ga);
+    // Display info if there is improvment
+    float ev = evaluate(GABestAdnF(ga), GABestAdnI(ga));
+    if (best - ev > PBMATH_EPSILON) {
+      best = ev;
+    }
+  } while (GAGetCurEpoch(ga) < 10 && best > PBMATH_EPSILON);
+
+  GAHistory history = GAHistoryCreateStatic();
+  FILE* stream = fopen(GAGetHistoryPath(ga), "r");
+  bool ret = GAHistoryLoad(&history, stream);
+  if (ret == false) {
+    GenAlgErr->_type = PBErrTypeUnitTestFailed;
+    sprintf(GenAlgErr->_msg, "GAHistoryLoad failed");
+    PBErrCatch(GenAlgErr);
+  }
+  fclose(stream);
+  GSetIterForward iterA = 
+    GSetIterForwardCreateStatic(&(ga->_history._genealogy));
+  GSetIterForward iterB = 
+    GSetIterForwardCreateStatic(&(history._genealogy));
+  do {
+    GAHistoryBirth* birthA = GSetIterGet(&iterA);
+    GAHistoryBirth* birthB = GSetIterGet(&iterB);
+    if (birthA->_epoch != birthB->_epoch &&
+      birthA->_idParents[0] != birthB->_idParents[0] &&
+      birthA->_idParents[1] != birthB->_idParents[1] &&
+      birthA->_idChild != birthB->_idChild) {
+      GenAlgErr->_type = PBErrTypeUnitTestFailed;
+      sprintf(GenAlgErr->_msg, "GAHistoryLoad/Save failed");
+      PBErrCatch(GenAlgErr);
+    }
+    
+  } while (GSetIterStep(&iterA) && GSetIterStep(&iterB));
+  GAHistoryFree(&history);
+  GenAlgFree(&ga);
+  printf("UnitTestGenAlgHistory OK\n");
+}
+
 void UnitTestGenAlg() {
   UnitTestGenAlgCreateFree();
   UnitTestGenAlgGetSet();
@@ -683,6 +747,7 @@ void UnitTestGenAlg() {
   UnitTestGenAlgLoadSave();
   UnitTestGenAlgTest();
   UnitTestGenAlgPerf();
+  UnitTestGenAlgHistory();
   printf("UnitTestGenAlg OK\n");
 }
 

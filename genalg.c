@@ -448,6 +448,8 @@ void GAInit(GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
+  // Flush the history
+  GAHistoryFlush(&(that->_history));
   // For each adn
   GSetIterForward iter = GSetIterForwardCreateStatic(GAAdns(that));
   do {
@@ -455,6 +457,13 @@ void GAInit(GenAlg* const that) {
     GenAlgAdn* adn = GSetIterGet(&iter);
     // Initialise randomly the genes of the adn
     GAAdnInit(adn, that);
+    // Add a birth to init history
+    if (GAGetFlagHistory(that) == true) {
+      GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that),
+        GAAdnGetId(adn),
+        GAAdnGetId(adn),
+        adn);
+    }
   } while (GSetIterStep(&iter));
   GAAdnCopy(that->_bestAdn, GAAdn(that, 0));
   that->_flagKTEvent = false;
@@ -587,7 +596,7 @@ void GAStep(GenAlg* const that) {
     ++(GAAdn(that, iAdn)->_age);
     // Add a birth to represent the surviving of this adn
     if (GAGetFlagHistory(that) == true) {
-      GARecordBirth(that, GAGetCurEpoch(that),
+      GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that) + 1,
         GAAdnGetId(GAAdn(that, iAdn)),
         GAAdnGetId(GAAdn(that, iAdn)),
         GAAdn(that, iAdn));
@@ -604,6 +613,13 @@ void GAStep(GenAlg* const that) {
     GAReproduction(that, parents, iAdn);
     // Mute the genes of the adn
     GAMute(that, parents, iAdn);
+    // Record the birth
+    if (GAGetFlagHistory(that) == true) {
+      GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that) + 1,
+        GAAdnGetId(GAAdn(that, parents[0])),
+        GAAdnGetId(GAAdn(that, parents[1])),
+        GAAdn(that, iAdn));
+    }
   }
   // If the user requested to save the history
   if (GAGetFlagHistory(that) == true) {
@@ -686,13 +702,6 @@ void GAReproduction(GenAlg* const that,
     case genAlgTypeDefault:
     default:
       GAReproductionDefault(that, parents, iChild);
-  }
-  // Record the birth
-  if (GAGetFlagHistory(that) == true) {
-    GARecordBirth(that, GAGetCurEpoch(that),
-      GAAdnGetId(GAAdn(that, parents[0])),
-      GAAdnGetId(GAAdn(that, parents[1])),
-      GAAdn(that, iChild));
   }
 }
 
@@ -1980,6 +1989,21 @@ void GAHistoryFree(GAHistory* that) {
     PBErrCatch(GenAlgErr);
   }
 #endif
+  // Flush the history
+  GAHistoryFlush(that);
+  // Free memory
+  free(that->_path);
+}
+
+// Flush the content of the GAHistory 'that'
+void GAHistoryFlush(GAHistory* that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
   // Loop on the genealogy
   while (GSetNbElem(&(that->_genealogy)) > 0) {
     // Pop the birth
@@ -1987,8 +2011,6 @@ void GAHistoryFree(GAHistory* that) {
     // Free memory
     free(birth);
   }
-  // Free memory
-  free(that->_path);
 }
 
 // Save the history of the GenAlg 'that'
@@ -2056,6 +2078,97 @@ JSONNode* GAHistoryEncodeAsJSON(const GAHistory* const that) {
   } while (GSetIterStep(&iter));
   // Add the genealogy
   JSONAddProp(json, "_genealogy", &genealogy);
+  // Flush the temporary node for the genealogy
+  JSONArrayStructFlush(&genealogy);
   // Return the created JSON 
   return json;
 }
+
+// Load the history into the GAHistory 'that' from the FILE 'stream'
+// Return true if we could load the history, false else
+bool GAHistoryLoad(GAHistory* const that, FILE* const stream) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (stream == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'stream' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Declare a json to load the encoded data
+  JSONNode* json = JSONCreate();
+  // Load the whole encoded data
+  if (!JSONLoad(json, stream)) {
+    return false;
+  }
+  // Decode the data from the JSON
+  if (!GAHistoryDecodeAsJSON(that, json)) {
+    return false;
+  }
+  // Free the memory used by the JSON
+  JSONFree(&json);
+  // Return the success code
+  return true;
+}
+
+// Function which decode from JSON encoding 'json' to GAHistory 'that'
+bool GAHistoryDecodeAsJSON(GAHistory* const that,
+  const JSONNode* const json) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'that' is null");
+    PBErrCatch(PBMathErr);
+  }
+  if (json == NULL) {
+    PBMathErr->_type = PBErrTypeNullPointer;
+    sprintf(PBMathErr->_msg, "'json' is null");
+    PBErrCatch(PBMathErr);
+  }
+#endif
+  // Flush the history
+  GAHistoryFlush(that);
+  // Decode the genealogy
+  JSONNode* propGen = JSONProperty(json, "_genealogy");
+  if (propGen == NULL) {
+    return false;
+  }
+  // Loop on the births
+  for (int i = 0; i < JSONGetNbValue(propGen); ++i) {
+    JSONNode* val = JSONValue(propGen, i);
+    // Decode the epoch
+    JSONNode* prop = JSONProperty(val, "_epoch");
+    if (prop == NULL) {
+      return false;
+    }
+    long epoch = atol(JSONLblVal(prop));
+    // Decode the father
+    prop = JSONProperty(val, "_father");
+    if (prop == NULL) {
+      return false;
+    }
+    long father = atol(JSONLblVal(prop));
+    // Decode the epoch
+    prop = JSONProperty(val, "_mother");
+    if (prop == NULL) {
+      return false;
+    }
+    long mother = atol(JSONLblVal(prop));
+    // Decode the id
+    prop = JSONProperty(val, "_id");
+    if (prop == NULL) {
+      return false;
+    }
+    GenAlgAdn adn;
+    adn._id = atol(JSONLblVal(prop));
+    // Add the birth to history
+    GAHistoryRecordBirth(that, epoch, father, mother, &adn);
+  }
+  // Return the success code
+  return true;
+}
+

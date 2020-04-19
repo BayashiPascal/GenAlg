@@ -547,7 +547,7 @@ void GAHistoryFree(GAHistory* that);
 #if BUILDMODE != 0
 static inline
 #endif
-void GARecordBirth(GenAlg* const that, const unsigned int epoch,
+void GAHistoryRecordBirth(GAHistory* const that, const unsigned int epoch,
   const unsigned long idFather, const unsigned long idMother, 
   const GenAlgAdn* child);
 
@@ -557,6 +557,18 @@ static inline
 #endif
 void GASetFlagHistory(GenAlg* const that, const bool flag);
 
+// Set the path where the history is recorded for the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetHistoryPath(GenAlg* const that, const char* const path);
+
+// Get the path where the history is recorded for the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+const char* GAGetHistoryPath(GenAlg* const that);
+
 // Get the history recording flag for the GenAlg 'that'
 #if BUILDMODE != 0
 static inline
@@ -564,10 +576,22 @@ static inline
 bool GAGetFlagHistory(const GenAlg* const that);
 
 // Save the history of the GenAlg 'that'
+// Return true if we could save the history, false else
 bool GASaveHistory(const GenAlg* const that);
 
 // Function which return the JSON encoding of the GAHistory 'that' 
 JSONNode* GAHistoryEncodeAsJSON(const GAHistory* const that);
+
+// Flush the content of the GAHistory 'that'
+void GAHistoryFlush(GAHistory* that);
+
+// Load the history into the GAHistory 'that' from the FILE 'stream'
+// Return true if we could load the history, false else
+bool GAHistoryLoad(GAHistory* const that, FILE* const stream);
+
+// Function which decode from JSON encoding 'json' to GAHistory 'that'
+bool GAHistoryDecodeAsJSON(GAHistory* const that,
+  const JSONNode* const json);
 
 // ================= Polymorphism ==================
 
