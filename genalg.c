@@ -98,7 +98,7 @@ void GenAlgAdnFree(GenAlgAdn** that) {
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga' according to the type of GenAlg
-void GAAdnInit(const GenAlgAdn* const that, const GenAlg* const ga) {
+void GAAdnInit(GenAlgAdn* const that, const GenAlg* const ga) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
@@ -117,6 +117,9 @@ void GAAdnInit(const GenAlgAdn* const that, const GenAlg* const ga) {
     default:
       GAAdnInitDefault(that, ga);
   }
+  // Initialise the parent id, by default itself
+  that->_idParents[0] = that->_id;
+  that->_idParents[1] = that->_id;
 }
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
@@ -407,8 +410,9 @@ void GASetNbEntities(GenAlg* const that, const int nb) {
     GenAlgAdnFree(&gaEnt);
   }
   while (GSetNbElem(GAAdns(that)) < nb) {
-    GenAlgAdn* ent = GenAlgAdnCreate(that->_nextId++,
+    GenAlgAdn* ent = GenAlgAdnCreate(that->_nextId,
       GAGetLengthAdnFloat(that), GAGetLengthAdnInt(that));
+    that->_nextId++;
     GSetPush(GAAdns(that), ent);
   }
   if (GAGetNbElites(that) >= nb)
@@ -457,16 +461,25 @@ void GAInit(GenAlg* const that) {
     GenAlgAdn* adn = GSetIterGet(&iter);
     // Initialise randomly the genes of the adn
     GAAdnInit(adn, that);
-    // Add a birth to init history
-    if (GAGetFlagHistory(that) == true) {
-      GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that),
-        GAAdnGetId(adn),
-        GAAdnGetId(adn),
-        adn);
-    }
   } while (GSetIterStep(&iter));
   GAAdnCopy(that->_bestAdn, GAAdn(that, 0));
   that->_flagKTEvent = false;
+  that->_curEpoch = 0;
+  // If the user requested to save the history
+  if (GAGetFlagHistory(that) == true) {
+    // Update the history
+    for (int iAdn = 0; iAdn < GAGetNbAdns(that); ++iAdn) {
+      GAHistoryRecordBirth(
+        &(that->_history), GAAdn(that, iAdn), GAGetCurEpoch(that));
+    }
+    // Save the history
+    bool ret = GASaveHistory(that);
+    if (ret == false) {
+      GenAlgErr->_type = PBErrTypeNullPointer;
+      sprintf(GenAlgErr->_msg, "Couldn't save the history");
+      PBErrCatch(GenAlgErr);
+    }
+  }
 }
 
 // Reset the GenAlg 'that'
@@ -501,13 +514,6 @@ void GAKTEvent(GenAlg* const that) {
           GAAdnInit(adn, that);
           adn->_age = 1;
           adn->_id = (that->_nextId)++;
-          // Add a birth to represent the reset of this adn
-          if (GAGetFlagHistory(that) == true) {
-            GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that) + 1,
-              adn->_id,
-              adn->_id,
-              adn);
-          }
           //GASetAdnValue(that, adn, worstValue);
           jAdn = 0;
           ++nbKTEvent;
@@ -536,13 +542,6 @@ void GAKTEvent(GenAlg* const that) {
     GAAdnInit(adn, that);
     adn->_age = 1;
     adn->_id = (that->_nextId)++;
-    // Add a birth to represent the reset of this adn
-    if (GAGetFlagHistory(that) == true) {
-      GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that) + 1,
-        adn->_id,
-        adn->_id,
-        adn);
-    }
     //GASetAdnValue(that, adn, worstValue);
     // We need to sort the adns
     GSetSort(GAAdns(that));
@@ -608,13 +607,9 @@ void GAStep(GenAlg* const that) {
   for (int iAdn = 0; iAdn < GAGetNbElites(that); ++iAdn) {
     // Increment age
     ++(GAAdn(that, iAdn)->_age);
-    // Add a birth to represent the surviving of this adn
-    if (GAGetFlagHistory(that) == true) {
-      GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that) + 1,
-        GAAdnGetId(GAAdn(that, iAdn)),
-        GAAdnGetId(GAAdn(that, iAdn)),
-        GAAdn(that, iAdn));
-    }
+    // Update the parents
+    GAAdn(that, iAdn)->_idParents[0] = GAAdnGetId(GAAdn(that, iAdn));
+    GAAdn(that, iAdn)->_idParents[1] = GAAdnGetId(GAAdn(that, iAdn));
   }
   // For each adn which is not an elite
   for (int iAdn = GAGetNbElites(that); iAdn < GAGetNbAdns(that); 
@@ -627,16 +622,16 @@ void GAStep(GenAlg* const that) {
     GAReproduction(that, parents, iAdn);
     // Mute the genes of the adn
     GAMute(that, parents, iAdn);
-    // Record the birth
-    if (GAGetFlagHistory(that) == true) {
-      GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that) + 1,
-        GAAdnGetId(GAAdn(that, parents[0])),
-        GAAdnGetId(GAAdn(that, parents[1])),
-        GAAdn(that, iAdn));
-    }
   }
+  // Increment the number of epochs
+  ++(that->_curEpoch);
   // If the user requested to save the history
   if (GAGetFlagHistory(that) == true) {
+    // Update the history
+    for (int iAdn = 0; iAdn < GAGetNbAdns(that); ++iAdn) {
+      GAHistoryRecordBirth(
+        &(that->_history), GAAdn(that, iAdn), GAGetCurEpoch(that));
+    }
     // Save the history
     bool ret = GASaveHistory(that);
     if (ret == false) {
@@ -645,8 +640,6 @@ void GAStep(GenAlg* const that) {
       PBErrCatch(GenAlgErr);
     }
   }
-  // Increment the number of epochs
-  ++(that->_curEpoch);
 }
 
 // Select the rank of two parents for the SRM algorithm
@@ -717,6 +710,10 @@ void GAReproduction(GenAlg* const that,
     default:
       GAReproductionDefault(that, parents, iChild);
   }
+  // Update the parent id in the new child
+  GenAlgAdn* child = GAAdn(that, iChild);
+  child->_idParents[0] = GAAdnGetId(GAAdn(that, parents[0]));
+  child->_idParents[1] = GAAdnGetId(GAAdn(that, parents[1]));
 }
 
 // Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
@@ -2179,8 +2176,10 @@ bool GAHistoryDecodeAsJSON(GAHistory* const that,
     }
     GenAlgAdn adn;
     adn._id = atol(JSONLblVal(prop));
+    adn._idParents[0] = father;
+    adn._idParents[1] = mother;
     // Add the birth to history
-    GAHistoryRecordBirth(that, epoch, father, mother, &adn);
+    GAHistoryRecordBirth(that, &adn, epoch);
   }
   // Return the success code
   return true;

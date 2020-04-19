@@ -849,21 +849,25 @@ bool GAGetFlagKTEvent(GenAlg* const that) {
 #if BUILDMODE != 0
 static inline
 #endif
-void GAHistoryRecordBirth(GAHistory* const that, const unsigned int epoch,
-  const unsigned long idFather, const unsigned long idMother, 
-  const GenAlgAdn* child) {
+void GAHistoryRecordBirth(GAHistory* const that, const GenAlgAdn* child,
+  const unsigned int epoch) {
 #if BUILDMODE == 0
   if (that == NULL) {
     GenAlgErr->_type = PBErrTypeNullPointer;
     sprintf(GenAlgErr->_msg, "'that' is null");
     PBErrCatch(GenAlgErr);
   }
+  if (child == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'child' is null");
+    PBErrCatch(GenAlgErr);
+  }
 #endif
   // Create the GAHistoryBirth
   GAHistoryBirth* birth = PBErrMalloc(GenAlgErr, sizeof(GAHistory));
   birth->_epoch = epoch;
-  birth->_idParents[0] = idFather;
-  birth->_idParents[1] = idMother;
+  birth->_idParents[0] = child->_idParents[0];
+  birth->_idParents[1] = child->_idParents[1];
   birth->_idChild = GAAdnGetId(child);
   // Add the birth to the genealogy of 'that'
   GSetAppend(&(that->_genealogy), birth);

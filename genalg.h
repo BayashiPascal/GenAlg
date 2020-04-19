@@ -44,6 +44,8 @@ typedef struct GenAlg GenAlg;
 typedef struct GenAlgAdn {
   // ID
   unsigned long _id;
+  // ID parents
+  unsigned long _idParents[2];
   // Age
   unsigned long _age;
   // Adn for floating point value
@@ -91,7 +93,7 @@ VecLong* GAAdnAdnI(const GenAlgAdn* const that);
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga' according to the type of the GenAlg
-void GAAdnInit(const GenAlgAdn* const that, const GenAlg* ga);
+void GAAdnInit(GenAlgAdn* const that, const GenAlg* ga);
 
 // Initialise randomly the genes of the GenAlgAdn 'that' of the 
 // GenAlg 'ga', version used to calculate the parameters of a NeuraNet
@@ -547,9 +549,8 @@ void GAHistoryFree(GAHistory* that);
 #if BUILDMODE != 0
 static inline
 #endif
-void GAHistoryRecordBirth(GAHistory* const that, const unsigned int epoch,
-  const unsigned long idFather, const unsigned long idMother, 
-  const GenAlgAdn* child);
+void GAHistoryRecordBirth(GAHistory* const that, const GenAlgAdn* child,
+  const unsigned int epoch);
 
 // Set the history recording flag for the GenAlg 'that'
 #if BUILDMODE != 0
