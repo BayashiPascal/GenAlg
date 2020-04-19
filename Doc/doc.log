@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.10.17)  19 APR 2020 14:19
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.10.17)  19 APR 2020 18:37
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -607,9 +607,9 @@ that) / 2); iAdn >= 1 ; --iAdn) {[]
  []
 
 [21] [22] [23] [24] [25] [26] [27] [28] [29] [30] [31] [32] [33] [34] [35]
-[36] [37] [38] [39] [40] [41] [42] [43] [44] [45] [46] [47]
+[36] [37] [38] [39] [40] [41] [42] [43] [44] [45] [46] [47] [48]
 File: /home/bayashi/GitHub/GenAlg/genalg-inline.c  (verbatim)
- [48] [49] [50]
+ [49] [50]
 [51] [52] [53]
 Overfull \hbox (60.50647pt too wide) in paragraph at lines 51--51
 []\OT1/cmtt/m/n/8 // 'nbLink' links dedicated to the convolution and 'nbBaseCel
@@ -653,122 +653,27 @@ Underfull \hbox (badness 10000) in paragraph at lines 86--87
 
  []
 
-<./eval.png, id=268, 570.13pt x 338.26375pt>
+[80]
+<./eval.png, id=271, 570.13pt x 338.26375pt>
 File: ./eval.png Graphic file (type png)
 <use ./eval.png>
 Package pdftex.def Info: ./eval.png  used on input line 89.
 (pdftex.def)             Requested size: 284.52756pt x 168.81143pt.
-[80]
+
 Underfull \hbox (badness 10000) in paragraph at lines 93--96
 
  []
 
 File: /home/bayashi/GitHub/GenAlg/UnitTestGenAlgHistory.json  (verbatim)
-
-Overfull \hbox (30163.68878pt too wide) in paragraph at lines 96--96
-[]\OT1/cmtt/m/n/8 {"_genealogy":[{"_epoch":"0","_father":"7","_mother":"7","_id
-":"7"},{"_epoch":"0","_father":"6","_mother":"6","_id":"6"},{"_epoch":"0","_fat
-her":"5","_mother":"5","_id":"5"},{"_epoch":"0","_father":"4","_mother":"4","_i
-d":"4"},{"_epoch":"0","_father":"3","_mother":"3","_id":"3"},{"_epoch":"0","_fa
-ther":"2","_mother":"2","_id":"2"},{"_epoch":"0","_father":"1","_mother":"1","_
-id":"1"},{"_epoch":"0","_father":"0","_mother":"0","_id":"0"},{"_epoch":"1","_f
-ather":"6","_mother":"6","_id":"6"},{"_epoch":"1","_father":"5","_mother":"5","
-_id":"5"},{"_epoch":"1","_father":"1","_mother":"1","_id":"1"},{"_epoch":"1","_
-father":"3","_mother":"3","_id":"3"},{"_epoch":"1","_father":"6","_mother":"5",
-"_id":"8"},{"_epoch":"1","_father":"0","_mother":"6","_id":"9"},{"_epoch":"1","
-_father":"0","_mother":"6","_id":"10"},{"_epoch":"1","_father":"0","_mother":"5
-","_id":"11"},{"_epoch":"2","_father":"11","_mother":"11","_id":"11"},{"_epoch"
-:"2","_father":"6","_mother":"6","_id":"6"},{"_epoch":"2","_father":"9","_mothe
-r":"9","_id":"9"},{"_epoch":"2","_father":"5","_mother":"5","_id":"5"},{"_epoch
-":"2","_father":"11","_mother":"9","_id":"12"},{"_epoch":"2","_father":"11","_m
-other":"6","_id":"13"},{"_epoch":"2","_father":"11","_mother":"6","_id":"14"},{
-"_epoch":"2","_father":"11","_mother":"9","_id":"15"},{"_epoch":"3","_father":"
-12","_mother":"12","_id":"12"},{"_epoch":"3","_father":"11","_mother":"11","_id
-":"11"},{"_epoch":"3","_father":"15","_mother":"15","_id":"15"},{"_epoch":"3","
-_father":"6","_mother":"6","_id":"6"},{"_epoch":"3","_father":"12","_mother":"1
-1","_id":"16"},{"_epoch":"3","_father":"12","_mother":"11","_id":"17"},{"_epoch
-":"3","_father":"12","_mother":"15","_id":"18"},{"_epoch":"3","_father":"12","_
-mother":"15","_id":"19"},{"_epoch":"4","_father":"20","_mother":"20","_id":"20"
-},{"_epoch":"4","_father":"11","_mother":"11","_id":"11"},{"_epoch":"4","_fathe
-r":"17","_mother":"17","_id":"17"},{"_epoch":"4","_father":"16","_mother":"16",
-"_id":"16"},{"_epoch":"4","_father":"12","_mother":"20","_id":"29"},{"_epoch":"
-4","_father":"12","_mother":"20","_id":"30"},{"_epoch":"4","_father":"20","_mot
-her":"11","_id":"31"},{"_epoch":"4","_father":"20","_mother":"17","_id":"32"},{
-"_epoch":"4","_father":"12","_mother":"20","_id":"33"},{"_epoch":"4","_father":
-"11","_mother":"17","_id":"34"},{"_epoch":"4","_father":"11","_mother":"17","_i
-d":"35"},{"_epoch":"4","_father":"11","_mother":"17","_id":"36"},{"_epoch":"4",
-"_father":"12","_mother":"11","_id":"37"},{"_epoch":"4","_father":"11","_mother
-":"17","_id":"38"},{"_epoch":"4","_father":"20","_mother":"17","_id":"39"},{"_e
-poch":"4","_father":"12","_mother":"11","_id":"40"},{"_epoch":"5","_father":"36
-","_mother":"36","_id":"36"},{"_epoch":"5","_father":"35","_mother":"35","_id":
-"35"},{"_epoch":"5","_father":"37","_mother":"37","_id":"37"},{"_epoch":"5","_f
-ather":"31","_mother":"31","_id":"31"},{"_epoch":"5","_father":"36","_mother":"
-37","_id":"41"},{"_epoch":"5","_father":"35","_mother":"37","_id":"42"},{"_epoc
-h":"5","_father":"36","_mother":"37","_id":"43"},{"_epoch":"5","_father":"35","
-_mother":"37","_id":"44"},{"_epoch":"6","_father":"45","_mother":"45","_id":"45
-"},{"_epoch":"6","_father":"35","_mother":"35","_id":"35"},{"_epoch":"6","_fath
-er":"37","_mother":"37","_id":"37"},{"_epoch":"6","_father":"43","_mother":"43"
-,"_id":"43"},{"_epoch":"6","_father":"36","_mother":"35","_id":"54"},{"_epoch":
-"6","_father":"45","_mother":"37","_id":"55"},{"_epoch":"6","_father":"45","_mo
-ther":"35","_id":"56"},{"_epoch":"6","_father":"36","_mother":"37","_id":"57"},
-{"_epoch":"6","_father":"45","_mother":"35","_id":"58"},{"_epoch":"6","_father"
-:"45","_mother":"35","_id":"59"},{"_epoch":"6","_father":"36","_mother":"37","_
-id":"60"},{"_epoch":"6","_father":"35","_mother":"37","_id":"61"},{"_epoch":"6"
-,"_father":"36","_mother":"45","_id":"62"},{"_epoch":"6","_father":"36","_mothe
-r":"35","_id":"63"},{"_epoch":"6","_father":"36","_mother":"45","_id":"64"},{"_
-epoch":"6","_father":"36","_mother":"45","_id":"65"},{"_epoch":"7","_father":"6
-6","_mother":"66","_id":"66"},{"_epoch":"7","_father":"57","_mother":"57","_id"
-:"57"},{"_epoch":"7","_father":"35","_mother":"35","_id":"35"},{"_epoch":"7","_
-father":"37","_mother":"37","_id":"37"},{"_epoch":"7","_father":"66","_mother":
-"35","_id":"67"},{"_epoch":"7","_father":"36","_mother":"57","_id":"68"},{"_epo
-ch":"7","_father":"66","_mother":"35","_id":"69"},{"_epoch":"7","_father":"36",
-"_mother":"35","_id":"70"},{"_epoch":"7","_father":"36","_mother":"35","_id":"7
-1"},{"_epoch":"7","_father":"57","_mother":"35","_id":"72"},{"_epoch":"7","_fat
-her":"36","_mother":"35","_id":"73"},{"_epoch":"7","_father":"66","_mother":"57
-","_id":"74"},{"_epoch":"7","_father":"36","_mother":"66","_id":"75"},{"_epoch"
-:"7","_father":"57","_mother":"35","_id":"76"},{"_epoch":"7","_father":"36","_m
-other":"57","_id":"77"},{"_epoch":"7","_father":"66","_mother":"57","_id":"78"}
-,{"_epoch":"8","_father":"91","_mother":"91","_id":"91"},{"_epoch":"8","_father
-":"90","_mother":"90","_id":"90"},{"_epoch":"8","_father":"57","_mother":"57","
-_id":"57"},{"_epoch":"8","_father":"71","_mother":"71","_id":"71"},{"_epoch":"8
-","_father":"36","_mother":"90","_id":"92"},{"_epoch":"8","_father":"36","_moth
-er":"57","_id":"93"},{"_epoch":"8","_father":"91","_mother":"90","_id":"94"},{"
-_epoch":"8","_father":"36","_mother":"57","_id":"95"},{"_epoch":"8","_father":"
-91","_mother":"57","_id":"96"},{"_epoch":"8","_father":"36","_mother":"57","_id
-":"97"},{"_epoch":"8","_father":"90","_mother":"57","_id":"98"},{"_epoch":"8","
-_father":"90","_mother":"57","_id":"99"},{"_epoch":"8","_father":"91","_mother"
-:"57","_id":"100"},{"_epoch":"8","_father":"36","_mother":"57","_id":"101"},{"_
-epoch":"8","_father":"91","_mother":"90","_id":"102"},{"_epoch":"8","_father":"
-36","_mother":"57","_id":"103"},{"_epoch":"9","_father":"120","_mother":"120","
-_id":"120"},{"_epoch":"9","_father":"119","_mother":"119","_id":"119"},{"_epoch
-":"9","_father":"57","_mother":"57","_id":"57"},{"_epoch":"9","_father":"118","
-_mother":"118","_id":"118"},{"_epoch":"9","_father":"120","_mother":"119","_id"
-:"121"},{"_epoch":"9","_father":"120","_mother":"119","_id":"122"},{"_epoch":"9
-","_father":"120","_mother":"57","_id":"123"},{"_epoch":"9","_father":"120","_m
-other":"119","_id":"124"},{"_epoch":"9","_father":"120","_mother":"57","_id":"1
-25"},{"_epoch":"9","_father":"36","_mother":"57","_id":"126"},{"_epoch":"9","_f
-ather":"36","_mother":"57","_id":"127"},{"_epoch":"9","_father":"119","_mother"
-:"57","_id":"128"},{"_epoch":"9","_father":"119","_mother":"57","_id":"129"},{"
-_epoch":"9","_father":"36","_mother":"120","_id":"130"},{"_epoch":"9","_father"
-:"119","_mother":"57","_id":"131"},{"_epoch":"9","_father":"119","_mother":"57"
-,"_id":"132"},{"_epoch":"10","_father":"129","_mother":"129","_id":"129"},{"_ep
-och":"10","_father":"120","_mother":"120","_id":"120"},{"_epoch":"10","_father"
-:"119","_mother":"119","_id":"119"},{"_epoch":"10","_father":"57","_mother":"57
-","_id":"57"},{"_epoch":"10","_father":"120","_mother":"119","_id":"133"},{"_ep
-och":"10","_father":"120","_mother":"119","_id":"134"},{"_epoch":"10","_father"
-:"129","_mother":"120","_id":"135"},{"_epoch":"10","_father":"129","_mother":"1
-19","_id":"136"}]}[] 
- []
-
 ) [81 <./eval.png (PNG copy)>] (./doc.aux) ) 
 Here is how much of TeX's memory you used:
  13598 strings out of 493765
  261656 string characters out of 6151500
- 320200 words of memory out of 5000000
+ 326823 words of memory out of 5000000
  16833 multiletter control sequences out of 15000+600000
  12740 words of font info for 50 fonts, out of 8000000 for 9000
  622 hyphenation exceptions out of 8191
- 55i,15n,54p,7289b,310s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,15n,54p,9188b,311s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/font
 s/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type
 1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
@@ -782,7 +687,7 @@ ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
 
 pdfTeX warning: pdflatex: no GlyphToUnicode entry has been inserted yet!
-Output written on doc.pdf (81 pages, 214898 bytes).
+Output written on doc.pdf (81 pages, 215081 bytes).
 PDF statistics:
  315 PDF objects out of 1000 (max. 8388607)
  217 compressed objects within 3 object streams

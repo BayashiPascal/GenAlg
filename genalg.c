@@ -501,6 +501,13 @@ void GAKTEvent(GenAlg* const that) {
           GAAdnInit(adn, that);
           adn->_age = 1;
           adn->_id = (that->_nextId)++;
+          // Add a birth to represent the reset of this adn
+          if (GAGetFlagHistory(that) == true) {
+            GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that) + 1,
+              adn->_id,
+              adn->_id,
+              adn);
+          }
           //GASetAdnValue(that, adn, worstValue);
           jAdn = 0;
           ++nbKTEvent;
@@ -529,6 +536,13 @@ void GAKTEvent(GenAlg* const that) {
     GAAdnInit(adn, that);
     adn->_age = 1;
     adn->_id = (that->_nextId)++;
+    // Add a birth to represent the reset of this adn
+    if (GAGetFlagHistory(that) == true) {
+      GAHistoryRecordBirth(&(that->_history), GAGetCurEpoch(that) + 1,
+        adn->_id,
+        adn->_id,
+        adn);
+    }
     //GASetAdnValue(that, adn, worstValue);
     // We need to sort the adns
     GSetSort(GAAdns(that));
