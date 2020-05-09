@@ -726,13 +726,36 @@ float GAGetDiversity(const GenAlg* const that) {
     PBErrCatch(GenAlgErr);
   }
 #endif 
-  float diversity = GAGetDiversityThreshold(that) + 1.0;
+
+  float diversity = fabs(
+        GAAdn(that, 0)->_val - GAAdn(that, GAGetNbElites(that) - 1)->_val);
+  /*
   for (int iAdn = 0; iAdn < GAGetNbElites(that) - 1; ++iAdn) {
+    GenAlgAdn* adnA = GAAdn(that, iAdn);
     for (int jAdn = iAdn + 1; jAdn < GAGetNbElites(that); ++jAdn) {
-      diversity = fabs(MIN(diversity, 
-        GAAdn(that, iAdn)->_val - GAAdn(that, jAdn)->_val));
+      GenAlgAdn* adnB = GAAdn(that, jAdn);
+      for (
+        unsigned long iVal = VecGetDim(GAAdnAdnF(adnA));
+        iVal--;) {
+          diversity =
+            MAX(
+              diversity,
+              fabs(VecGet(GAAdnAdnF(adnA), iVal) -
+                VecGet(GAAdnAdnF(adnB), iVal)));
+      }
+      if (that->_NNdata._flagMutableLink == true) {
+        for (
+          unsigned long iVal = VecGetDim(GAAdnAdnI(adnA));
+          iVal--;) {
+            diversity =
+              MAX(
+                diversity,
+                fabs(VecGet(GAAdnAdnI(adnA), iVal) -
+                  VecGet(GAAdnAdnI(adnB), iVal)));
+        }
+      }
     }
-  }
+  }*/
   return diversity;
 }
 

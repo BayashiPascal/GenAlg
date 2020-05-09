@@ -331,7 +331,7 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   that->_curEpoch = 0;
   that->_nbKTEvent = 0;
   that->_flagTextOMeter = false;
-  that->_diversityThreshold = 0.01;
+  that->_diversityThreshold = PBMATH_EPSILON;
   that->_textOMeter = NULL;
   that->_nbMinAdn = nbEntities;
   that->_nbMaxAdn = nbEntities;
@@ -493,8 +493,17 @@ void GAKTEvent(GenAlg* const that) {
   }
 #endif
 
+  for (int iAdn = GAGetNbAdns(that) - 1; iAdn >= 1 ; --iAdn) {
+    GenAlgAdn* adn = GAAdn(that, iAdn);
+    GAAdnInit(adn, that);
+    adn->_age = 0;
+    adn->_id = (that->_nextId)++;
+  }
+  that->_nbKTEvent += 1;
+  GSetSort(GAAdns(that));
+
   // Loop until the diversity of the elites is sufficient
-  int nbKTEvent = 0;
+  /*int nbKTEvent = 0;
   int nbMaxLoop = 
     (int)round((float)GAGetNbAdns(that) / (float)GAGetNbElites(that));
   do {
@@ -553,7 +562,7 @@ void GAKTEvent(GenAlg* const that) {
   if (that->_flagKTEvent == true) {
     // We need to sort the adns
     GSetSort(GAAdns(that));
-  }
+  }*/
 
 }
 
@@ -584,8 +593,11 @@ void GAStep(GenAlg* const that) {
       that->_bestAdn->_age = that->_curEpoch + 1;
       flagImprov = true;
     } else {
-      // Ensure diversity level
-      GAKTEvent(that);
+      // Check for the diversity level
+      float diversity = GAGetDiversity(that);
+      if (diversity < GAGetDiversityThreshold(that)) {
+        GAKTEvent(that);
+      }
     }
   }
   // Refresh the TextOMeter if necessary
@@ -632,13 +644,6 @@ void GAStep(GenAlg* const that) {
       GAHistoryRecordBirth(
         &(that->_history), GAAdn(that, iAdn), GAGetCurEpoch(that));
     }
-    // Save the history
-    bool ret = GASaveHistory(that);
-    if (ret == false) {
-      GenAlgErr->_type = PBErrTypeNullPointer;
-      sprintf(GenAlgErr->_msg, "Couldn't save the history");
-      PBErrCatch(GenAlgErr);
-    }
   }
 }
 
@@ -675,6 +680,10 @@ void GASelectParents(const GenAlg* const that, int* const parents) {
     parents[0] = p[1];
     parents[1] = p[0];
   }
+
+  // TEST
+  parents[1] = parents[0];
+
 }
 
 // Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
@@ -978,10 +987,8 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba and amplitude of mutation
-  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
-  float amp = sqrt(1.0 / (float)(parentA->_age + 1));
-  probMute /= (float)(GAGetLengthAdnInt(that));
-  probMute += (float)(parentA->_age) / 10000.0;
+  float amp = 1.0 / (float)(parentA->_age);
+  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
   // Ensure the proba is not null
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
@@ -1073,7 +1080,6 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
             GAAdnSetGeneF(child, baseFunGene + jGene, 
               GAAdnGetGeneF(child, baseFunGene + jGene) + 
               (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
-              //VecGet(parentA->_mutabilityF, baseFun * 3) * 
               (rnd() - 0.5) + 
               GAAdnGetDeltaGeneF(child, baseFunGene + jGene));
             // Keep the gene value in bounds
@@ -1128,11 +1134,8 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba amplitude of mutation
-  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
-  float amp = sqrt(1.0 / (float)(parentA->_age));
-  probMute /= (float)(MAX(GAGetLengthAdnInt(that), 
-    GAGetLengthAdnFloat(that)));
-  probMute += (float)(parentA->_age) / 10000.0;
+  float amp = 1.0 / (float)(parentA->_age);
+  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
   bool hasMuted = false;
@@ -1221,10 +1224,8 @@ void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents,
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba amplitude of mutation
-  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
-  float amp = sqrt(1.0 / (float)(parentA->_age));
-  probMute /= (float)(that->_NNdata._nbLink);
-  probMute += (float)(parentA->_age) / 10000.0;
+  float amp = 1.0 / (float)(parentA->_age);
+  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
   bool hasMuted = false;

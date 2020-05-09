@@ -168,7 +168,7 @@ void UnitTestGenAlgCreateFree() {
     ga->_flagTextOMeter != false ||
     ga->_nbMinAdn != GENALG_NBENTITIES ||
     ga->_nbMaxAdn != GENALG_NBENTITIES ||
-    ISEQUALF(ga->_diversityThreshold, 0.01) != true ||
+    ISEQUALF(ga->_diversityThreshold, PBMATH_EPSILON) != true ||
     ga->_textOMeter != NULL ||
     GSetNbElem(GAAdns(ga)) != GENALG_NBENTITIES) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
@@ -455,9 +455,9 @@ void UnitTestGenAlgStep() {
   if (ga->_nextId != 4 || GAAdnGetId(child) != 3 || 
     GAAdnGetAge(child) != 1 ||
     ISEQUALF(GAAdnGetGeneF(child, 0), 0.285933) == false ||
-    ISEQUALF(GAAdnGetGeneF(child, 1), 0.174965) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 1), 0.287805) == false ||
     ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.0) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.0) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.112841) == false ||
     GAAdnGetGeneI(child, 0) != 4 ||
     GAAdnGetGeneI(child, 1) != 10 ||
     GAAdn(ga, 2) != child ||
@@ -582,19 +582,21 @@ void UnitTestGenAlgTest() {
     GASetBoundsAdnFloat(ga, i, &boundsF);
     GASetBoundsAdnInt(ga, i, &boundsI);
   }
+  GASetFlagHistory(ga, true);
+  GASetHistoryPath(ga, "./history.json");
   GAInit(ga);
   GASetTextOMeterFlag(ga, true);
-  //GASetDiversityThreshold(ga, 0.0001);
-  GASetDiversityThreshold(ga, 0.01);
-  GASetNbMinAdn(ga, 32);
-  GASetNbMaxAdn(ga, 512);
+  GASetNbMinAdn(ga, GENALG_NBELITES * 2);
+  GASetNbMaxAdn(ga, GENALG_NBENTITIES);
   float best = 1.0;
+  unsigned long nbMaxEpoch = 2000;
   do {
     for (int iEnt = GAGetNbAdns(ga); iEnt--;)
-      if (GAAdnIsNew(GAAdn(ga, iEnt)))
+      if (GAAdnIsNew(GAAdn(ga, iEnt))) {
         GASetAdnValue(ga, GAAdn(ga, iEnt), 
           -1.0 * evaluate(GAAdnAdnF(GAAdn(ga, iEnt)), 
           GAAdnAdnI(GAAdn(ga, iEnt))));
+      }
     GAStep(ga);
     // Slow down the process to have time to read the TextOMeter
     unsigned int microseconds = 10000;
@@ -610,7 +612,14 @@ void UnitTestGenAlgTest() {
       VecPrint(GABestAdnI(ga), stdout);
       printf("\n");
     }
-  } while (GAGetCurEpoch(ga) < 2000 && best > PBMATH_EPSILON);
+  } while (GAGetCurEpoch(ga) < nbMaxEpoch && best > PBMATH_EPSILON);
+  // Save the history
+  bool ret = GASaveHistory(ga);
+  if (ret == false) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "Couldn't save the history");
+    PBErrCatch(GenAlgErr);
+  }
   printf("target: -0.5*x^3 + 0.314*x^2 - 0.7777*x + 0.1\n");
   printf("approx: \n");
   GAAdnPrintln(GABestAdn(ga), stdout);
@@ -641,12 +650,8 @@ void UnitTestGenAlgPerf() {
       GASetBoundsAdnInt(ga, i, &boundsI);
     }
     GAInit(ga);
-    //GASetDiversityThreshold(ga, 0.001);
-
-  GASetDiversityThreshold(ga, 0.01);
-  GASetNbMinAdn(ga, 32);
-  GASetNbMaxAdn(ga, 512);
-
+    GASetNbMinAdn(ga, GENALG_NBELITES * 2);
+    GASetNbMaxAdn(ga, GENALG_NBENTITIES);
     float ev = 0.0;
     do {
       for (int iEnt = GAGetNbAdns(ga); iEnt--;)
@@ -705,10 +710,17 @@ void UnitTestGenAlgHistory() {
       best = ev;
     }
   } while (GAGetCurEpoch(ga) < 10 && best > PBMATH_EPSILON);
+  // Save the history
+  bool ret = GASaveHistory(ga);
+  if (ret == false) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "Couldn't save the history");
+    PBErrCatch(GenAlgErr);
+  }
 
   GAHistory history = GAHistoryCreateStatic();
   FILE* stream = fopen(GAGetHistoryPath(ga), "r");
-  bool ret = GAHistoryLoad(&history, stream);
+  ret = GAHistoryLoad(&history, stream);
   if (ret == false) {
     GenAlgErr->_type = PBErrTypeUnitTestFailed;
     sprintf(GenAlgErr->_msg, "GAHistoryLoad failed");
