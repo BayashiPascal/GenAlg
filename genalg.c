@@ -1015,7 +1015,7 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
   float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
   float amp = sqrt(1.0 / (float)(parentA->_age + 1));
   probMute /= (float)(GAGetLengthAdnInt(that));
-  probMute += (float)(parentA->_age) / (float)GAGetMaxAge(that);
+  probMute += (float)(parentA->_age) / 10000;
   // Ensure the proba is not null
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
@@ -1165,7 +1165,7 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
   float amp = sqrt(1.0 / (float)(parentA->_age));
   probMute /= (float)(MAX(GAGetLengthAdnInt(that), 
     GAGetLengthAdnFloat(that)));
-  probMute += (float)(parentA->_age) / (float)GAGetMaxAge(that);
+  probMute += (float)(parentA->_age) / 10000;
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
   bool hasMuted = false;
@@ -1257,7 +1257,7 @@ void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents,
   float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
   float amp = sqrt(1.0 / (float)(parentA->_age));
   probMute /= (float)(that->_NNdata._nbLink);
-  probMute += (float)(parentA->_age) / (float)GAGetMaxAge(that);
+  probMute += (float)(parentA->_age) / 10000;
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
   bool hasMuted = false;
