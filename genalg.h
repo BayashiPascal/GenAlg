@@ -279,6 +279,8 @@ typedef struct GenAlg {
   GAHistory _history;
   // Flag to remember if we are recording the history
   bool _flagHistory;
+  // Maximum age for an entity
+  unsigned long _maxAge;
 } GenAlg;
 
 // ================ Functions declaration ====================
@@ -593,6 +595,18 @@ bool GAHistoryLoad(GAHistory* const that, FILE* const stream);
 // Function which decode from JSON encoding 'json' to GAHistory 'that'
 bool GAHistoryDecodeAsJSON(GAHistory* const that,
   const JSONNode* const json);
+
+// Set the maximum age for an entity of the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetMaxAge(GenAlg* const that, const unsigned long age);
+
+// Get the maximum age for an entity of the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+unsigned long GAGetMaxAge(GenAlg* const that);
 
 // ================= Polymorphism ==================
 

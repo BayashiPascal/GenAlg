@@ -728,34 +728,7 @@ float GAGetDiversity(const GenAlg* const that) {
 #endif 
 
   float diversity = fabs(
-        GAAdn(that, 0)->_val - GAAdn(that, GAGetNbElites(that) - 1)->_val);
-  /*
-  for (int iAdn = 0; iAdn < GAGetNbElites(that) - 1; ++iAdn) {
-    GenAlgAdn* adnA = GAAdn(that, iAdn);
-    for (int jAdn = iAdn + 1; jAdn < GAGetNbElites(that); ++jAdn) {
-      GenAlgAdn* adnB = GAAdn(that, jAdn);
-      for (
-        unsigned long iVal = VecGetDim(GAAdnAdnF(adnA));
-        iVal--;) {
-          diversity =
-            MAX(
-              diversity,
-              fabs(VecGet(GAAdnAdnF(adnA), iVal) -
-                VecGet(GAAdnAdnF(adnB), iVal)));
-      }
-      if (that->_NNdata._flagMutableLink == true) {
-        for (
-          unsigned long iVal = VecGetDim(GAAdnAdnI(adnA));
-          iVal--;) {
-            diversity =
-              MAX(
-                diversity,
-                fabs(VecGet(GAAdnAdnI(adnA), iVal) -
-                  VecGet(GAAdnAdnI(adnB), iVal)));
-        }
-      }
-    }
-  }*/
+        GAAdn(that, GAGetNbElites(that) - 2)->_val - GAAdn(that, GAGetNbElites(that) - 1)->_val);
   return diversity;
 }
 
@@ -964,6 +937,38 @@ const char* GAGetHistoryPath(GenAlg* const that) {
 #endif
   // Return the path
   return that->_history._path;
+}
+
+// Set the maximum age for an entity of the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetMaxAge(GenAlg* const that, const unsigned long age) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Set the maximum age
+  that->_maxAge = age;
+}
+
+// Get the maximum age for an entity of the GenAlg 'that'
+#if BUILDMODE != 0
+static inline
+#endif
+unsigned long GAGetMaxAge(GenAlg* const that) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Return the maximumAge
+  return that->_maxAge;
 }
 
 

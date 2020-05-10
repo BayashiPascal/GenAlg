@@ -360,6 +360,7 @@ GenAlg* GenAlgCreate(const int nbEntities, const int nbElites,
   GASetNbElites(that, nbElites);
   that->_history = GAHistoryCreateStatic();
   that->_flagHistory = false;
+  that->_maxAge = 100;
   // Return the new GenAlg
   return that;
 }
@@ -493,14 +494,30 @@ void GAKTEvent(GenAlg* const that) {
   }
 #endif
 
-  for (int iAdn = GAGetNbAdns(that) - 1; iAdn >= 1 ; --iAdn) {
+  int iAdnMin = 1;
+  while (iAdnMin < GAGetNbElites(that) - 1 &&
+    fabs(GAAdn(that, iAdnMin)->_val - GAAdn(that, GAGetNbElites(that) - 1)->_val) > GAGetDiversityThreshold(that)) {
+    ++iAdnMin;
+  }
+
+  for (int iAdn = GAGetNbAdns(that) - 1; iAdn >= iAdnMin ; --iAdn) {
+    GenAlgAdn* adn = GAAdn(that, iAdn);
+    GAAdnInit(adn, that);
+    adn->_age = 0;
+    adn->_id = (that->_nextId)++;
+  }
+  if (iAdnMin == 1)
+    that->_nbKTEvent += 1;
+  //GSetSort(GAAdns(that));
+
+  /*for (int iAdn = GAGetNbAdns(that) - 1; iAdn >= 1 ; --iAdn) {
     GenAlgAdn* adn = GAAdn(that, iAdn);
     GAAdnInit(adn, that);
     adn->_age = 0;
     adn->_id = (that->_nextId)++;
   }
   that->_nbKTEvent += 1;
-  GSetSort(GAAdns(that));
+  GSetSort(GAAdns(that));*/
 
   // Loop until the diversity of the elites is sufficient
   /*int nbKTEvent = 0;
@@ -593,6 +610,14 @@ void GAStep(GenAlg* const that) {
       that->_bestAdn->_age = that->_curEpoch + 1;
       flagImprov = true;
     } else {
+      // If the boss is too old
+      if (GAAdnGetAge(GAAdn(that, 0)) > GAGetMaxAge(that)) {
+        // Kill the boss !
+        GAAdn(that, 0)->_age = 0;
+        GAAdnInit(GAAdn(that, 0), that);
+        GAAdn(that, 0)->_age = 0;
+        GAAdn(that, 0)->_id = (that->_nextId)++;
+      }
       // Check for the diversity level
       float diversity = GAGetDiversity(that);
       if (diversity < GAGetDiversityThreshold(that)) {
@@ -987,8 +1012,10 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba and amplitude of mutation
-  float amp = 1.0 / (float)(parentA->_age);
-  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
+  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
+  float amp = sqrt(1.0 / (float)(parentA->_age + 1));
+  probMute /= (float)(GAGetLengthAdnInt(that));
+  probMute += (float)(parentA->_age) / (float)GAGetMaxAge(that);
   // Ensure the proba is not null
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
@@ -1134,8 +1161,11 @@ void GAMuteDefault(GenAlg* const that, const int* const parents,
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba amplitude of mutation
-  float amp = 1.0 / (float)(parentA->_age);
-  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
+  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
+  float amp = sqrt(1.0 / (float)(parentA->_age));
+  probMute /= (float)(MAX(GAGetLengthAdnInt(that), 
+    GAGetLengthAdnFloat(that)));
+  probMute += (float)(parentA->_age) / (float)GAGetMaxAge(that);
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
   bool hasMuted = false;
@@ -1224,8 +1254,10 @@ void GAMuteNeuraNetConv(GenAlg* const that, const int* const parents,
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
   // Get the proba amplitude of mutation
-  float amp = 1.0 / (float)(parentA->_age);
-  float probMute = ((float)iChild) / ((float)GAGetNbAdns(that));
+  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
+  float amp = sqrt(1.0 / (float)(parentA->_age));
+  probMute /= (float)(that->_NNdata._nbLink);
+  probMute += (float)(parentA->_age) / (float)GAGetMaxAge(that);
   if (probMute < PBMATH_EPSILON)
     probMute = PBMATH_EPSILON;
   bool hasMuted = false;

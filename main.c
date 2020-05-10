@@ -455,9 +455,9 @@ void UnitTestGenAlgStep() {
   if (ga->_nextId != 4 || GAAdnGetId(child) != 3 || 
     GAAdnGetAge(child) != 1 ||
     ISEQUALF(GAAdnGetGeneF(child, 0), 0.285933) == false ||
-    ISEQUALF(GAAdnGetGeneF(child, 1), 0.287805) == false ||
+    ISEQUALF(GAAdnGetGeneF(child, 1), 0.174965) == false ||
     ISEQUALF(GAAdnGetDeltaGeneF(child, 0), 0.0) == false ||
-    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.112841) == false ||
+    ISEQUALF(GAAdnGetDeltaGeneF(child, 1), 0.0) == false ||
     GAAdnGetGeneI(child, 0) != 4 ||
     GAAdnGetGeneI(child, 1) != 10 ||
     GAAdn(ga, 2) != child ||
@@ -588,6 +588,7 @@ void UnitTestGenAlgTest() {
   GASetTextOMeterFlag(ga, true);
   GASetNbMinAdn(ga, GENALG_NBELITES * 2);
   GASetNbMaxAdn(ga, GENALG_NBENTITIES);
+  GASetMaxAge(ga, 1000);
   float best = 1.0;
   unsigned long nbMaxEpoch = 2000;
   do {
@@ -652,6 +653,7 @@ void UnitTestGenAlgPerf() {
     GAInit(ga);
     GASetNbMinAdn(ga, GENALG_NBELITES * 2);
     GASetNbMaxAdn(ga, GENALG_NBENTITIES);
+    GASetMaxAge(ga, 1000);
     float ev = 0.0;
     do {
       for (int iEnt = GAGetNbAdns(ga); iEnt--;)
