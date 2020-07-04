@@ -198,7 +198,8 @@ void GAAdnSetMutabilityFloat(GenAlgAdn* const that,
 typedef enum GenAlgType {
   genAlgTypeDefault,
   genAlgTypeNeuraNet,
-  genAlgTypeNeuraNetConv
+  genAlgTypeNeuraNetConv,
+  genAlgTypeMorpheus
 } GenAlgType;
 
 // Data used when GenAlg is applied to a NeuraNet
@@ -213,6 +214,14 @@ typedef struct GANeuraNet {
   // Flag to memorize if the links of the NeuraNet can be modified
   bool _flagMutableLink;
 } GANeuraNet;
+
+// Data used when GenAlg is applied to a Morpheus
+typedef struct GAMorpheus {
+  unsigned int _nbBase;
+  long* _iBases;
+  const VecFloat* _bases;
+  const VecLong* _links;
+} GAMorpheus;
 
 // Structures to save the history of the GenAlg
 typedef struct GAHistoryBirth {
@@ -258,6 +267,8 @@ typedef struct GenAlg {
   float _normRangeInt;
   // Data used if the GenAlg is applied to a NeuraNet
   GANeuraNet _NNdata;
+  // Data used if the GenAlg is applied to a Morpheus
+  GAMorpheus _MorpheusData;
   // Number of ktevent
   unsigned long _nbKTEvent;
   // Flag to memorize if there has been a KT event during last call to GAStep
@@ -321,6 +332,15 @@ static inline
 void GASetTypeNeuraNetConv(GenAlg* const that, const int nbIn, 
   const int nbHid, const int nbOut, const long nbBaseConv,
   const long nbBaseCellConv, const long nbLink);
+
+// Set the type of the GenAlg 'that' to genAlgTypeMorpheus, the GenAlg
+// will be used with the Morpheus type of learning on the 'nbBase' bases
+// indicated by their indices 'iBases', and the 'bases' and 'links' as
+// initialisation values
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetTypeMorpheus(GenAlg* const that, unsigned int nbBase, long* iBases, const VecFloat* bases, const VecLong* links);
 
 // Return the GSet of the GenAlg 'that'
 #if BUILDMODE != 0

@@ -354,6 +354,28 @@ void GASetTypeNeuraNet(GenAlg* const that, const int nbIn,
   that->_NNdata._flagMutableLink = true;
 }
 
+// Set the type of the GenAlg 'that' to genAlgTypeMorpheus, the GenAlg
+// will be used with the Morpheus type of learning on the 'nbBase' bases
+// indicated by their indices 'iBases', and the 'bases' and 'links' as
+// initialisation values
+#if BUILDMODE != 0
+static inline
+#endif
+void GASetTypeMorpheus(GenAlg* const that, unsigned int nbBase, long* iBases, const VecFloat* bases, const VecLong* links) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  that->_type = genAlgTypeMorpheus;
+  that->_MorpheusData._nbBase = nbBase;
+  that->_MorpheusData._iBases = iBases;
+  that->_MorpheusData._bases = bases;
+  that->_MorpheusData._links = links;
+}
+
 // Set the type of the GenAlg 'that' to genAlgTypeNeuraNetConv, 
 // the GenAlg will be used with a NeuraNet having 'nbIn' inputs, 
 // 'nbHid' hidden values, 'nbOut' outputs, 'nbBaseConv' bases function,

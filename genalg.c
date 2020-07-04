@@ -30,6 +30,10 @@ void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga);
 void GAAdnInitNeuraNetConv(const GenAlgAdn* const that, 
   const GenAlg* const ga);
     
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
+// GenAlg 'ga', version used for Morpheus
+void GAAdnInitMorpheus(const GenAlgAdn* const that, const GenAlg* ga);
+
 // ================ Functions implementation ====================
 
 // Create a new GenAlgAdn with ID 'id', 'lengthAdnF' and 'lengthAdnI'
@@ -112,6 +116,9 @@ void GAAdnInit(GenAlgAdn* const that, const GenAlg* const ga) {
       break;
     case genAlgTypeNeuraNetConv:
       GAAdnInitNeuraNetConv(that, ga);
+      break;
+    case genAlgTypeMorpheus:
+      GAAdnInitMorpheus(that, ga);
       break;
     case genAlgTypeDefault:
     default:
@@ -220,6 +227,32 @@ void GAAdnInitNeuraNet(const GenAlgAdn* const that, const GenAlg* ga) {
   }
 }
 
+// Initialise randomly the genes of the GenAlgAdn 'that' of the 
+// GenAlg 'ga', version used for Morpheus
+void GAAdnInitMorpheus(const GenAlgAdn* const that, 
+  const GenAlg* const ga) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  VecCopy(that->_adnF, ga->_MorpheusData._bases);
+  VecCopy(that->_adnI, ga->_MorpheusData._links);
+  for (unsigned int iBase = ga->_MorpheusData._nbBase; iBase--;) {
+    long jGene = ga->_MorpheusData._iBases[iBase] * 3L;
+    for (long i = 3; i--;) {
+      long iGene = jGene + i;
+      float min = VecGet(GABoundsAdnFloat(ga, iGene), 0);
+      float max = VecGet(GABoundsAdnFloat(ga, iGene), 1);
+      float val = min + (max - min) * rnd();
+      VecSet(that->_adnF, iGene, val);
+      VecSet(that->_mutabilityF, iGene, 1.0);
+    }
+  }
+}
+
 // Print the information about the GenAlgAdn 'that' on the 
 // stream 'stream'
 void GAAdnPrintln(const GenAlgAdn* const that, FILE* const stream) {
@@ -275,6 +308,13 @@ void GAReproduction(GenAlg* const that, const int* const parents,
 void GAReproductionDefault(GenAlg* const that, 
   const int* const parents, const int iChild);
 
+// Set the genes of the adn at rank 'iChild' as a mix of the 
+// genes of adns at ranks 'parents[0]' and 'parents[1]'
+// Version used for Morpheus, links topology stays the same, base
+// functions are averaged betwen parent
+void GAReproductionMorpheus(GenAlg* const that, 
+  const int* const parents, const int iChild);
+
 // Set the genes of the adn at rank 'iChild' as a 50/50 mix of the 
 // genes of adns at ranks 'parents[0]' and 'parents[1]'
 // This version is optimised to calculate the parameters of a NeuraNet
@@ -296,6 +336,11 @@ void GAMute(GenAlg* const that, const int* const parents,
   
 // Mute the genes of the entity at rank 'iChild'
 void GAMuteDefault(GenAlg* const that, const int* const parents, 
+  const int iChild);
+
+// Mute the genes of the entity at rank 'iChild'
+// Version for Morpheus
+void GAMuteMorpheus(GenAlg* const that, const int* const parents, 
   const int iChild);
 
 // Mute the genes of the entity at rank 'iChild'
@@ -740,6 +785,9 @@ void GAReproduction(GenAlg* const that,
     case genAlgTypeNeuraNetConv:
       GAReproductionNeuraNetConv(that, parents, iChild);
       break;
+    case genAlgTypeMorpheus:
+      GAReproductionMorpheus(that, parents, iChild);
+      break;
     case genAlgTypeDefault:
     default:
       GAReproductionDefault(that, parents, iChild);
@@ -949,6 +997,54 @@ void GAReproductionDefault(GenAlg* const that,
   child->_id = (that->_nextId)++;
 }
 
+// Set the genes of the adn at rank 'iChild' as a mix of the 
+// genes of adns at ranks 'parents[0]' and 'parents[1]'
+// Version used for Morpheus, links topology stays the same, base
+// functions are averaged betwen parent
+void GAReproductionMorpheus(GenAlg* const that, 
+  const int* const parents, const int iChild) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (parents == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'parents' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
+      iChild, GAGetNbAdns(that));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Get the parents and child
+  GenAlgAdn* parentA = GAAdn(that, parents[0]);
+  GenAlgAdn* parentB = GAAdn(that, parents[1]);
+  GenAlgAdn* child = GAAdn(that, iChild);
+  // For each gene of the adn for floating point value
+  for (long iGene = 0; iGene < GAGetLengthAdnFloat(that); iGene += 3) {
+    // Get the average of genes from the parents
+    for (long jGene = 3; jGene--;) {
+      VecSet(child->_adnF, iGene + jGene, 
+        0.5 * VecGet(parentA->_adnF, iGene + jGene) +
+        0.5 * VecGet(parentB->_adnF, iGene + jGene));
+      VecSet(child->_deltaAdnF, iGene + jGene, 
+        0.5 * VecGet(parentA->_deltaAdnF, iGene + jGene) +
+        0.5 * VecGet(parentB->_deltaAdnF, iGene + jGene));
+    }
+  }
+  // Copy the genes for int values from one parent
+  VecCopy(child->_adnI, parentA->_adnI);
+  // Reset the age of the child
+  child->_age = 1;
+  // Set the id of the child
+  child->_id = (that->_nextId)++;
+}
+
 // Router toward the appropriate Mute function according to the type 
 // of GenAlg
 void GAMute(GenAlg* const that, const int* const parents, 
@@ -977,6 +1073,9 @@ void GAMute(GenAlg* const that, const int* const parents,
       break;
     case genAlgTypeNeuraNetConv:
       GAMuteNeuraNetConv(that, parents, iChild);
+      break;
+    case genAlgTypeMorpheus:
+      GAMuteMorpheus(that, parents, iChild);
       break;
     case genAlgTypeDefault:
     default:
@@ -1134,6 +1233,89 @@ void GAMuteNeuraNet(GenAlg* const that, const int* const parents,
     }
   } while (hasMuted == false);
   free(isUsed);
+}
+
+// Mute the genes of the entity at rank 'iChild'
+// Version for Morpheus
+void GAMuteMorpheus(GenAlg* const that, const int* const parents, 
+  const int iChild) {
+#if BUILDMODE == 0
+  if (that == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'that' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (parents == NULL) {
+    GenAlgErr->_type = PBErrTypeNullPointer;
+    sprintf(GenAlgErr->_msg, "'parents' is null");
+    PBErrCatch(GenAlgErr);
+  }
+  if (iChild < 0 || iChild >= GAGetNbAdns(that)) {
+    GenAlgErr->_type = PBErrTypeInvalidArg;
+    sprintf(GenAlgErr->_msg, "'child' is invalid (0<=%d<%d)",
+      iChild, GAGetNbAdns(that));
+    PBErrCatch(GenAlgErr);
+  }
+#endif
+  // Get the first parent and child
+  GenAlgAdn* parentA = GAAdn(that, parents[0]);
+  GenAlgAdn* child = GAAdn(that, iChild);
+  // Get the proba and amplitude of mutation
+  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
+  float amp = sqrt(1.0 / (float)(parentA->_age + 1));
+  probMute /= (float)(GAGetLengthAdnInt(that));
+  probMute += (float)(parentA->_age) / 10000;
+  // Ensure the proba is not null
+  if (probMute < PBMATH_EPSILON)
+    probMute = PBMATH_EPSILON;
+  // Declare a variable to memorize if there has been mutation
+  bool hasMuted = false;
+  // Loop until there has been at least one mutation
+  do {
+   // For each gene of the adn for int value (links definitions)
+    for (long iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
+      // Get the index of the base function
+      long baseFun = GAAdnGetGeneI(child, iGene);
+      long baseFunGene = baseFun * 3;
+      for (long jGene = 3; jGene--;) {
+        // If the associated base function mutes
+        if (rnd() < probMute) {
+          hasMuted = true;
+          // Get the bounds
+          const VecFloat2D* const bounds = 
+            GABoundsAdnFloat(that, baseFunGene + jGene);
+          // Declare a variable to memorize the previous value 
+          // of the gene
+          float prevVal = GAAdnGetGeneF(child, baseFunGene + jGene);
+          // Apply the mutation
+          GAAdnSetGeneF(child, baseFunGene + jGene, 
+            GAAdnGetGeneF(child, baseFunGene + jGene) + 
+            (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
+            (rnd() - 0.5) + 
+            GAAdnGetDeltaGeneF(child, baseFunGene + jGene));
+          // Keep the gene value in bounds
+          while (GAAdnGetGeneF(child, baseFunGene + jGene) < 
+            VecGet(bounds, 0) ||
+            GAAdnGetGeneF(child, baseFunGene + jGene) > 
+            VecGet(bounds, 1)) {
+            if (GAAdnGetGeneF(child, baseFunGene + jGene) > 
+              VecGet(bounds, 1))
+              GAAdnSetGeneF(child, baseFunGene + jGene, 
+                2.0 * VecGet(bounds, 1) - 
+                GAAdnGetGeneF(child, baseFunGene + jGene));
+            else if (GAAdnGetGeneF(child, baseFunGene + jGene) < 
+              VecGet(bounds, 0))
+              GAAdnSetGeneF(child, baseFunGene + jGene, 
+                2.0 * VecGet(bounds, 0) - 
+                GAAdnGetGeneF(child, baseFunGene + jGene));
+          }
+          // Update the deltaAdn
+          GAAdnSetDeltaGeneF(child, baseFunGene + jGene, 
+            GAAdnGetGeneF(child, baseFunGene + jGene) - prevVal);
+        }
+      }
+    }
+  } while (hasMuted == false);
 }
 
 // Mute the genes of the entity at rank 'iChild'
