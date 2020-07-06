@@ -1260,62 +1260,47 @@ void GAMuteMorpheus(GenAlg* const that, const int* const parents,
   // Get the first parent and child
   GenAlgAdn* parentA = GAAdn(that, parents[0]);
   GenAlgAdn* child = GAAdn(that, iChild);
-  // Get the proba and amplitude of mutation
-  float probMute = sqrt(((float)iChild) / ((float)GAGetNbAdns(that)));
+  // Get the amplitude of mutation
   float amp = sqrt(1.0 / (float)(parentA->_age + 1));
-  probMute /= (float)(GAGetLengthAdnInt(that));
-  probMute += (float)(parentA->_age) / 10000;
-  // Ensure the proba is not null
-  if (probMute < PBMATH_EPSILON)
-    probMute = PBMATH_EPSILON;
-  // Declare a variable to memorize if there has been mutation
-  bool hasMuted = false;
-  // Loop until there has been at least one mutation
-  do {
-   // For each gene of the adn for int value (links definitions)
-    for (long iGene = 0; iGene < GAGetLengthAdnInt(that); iGene += 3) {
-      // Get the index of the base function
-      long baseFun = GAAdnGetGeneI(child, iGene);
-      long baseFunGene = baseFun * 3;
-      for (long jGene = 3; jGene--;) {
-        // If the associated base function mutes
-        if (rnd() < probMute) {
-          hasMuted = true;
-          // Get the bounds
-          const VecFloat2D* const bounds = 
-            GABoundsAdnFloat(that, baseFunGene + jGene);
-          // Declare a variable to memorize the previous value 
-          // of the gene
-          float prevVal = GAAdnGetGeneF(child, baseFunGene + jGene);
-          // Apply the mutation
+  // For each base function mutating
+  for (unsigned int iBase = 0; iBase < that->_MorpheusData._nbBase; ++iBase) {
+    // Get the index of the base function
+    long baseFun = that->_MorpheusData._iBases[iBase];
+    long baseFunGene = baseFun * 3;
+    for (long jGene = 3; jGene--;) {
+      // Get the bounds
+      const VecFloat2D* const bounds = 
+        GABoundsAdnFloat(that, baseFunGene + jGene);
+      // Declare a variable to memorize the previous value 
+      // of the gene
+      float prevVal = GAAdnGetGeneF(child, baseFunGene + jGene);
+      // Apply the mutation
+      GAAdnSetGeneF(child, baseFunGene + jGene, 
+        GAAdnGetGeneF(child, baseFunGene + jGene) + 
+        (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
+        (rnd() - 0.5) + 
+        GAAdnGetDeltaGeneF(child, baseFunGene + jGene));
+      // Keep the gene value in bounds
+      while (GAAdnGetGeneF(child, baseFunGene + jGene) < 
+        VecGet(bounds, 0) ||
+        GAAdnGetGeneF(child, baseFunGene + jGene) > 
+        VecGet(bounds, 1)) {
+        if (GAAdnGetGeneF(child, baseFunGene + jGene) > 
+          VecGet(bounds, 1))
           GAAdnSetGeneF(child, baseFunGene + jGene, 
-            GAAdnGetGeneF(child, baseFunGene + jGene) + 
-            (VecGet(bounds, 1) - VecGet(bounds, 0)) * amp * 
-            (rnd() - 0.5) + 
-            GAAdnGetDeltaGeneF(child, baseFunGene + jGene));
-          // Keep the gene value in bounds
-          while (GAAdnGetGeneF(child, baseFunGene + jGene) < 
-            VecGet(bounds, 0) ||
-            GAAdnGetGeneF(child, baseFunGene + jGene) > 
-            VecGet(bounds, 1)) {
-            if (GAAdnGetGeneF(child, baseFunGene + jGene) > 
-              VecGet(bounds, 1))
-              GAAdnSetGeneF(child, baseFunGene + jGene, 
-                2.0 * VecGet(bounds, 1) - 
-                GAAdnGetGeneF(child, baseFunGene + jGene));
-            else if (GAAdnGetGeneF(child, baseFunGene + jGene) < 
-              VecGet(bounds, 0))
-              GAAdnSetGeneF(child, baseFunGene + jGene, 
-                2.0 * VecGet(bounds, 0) - 
-                GAAdnGetGeneF(child, baseFunGene + jGene));
-          }
-          // Update the deltaAdn
-          GAAdnSetDeltaGeneF(child, baseFunGene + jGene, 
-            GAAdnGetGeneF(child, baseFunGene + jGene) - prevVal);
-        }
+            2.0 * VecGet(bounds, 1) - 
+            GAAdnGetGeneF(child, baseFunGene + jGene));
+        else if (GAAdnGetGeneF(child, baseFunGene + jGene) < 
+          VecGet(bounds, 0))
+          GAAdnSetGeneF(child, baseFunGene + jGene, 
+            2.0 * VecGet(bounds, 0) - 
+            GAAdnGetGeneF(child, baseFunGene + jGene));
       }
+      // Update the deltaAdn
+      GAAdnSetDeltaGeneF(child, baseFunGene + jGene, 
+        GAAdnGetGeneF(child, baseFunGene + jGene) - prevVal);
     }
-  } while (hasMuted == false);
+  }
 }
 
 // Mute the genes of the entity at rank 'iChild'
